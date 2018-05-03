@@ -16,7 +16,7 @@ module FpgaVirtualConsole(
     output  reg [2:0]   vgaGreen,
     output  reg [2:0]   vgaBlue,
     // debug output
-    output  reg [47:0]  segments,   // eight 7-segmented displays
+    output  reg [55:0]  segmentDiaplays,   // eight 7-segmented displays
     output  reg [15:0]  leds        // 16 leds
     );
 
@@ -24,6 +24,31 @@ module FpgaVirtualConsole(
     // constants
     parameter CLOCK_FREQUNCY = 100000000;   // default clock frequency is 100 MHz
     parameter BAUD_RATE = 115200;           // default baud rate of UART
+
+
+    // 7-segmented displays
+    reg     [3:0]   segmentDisplayHex[0:7]; // eight hex 
+    wire    [55:0]  segmentDiaplaySignal;
+
+    always @(posedge clk) begin
+        segmentDiaplays <= segmentDiaplaySignal;
+    end
+
+    LedDecoder decoder_1(.hex(segmentDisplayHex[7]), .segments(segmentDiaplaySignal[55:49]));
+    LedDecoder decoder_2(.hex(segmentDisplayHex[6]), .segments(segmentDiaplaySignal[48:42]));
+    LedDecoder decoder_3(.hex(segmentDisplayHex[5]), .segments(segmentDiaplaySignal[41:35]));
+    LedDecoder decoder_4(.hex(segmentDisplayHex[4]), .segments(segmentDiaplaySignal[34:28]));
+    LedDecoder decoder_5(.hex(segmentDisplayHex[3]), .segments(segmentDiaplaySignal[27:21]));
+    LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDiaplaySignal[20:14]));
+    LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDiaplaySignal[13:7]));
+    LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDiaplaySignal[6:0]));
+
+    // leds
+    reg     [15:0]  ledValues;
+
+    always @(posedge clk) begin
+        leds <= ledValues;
+    end
 
 
     // UART module
