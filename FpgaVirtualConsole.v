@@ -16,14 +16,14 @@ module FpgaVirtualConsole(
     output  reg [2:0]   vgaGreen,
     output  reg [2:0]   vgaBlue,
     // debug output
-    output  reg [47:0]  segments,
-    output  reg [15:0]  leds
+    output  reg [47:0]  segments,   // eight 7-segmented displays
+    output  reg [15:0]  leds        // 16 leds
     );
 
 
     // constants
-    parameter CLOCK_FREQUNCY = 100000000;
-    parameter BAUD_RATE = 115200;
+    parameter CLOCK_FREQUNCY = 100000000;   // default clock frequency is 100 MHz
+    parameter BAUD_RATE = 115200;           // default baud rate of UART
 
 
     // UART module

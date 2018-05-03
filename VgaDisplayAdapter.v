@@ -1,3 +1,5 @@
+// Partly from https://timetoexplore.net/blog/arty-fpga-vga-verilog-01
+
 module VgaDisplayAdapter_640_480(
     input wire CLK,             // board clock: 100 MHz on Arty & Basys 3
     input wire RST_BTN,         // reset button
