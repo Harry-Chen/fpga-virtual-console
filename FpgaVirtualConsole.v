@@ -74,6 +74,8 @@ module FpgaVirtualConsole(
         uartBusy <= uartBusySignal;
         uartReady <= uartReadySignal;
         uartDataReceived <= uartDataSignal;
+        uartStartSend <= scan_code_ready;
+        uartDataToSend <= ascii_code;
     end
 
     async_transmitter #(
@@ -81,10 +83,8 @@ module FpgaVirtualConsole(
         .Baud(BAUD_RATE)
     ) uartTransmitter(
         .clk(clk), // input
-        //.TxD_start(uartStartSend), // input
-		  //.TxD_data(uartDataToSend), // input
-		  .TxD_start(scan_code_ready),
-		  .TxD_data(ascii_code),
+        .TxD_start(uartStartSend), // input
+		.TxD_data(uartDataToSend), // input
         .TxD(uartTxSignal), // output
         .TxD_busy(uartBusySignal) // output
     );

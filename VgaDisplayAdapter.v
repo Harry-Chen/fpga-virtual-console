@@ -11,8 +11,8 @@ module VgaDisplayAdapter_640_480(
     );
 
     wire rst = ~RST_BTN;  // reset is active low on Arty
-	 
-	 parameter ClkFrequency = 100000000; 
+    
+    parameter ClkFrequency = 100000000; 
     localparam VGA_FREQUENCY = 25000000; // get a 25MHz clock
     localparam CLOCKS_NEEDED = ClkFrequency / VGA_FREQUENCY - 1;
 
