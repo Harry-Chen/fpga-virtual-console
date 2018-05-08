@@ -42,6 +42,17 @@ module FpgaVirtualConsole(
     LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDiaplaySignal[13:7]));
     LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDiaplaySignal[6:0]));
 
+	// keyboard test
+	wire [7:0] scan_code, ascii_code;
+	wire scan_code_ready;
+	wire letter_case;
+	
+	// instantiate keyboard scan code circuit
+	Ps2StateMachine kb_unit (.clk(clk), .reset(rst), .ps2d(ps2Data), .ps2c(ps2Clk),
+			 .scan_code(scan_code), .scan_code_ready(scan_code_ready), .letter_case_out(letter_case));
+					
+	// instantiate key-to-ascii code conversion circuit
+	ScanCodeToAscii k2a_unit (.letter_case(letter_case), .scan_code(scan_code), .ascii_code(ascii_code));
 
     // UART module
     reg         uartReady;
@@ -67,8 +78,10 @@ module FpgaVirtualConsole(
         .Baud(BAUD_RATE)
     ) uartTransmitter(
         .clk(clk), // input
-        .TxD_start(uartStartSend), // input
-        .TxD_data(uartDataToSend), // input
+        //.TxD_start(uartStartSend), // input
+		  //.TxD_data(uartDataToSend), // input
+		  .TxD_start(scan_code_ready),
+		  .TxD_data(ascii_code),
         .TxD(uartTxSignal), // output
         .TxD_busy(uartBusySignal) // output
     );
