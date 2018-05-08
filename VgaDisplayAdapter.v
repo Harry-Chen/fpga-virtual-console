@@ -10,21 +10,24 @@ module VgaDisplayAdapter_640_480(
     output wire [2:0] VGA_B     // 4-bit VGA blue output
     );
 
-    parameter ClkFrequency = 25000000; // 25MHz
-    localparam VGA_FREQUENCY = 25000000;
-    localparam CLOCKS_NEEDED = ClkFrequency / VGA_FREQUENCY;
-
     wire rst = ~RST_BTN;  // reset is active low on Arty
+	 
+	 parameter ClkFrequency = 100000000; 
+    localparam VGA_FREQUENCY = 25000000; // get a 25MHz clock
+    localparam CLOCKS_NEEDED = ClkFrequency / VGA_FREQUENCY - 1;
 
     // generate a 25 MHz pixel strobe
-    reg [15:0] cnt = 0;
+    reg [2:0] cnt = 0;
     reg pix_stb = 0;
     always @(posedge CLK) begin
       if(cnt == CLOCKS_NEEDED) begin
         cnt <= 0;
-        pix_stb <= ~pix_stb;
+        pix_stb <= 1;
       end
-      else cnt <= cnt + 1;
+      else begin
+			pix_stb <= 0;
+			cnt <= cnt + 1;
+		end
     end
 
     wire [9:0] x;  // current pixel x position: 10-bit value: 0-1023
