@@ -2,7 +2,7 @@ module FpgaVirtualConsole(
     // general signals
     input               clk,
     input               rst,
-    input       [7:0]   buttons,
+    input       [3:0]   buttons,
     // PS/2 receiver
     input               ps2Clk,
     input               ps2Data,
@@ -16,8 +16,7 @@ module FpgaVirtualConsole(
     output  reg [2:0]   vgaGreen,
     output  reg [2:0]   vgaBlue,
     // debug output
-    output  reg [55:0]  segmentDiaplays,   // eight 7-segmented displays
-    output  reg [15:0]  leds        // 16 leds
+    output  reg [55:0]  segmentDiaplays   // eight 7-segmented displays
     );
 
 
@@ -42,13 +41,6 @@ module FpgaVirtualConsole(
     LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDiaplaySignal[20:14]));
     LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDiaplaySignal[13:7]));
     LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDiaplaySignal[6:0]));
-
-    // leds
-    reg     [15:0]  ledValues;
-
-    always @(posedge clk) begin
-        leds <= ledValues;
-    end
 
 
     // UART module

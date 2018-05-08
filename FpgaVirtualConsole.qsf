@@ -58,4 +58,26 @@ set_global_assignment -name VERILOG_FILE VgaSignalGenerator.v
 set_global_assignment -name VERILOG_FILE VgaDisplayAdapter.v
 set_global_assignment -name VERILOG_FILE AsyncUartTransceiver.v
 set_global_assignment -name VERILOG_FILE FpgaVirtualConsole.v
+set_global_assignment -name STRATIX_DEVICE_IO_STANDARD "3.3-V LVTTL"
+set_location_assignment PIN_AE5 -to buttons[3]
+set_location_assignment PIN_AD5 -to buttons[2]
+set_location_assignment PIN_AD4 -to buttons[1]
+set_location_assignment PIN_AC6 -to buttons[0]
+set_location_assignment PIN_N2 -to clk
+set_location_assignment PIN_AD6 -to ps2Clk
+set_location_assignment PIN_AD7 -to ps2Data
+set_location_assignment PIN_N1 -to rst
+set_location_assignment PIN_M3 -to uartRx
+set_location_assignment PIN_M2 -to uartTx
+set_location_assignment PIN_U1 -to vgaBlue[2]
+set_location_assignment PIN_U2 -to vgaBlue[1]
+set_location_assignment PIN_T4 -to vgaBlue[0]
+set_location_assignment PIN_T3 -to vgaGreen[2]
+set_location_assignment PIN_T2 -to vgaGreen[1]
+set_location_assignment PIN_R5 -to vgaGreen[0]
+set_location_assignment PIN_U3 -to vgaHSync
+set_location_assignment PIN_R4 -to vgaRed[2]
+set_location_assignment PIN_R3 -to vgaRed[1]
+set_location_assignment PIN_R2 -to vgaRed[0]
+set_location_assignment PIN_U4 -to vgaVSync
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
