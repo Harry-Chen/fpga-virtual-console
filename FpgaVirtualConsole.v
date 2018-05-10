@@ -40,12 +40,15 @@ module FpgaVirtualConsole(
     LedDecoder decoder_5(.hex(segmentDisplayHex[3]), .segments(segmentDiaplaySignal[27:21]));
     LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDiaplaySignal[20:14]));
     LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDiaplaySignal[13:7]));
-    LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDiaplaySignal[6:0]));
-
+    //LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDiaplaySignal[6:0]));
+	 
+	 
 	// keyboard test
 	wire [7:0] scan_code, ascii_code;
 	wire scan_code_ready;
 	wire letter_case;
+	
+	assign segmentDiaplaySignal[6:0] = ascii_code;
 	
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit (.clk(clk), .reset(rst), .ps2d(ps2Data), .ps2c(ps2Clk),
@@ -71,6 +74,8 @@ module FpgaVirtualConsole(
         uartBusy <= uartBusySignal;
         uartReady <= uartReadySignal;
         uartDataReceived <= uartDataSignal;
+        uartStartSend <= scan_code_ready;
+        uartDataToSend <= ascii_code;
     end
 
     async_transmitter #(
@@ -78,10 +83,8 @@ module FpgaVirtualConsole(
         .Baud(BAUD_RATE)
     ) uartTransmitter(
         .clk(clk), // input
-        //.TxD_start(uartStartSend), // input
-		  //.TxD_data(uartDataToSend), // input
-		  .TxD_start(scan_code_ready),
-		  .TxD_data(ascii_code),
+        .TxD_start(uartStartSend), // input
+		.TxD_data(uartDataToSend), // input
         .TxD(uartTxSignal), // output
         .TxD_busy(uartBusySignal) // output
     );
