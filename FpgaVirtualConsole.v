@@ -16,7 +16,7 @@ module FpgaVirtualConsole(
     output  reg [2:0]   vgaGreen,
     output  reg [2:0]   vgaBlue,
     // debug output
-    output  reg [55:0]  segmentDiaplays   // eight 7-segmented displays
+    output  reg [55:0]  segmentDisplays   // eight 7-segmented displays
     );
 
 
@@ -27,19 +27,19 @@ module FpgaVirtualConsole(
 
     // 7-segmented displays
     reg     [3:0]   segmentDisplayHex[0:7]; // eight hex 
-    wire    [55:0]  segmentDiaplaySignal;
+    wire    [55:0]  segmentDisplaySignal;
 
     always @(posedge clk) begin
-        segmentDiaplays <= segmentDiaplaySignal;
+        segmentDisplays <= segmentDisplaySignal;
     end
 
-    LedDecoder decoder_1(.hex(segmentDisplayHex[7]), .segments(segmentDiaplaySignal[55:49]));
-    LedDecoder decoder_2(.hex(segmentDisplayHex[6]), .segments(segmentDiaplaySignal[48:42]));
-    LedDecoder decoder_3(.hex(segmentDisplayHex[5]), .segments(segmentDiaplaySignal[41:35]));
-    LedDecoder decoder_4(.hex(segmentDisplayHex[4]), .segments(segmentDiaplaySignal[34:28]));
-    LedDecoder decoder_5(.hex(segmentDisplayHex[3]), .segments(segmentDiaplaySignal[27:21]));
-    LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDiaplaySignal[20:14]));
-    LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDiaplaySignal[13:7]));
+    LedDecoder decoder_1(.hex(segmentDisplayHex[7]), .segments(segmentDisplaySignal[55:49]));
+    LedDecoder decoder_2(.hex(segmentDisplayHex[6]), .segments(segmentDisplaySignal[48:42]));
+    LedDecoder decoder_3(.hex(segmentDisplayHex[5]), .segments(segmentDisplaySignal[41:35]));
+    LedDecoder decoder_4(.hex(segmentDisplayHex[4]), .segments(segmentDisplaySignal[34:28]));
+    LedDecoder decoder_5(.hex(segmentDisplayHex[3]), .segments(segmentDisplaySignal[27:21]));
+    LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDisplaySignal[20:14]));
+    LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDisplaySignal[13:7]));
     //LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDiaplaySignal[6:0]));
 	 
 	 
@@ -48,7 +48,7 @@ module FpgaVirtualConsole(
 	wire scan_code_ready;
 	wire letter_case;
 	
-	assign segmentDiaplaySignal[6:0] = ascii_code;
+	assign segmentDisplaySignal[6:0] = ascii_code;
 	
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit (.clk(clk), .reset(rst), .ps2d(ps2Data), .ps2c(ps2Clk),
