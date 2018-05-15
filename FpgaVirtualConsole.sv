@@ -29,24 +29,17 @@ module FpgaVirtualConsole(
     logic     [3:0]   segmentDisplayHex[0:7]; // eight hex 	 
 
     always_ff @(posedge clk) begin
-        segmentDisplayHex[0] <= 0;
-        segmentDisplayHex[1] <= 1;
-        segmentDisplayHex[2] <= 2;
-        segmentDisplayHex[3] <= 3;
-        segmentDisplayHex[4] <= 4;
-        segmentDisplayHex[5] <= 5;
-        segmentDisplayHex[6] <= 6;
-        segmentDisplayHex[7] <= 7;
+
     end
 
-    LedDecoder decoder_1(.hex(segmentDisplayHex[7]), .segments(segmentDisplays[55:49]));
-    LedDecoder decoder_2(.hex(segmentDisplayHex[6]), .segments(segmentDisplays[48:42]));
-    LedDecoder decoder_3(.hex(segmentDisplayHex[5]), .segments(segmentDisplays[41:35]));
-    LedDecoder decoder_4(.hex(segmentDisplayHex[4]), .segments(segmentDisplays[34:28]));
-    LedDecoder decoder_5(.hex(segmentDisplayHex[3]), .segments(segmentDisplays[27:21]));
-    LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDisplays[20:14]));
-    LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDisplays[13:7]));
-    LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDisplays[6:0]));
+    //LedDecoder decoder_1(.hex(segmentDisplayHex[7]), .segments(segmentDisplays[55:49]));
+    //LedDecoder decoder_2(.hex(segmentDisplayHex[6]), .segments(segmentDisplays[48:42]));
+    //LedDecoder decoder_3(.hex(segmentDisplayHex[5]), .segments(segmentDisplays[41:35]));
+    //LedDecoder decoder_4(.hex(segmentDisplayHex[4]), .segments(segmentDisplays[34:28]));
+    //LedDecoder decoder_5(.hex(segmentDisplayHex[3]), .segments(segmentDisplays[27:21]));
+    //LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDisplays[20:14]));
+    //LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDisplays[13:7]));
+    //LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDisplays[6:0]));
 	 
 	 
 	// keyboard test
@@ -54,14 +47,25 @@ module FpgaVirtualConsole(
 	logic scan_code_ready;
 	logic letter_case;
 	
-	//assign segmentDisplaySignal[6:0] = ascii_code;
+	assign segmentDisplays[7:0] = ascii_code;
 	
 	// instantiate keyboard scan code circuit
-	Ps2StateMachine kb_unit (.clk(clk), .reset(rst), .ps2d(ps2Data), .ps2c(ps2Clk),
-			 .scan_code(scan_code), .scan_code_ready(scan_code_ready), .letter_case_out(letter_case));
+	Ps2StateMachine kb_unit(
+        .clk(clk),
+        .reset(~rst),
+        .ps2d(ps2Data),
+        .ps2c(ps2Clk),
+        .scan_code(scan_code),
+        .scan_code_ready(scan_code_ready),
+        .letter_case_out(letter_case)
+    );
 					
 	// instantiate key-to-ascii code conversion circuit
-	ScanCodeToAscii k2a_unit (.letter_case(letter_case), .scan_code(scan_code), .ascii_code(ascii_code));
+	ScanCodeToAscii k2a_unit(
+        .letter_case(letter_case),
+        .scan_code(scan_code),
+        .ascii_code(ascii_code)
+    );
 
     // UART module
     logic         uartReady;
@@ -96,6 +100,7 @@ module FpgaVirtualConsole(
         .RxD_data(uartDataReceived) // output
     );
 
+    assign segmentDisplays[15:8] = uartDataReceived;
 
     // VGA module
 
