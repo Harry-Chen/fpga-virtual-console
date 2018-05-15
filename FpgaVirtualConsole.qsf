@@ -131,12 +131,13 @@ set_location_assignment PIN_AC21 -to segmentDisplays[52]
 set_location_assignment PIN_AE22 -to segmentDisplays[53]
 set_location_assignment PIN_AD22 -to segmentDisplays[54]
 set_location_assignment PIN_AD23 -to segmentDisplays[55]
+set_global_assignment -name SYSTEMVERILOG_FILE FpgaVirtualConsole.sv
+set_global_assignment -name SYSTEMVERILOG_FILE LedDecoder.sv
+set_global_assignment -name VERILOG_FILE KeyboardToUart.v
 set_global_assignment -name VERILOG_FILE ScanCodeToAscii.v
 set_global_assignment -name VERILOG_FILE Ps2StateMachine.v
 set_global_assignment -name VERILOG_FILE Ps2Receiver.v
-set_global_assignment -name VERILOG_FILE LedDecoder.v
 set_global_assignment -name VERILOG_FILE VgaSignalGenerator.v
 set_global_assignment -name VERILOG_FILE VgaDisplayAdapter.v
 set_global_assignment -name VERILOG_FILE AsyncUartTransceiver.v
-set_global_assignment -name VERILOG_FILE FpgaVirtualConsole.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
