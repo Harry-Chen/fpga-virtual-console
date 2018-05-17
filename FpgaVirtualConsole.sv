@@ -10,11 +10,7 @@ module FpgaVirtualConsole(
     input               uartRx,
     output  reg         uartTx,
     // vga output
-    output  reg         vgaHSync,
-    output  reg         vgaVSync,
-    output  reg [2:0]   vgaRed,
-    output  reg [2:0]   vgaGreen,
-    output  reg [2:0]   vgaBlue,
+    output  VgaSignal_t vga,
     // debug output
     output  reg [55:0]  segmentDisplays   // eight 7-segmented displays
     );
@@ -102,6 +98,27 @@ module FpgaVirtualConsole(
 
     assign segmentDisplays[15:8] = uartDataReceived;
 
+    // Text RAM module
+
+    TextRamRequest_t textRamRequestParser, textRamRequestRenderer;
+    TextRamResult_t textRamResultParser, textRamResultRenderer;
+
+    TextRam ram(
+        .aclr_a(rst),
+        .aclr_b(rst),
+        .address_a(textRamRequestParser.address),
+        .address_b(textRamRequestRenderer.address),
+        .clock_a(clk),
+        .clock_b(clk),
+        .data_a(textRamRequestParser.data),
+        .data_b(textRamRequestRenderer.data),
+        .wren_a(textRamRequestParser.wren),
+        .wren_b(textRamRequestRenderer.wren),
+        .q_a(textRamResultParser.q),
+        .q_b(textRamResultRenderer.q)
+	);
+
+
     // VGA module
 
     VgaDisplayAdapter_640_480 #(
@@ -109,11 +126,7 @@ module FpgaVirtualConsole(
     ) display(
         .CLK(clk),
         .RST_BTN(rst),
-        .VGA_HS_O(vgaHSync),
-        .VGA_VS_O(vgaVSync),
-        .VGA_R(vgaRed),
-        .VGA_G(vgaGreen),
-        .VGA_B(vgaBlue)
+        .vga(vga)
     );
 
 

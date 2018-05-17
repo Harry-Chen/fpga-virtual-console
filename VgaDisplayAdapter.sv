@@ -1,13 +1,10 @@
 // Partly from https://timetoexplore.net/blog/arty-fpga-vga-verilog-01
+`include "DataType.sv"
 
 module VgaDisplayAdapter_640_480(
     input wire CLK,             // board clock: 100 MHz on Arty & Basys 3
     input wire RST_BTN,         // reset button
-    output wire VGA_HS_O,       // horizontal sync output
-    output wire VGA_VS_O,       // vertical sync output
-    output wire [2:0] VGA_R,    // 4-bit VGA red output
-    output wire [2:0] VGA_G,    // 4-bit VGA green output
-    output wire [2:0] VGA_B     // 4-bit VGA blue output
+    output VgaSignal_t vga
     );
 
     wire rst = RST_BTN;  // reset is active low on Arty
@@ -36,8 +33,8 @@ module VgaDisplayAdapter_640_480(
     VgaSignalGenerator_640_480 display (
         .i_clk(CLK),
         .i_pix_stb(pix_stb),
-        .o_hs(VGA_HS_O), 
-        .o_vs(VGA_VS_O), 
+        .o_hs(vga.hSync), 
+        .o_vs(vga.vSync), 
         .o_x(x), 
         .o_y(y)
     );
@@ -49,9 +46,9 @@ module VgaDisplayAdapter_640_480(
     assign sq_c = ((x > 280) & (y > 200) & (x < 440) & (y < 360)) ? 1 : 0;
     assign sq_d = ((x > 360) & (y > 280) & (x < 520) & (y < 440)) ? 1 : 0;
 
-    assign VGA_R[2] = sq_b;         // square b is red
-    assign VGA_G[2] = sq_a | sq_d;  // squares a and d are green
-    assign VGA_B[2] = sq_c;         // square c is blue
+    assign vga.red[2] = sq_b;         // square b is red
+    assign vga.green[2] = sq_a | sq_d;  // squares a and d are green
+    assign vga.blue[2] = sq_c;         // square c is blue
 
     // TODO: read from SRAM in a 25MHz clock
 endmodule
