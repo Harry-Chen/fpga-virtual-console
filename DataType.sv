@@ -8,7 +8,7 @@
 `define SRAM_ADDRESS_WIDTH 20
 `define SRAM_DATA_WIDTH 32
 
-typedef struct packed{
+typedef struct packed {
 	logic   [`TEXT_RAM_ADDRESS_WIDTH - 1:0] address;
 	logic   [`TEXT_RAM_DATA_WIDTH - 1:0]    data;
 	logic	wren;
@@ -16,7 +16,7 @@ typedef struct packed{
 
 typedef logic [`TEXT_RAM_DATA_WIDTH - 1:0] TextRamResult_t;
 
-typedef struct packed{
+typedef struct packed {
     logic        hSync;
     logic        vSync;
     logic [2:0]  red;
@@ -24,13 +24,26 @@ typedef struct packed{
     logic [2:0]  blue;
 } VgaSignal_t;
 
-typedef struct packed{
+typedef struct packed {
     logic [`SRAM_ADDRESS_WIDTH - 1:0] address;
     logic cs;
-    logic oe;
-    logic we;
-} SramRequest_t;
+    logic oe_n;
+    logic we_n;
+} SramInterface_t;
 
 typedef logic [`SRAM_DATA_WIDTH - 1:0] SramData_t;
+
+typedef struct packed {
+    logic [`SRAM_DATA_WIDTH - 1:0]      dout;
+    logic den;
+    logic [`SRAM_ADDRESS_WIDTH - 1:0]   address;
+    logic oe_n;
+    logic we_n;
+} SramRequest_t;
+
+typedef struct packed {
+    logic [`SRAM_DATA_WIDTH - 1:0]      din;
+    logic done;
+} SramResult_t;
 
 `endif

@@ -2,7 +2,6 @@
 
 module VgaSignalGenerator_640_480(
     input wire i_clk,       // base clock
-    input wire i_pix_stb,   // pixel clock strobe
     output wire o_hs,       // horizontal sync
     output wire o_vs,       // vertical sync
     output wire o_blanking, // high during blanking interval
@@ -39,18 +38,15 @@ module VgaSignalGenerator_640_480(
 
     always @ (posedge i_clk)
     begin
-        if (i_pix_stb)  // once per pixel
+        if (h_count == LINE)  // end of line
         begin
-            if (h_count == LINE)  // end of line
-            begin
-                h_count <= 0;
-                v_count <= v_count + 1;
-            end
-            else 
-                h_count <= h_count + 1;
-
-            if (v_count == SCREEN)  // end of screen
-                v_count <= 0;
+            h_count <= 0;
+            v_count <= v_count + 1;
         end
+        else 
+            h_count <= h_count + 1;
+
+        if (v_count == SCREEN)  // end of screen
+            v_count <= 0;
     end
 endmodule

@@ -12,7 +12,7 @@ module FpgaVirtualConsole(
     // vga output
     output  VgaSignal_t vga,
     // sram read/write
-    output  SramRequest_t sramRequest,
+    output  SramInterface_t sramRequest,
     inout   SramData_t  sramData,
     // debug output
     output  reg [55:0]  segmentDisplays   // eight 7-segmented displays
@@ -101,6 +101,19 @@ module FpgaVirtualConsole(
 
     assign segmentDisplays[15:8] = uartDataReceived;
 
+    // Frequency Divider
+
+    logic clk25M;
+
+    FrequencyDivider #(
+        .clockFrequency(CLOCK_FREQUNCY),
+        .requiredFrequency(25000000)
+    ) divider25M (
+        .clk(clk),
+        .rst(rst),
+        .slowClock(clk25M)
+    );
+
     // Text RAM module
 
     TextRamRequest_t textRamRequestParser, textRamRequestRenderer;
@@ -112,7 +125,7 @@ module FpgaVirtualConsole(
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
         .clock_a(clk),
-        .clock_b(clk),
+        .clock_b(clk25M),
         .data_a(textRamRequestParser.data),
         .data_b(textRamRequestRenderer.data),
         .wren_a(textRamRequestParser.wren),
@@ -124,11 +137,9 @@ module FpgaVirtualConsole(
 
     // VGA module
 
-    VgaDisplayAdapter_640_480 #(
-        .ClkFrequency(CLOCK_FREQUNCY)
-    ) display(
-        .CLK(clk),
-        .RST_BTN(rst),
+    VgaDisplayAdapter_640_480 display(
+        .clk(clk25M),
+        .rst(rst),
         .vga(vga)
     );
 
