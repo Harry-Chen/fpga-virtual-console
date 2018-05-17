@@ -174,7 +174,7 @@ module FpgaVirtualConsole(
         .ramRequest(vgaRequest),
         .ramResult(vgaResult),
         .vga,
-        .paintDone(segmentDisplays[55])
+        //.paintDone()
     );
 
 
