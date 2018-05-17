@@ -11,6 +11,9 @@ module FpgaVirtualConsole(
     output  reg         uartTx,
     // vga output
     output  VgaSignal_t vga,
+    // sram read/write
+    output  SramRequest_t sramRequest,
+    inout   SramData_t  sramData,
     // debug output
     output  reg [55:0]  segmentDisplays   // eight 7-segmented displays
     );
@@ -114,8 +117,8 @@ module FpgaVirtualConsole(
         .data_b(textRamRequestRenderer.data),
         .wren_a(textRamRequestParser.wren),
         .wren_b(textRamRequestRenderer.wren),
-        .q_a(textRamResultParser.q),
-        .q_b(textRamResultRenderer.q)
+        .q_a(textRamResultParser),
+        .q_b(textRamResultRenderer)
 	);
 
 
