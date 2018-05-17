@@ -4,6 +4,8 @@
 module VgaDisplayAdapter_640_480(
     input clk,       
     input rst,
+    output SramRequest_t ramRequest,
+    input  SramResult_t  ramResult,
     output VgaSignal_t vga
     );
 
