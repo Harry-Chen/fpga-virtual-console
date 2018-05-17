@@ -22,6 +22,8 @@ module FpgaVirtualConsole(
     // constants
     parameter CLOCK_FREQUNCY = 100000000;   // default clock frequency is 100 MHz
     parameter BAUD_RATE = 115200;           // default baud rate of UART
+	parameter CONSOLE_LINES = 40;
+	parameter CONSOLE_COLUMNS = 80;
 
 
     // 7-segmented displays
@@ -46,7 +48,7 @@ module FpgaVirtualConsole(
 	logic scan_code_ready;
 	logic letter_case;
 	
-	assign segmentDisplays[7:0] = ascii_code;
+//	assign segmentDisplays[7:0] = ascii_code;
 	
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit(
@@ -99,7 +101,20 @@ module FpgaVirtualConsole(
         .RxD_data(uartDataReceived) // output
     );
 
-    assign segmentDisplays[15:8] = uartDataReceived;
+//    assign segmentDisplays[15:8] = uartDataReceived;
+
+	// VT100 parser module
+	VT100Parser #(
+		.CONSOLE_LINES(CONSOLE_LINES),
+		.CONSOLE_COLUMNS(CONSOLE_COLUMNS)
+	) vt100Parser(
+		.clk(clk),
+		.rst(rst),
+		.dataReady(uartReady),
+		.data(uartDataReceived),
+//		.cursorPosition(???),
+		.debug(segmentDisplays[55:14])
+	);
 
     // Frequency Divider
 

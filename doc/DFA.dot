@@ -1,0 +1,64 @@
+digraph DFA {   
+//	edge[fontname="FangSong"];  
+//	node[peripheries=2, fontname="FangSong"];  
+	size="16, 16";  
+	node[shape=circle];  
+
+	Start;
+
+	INPUT[style=filled];
+	Start->INPUT[label=others];
+
+	/* Basic structure */
+
+	// ESC
+	Start->Esc[label=ESC];
+
+	// ESC [
+	Esc->Bracket[label="["];
+
+	// ESC [ Pn
+	Bracket->Pn1[label="digit"];
+	Pn1->Pn1[label="digit"];
+
+	// ESC [ Pn; 
+	Pn1->Del1[label=";"];
+
+	// ESC [ Pn; Pn
+	Del1->Pn2[label="digit"];
+	Pn2->Pn2[label="digit"];
+
+
+	/* Cursor Movement Commands */
+	subgraph cluster1 {
+		node[style=filled];
+        color=blue;
+        label="Cursor Commands";  
+		CUU; CUD; CUF; CUB; 
+		CUP; IND; NEL; RI;
+	}
+
+	// ESC [ Pn A
+	Pn1->CUU[label=A];  // Cursor up
+
+	// ESC [ Pn B
+	Pn1->CUD[label=B];  // Cursor down
+
+	// ESC [ Pn C
+	Pn1->CUF[label=C];  // Cursor forward (right)
+
+	// ESC [ Pn B
+	Pn1->CUB[label=D];  // Cursor backward (left)
+
+	// ESC [ Pn; Pn H 
+	Pn2->CUP[label="H,f"]; // Cursor Position
+
+	// ESC D
+	Esc->IND[label=D];  // Index
+
+	// ESC E
+	Esc->NEL[label=E];  // Next line
+
+	// ESC M
+	Esc->RI[label=M];  // Reserve Index
+}         
