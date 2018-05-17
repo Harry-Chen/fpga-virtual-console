@@ -128,8 +128,8 @@ set_location_assignment PIN_W24 -to sramData[3]
 set_location_assignment PIN_U22 -to sramData[2]
 set_location_assignment PIN_Y25 -to sramData[1]
 set_location_assignment PIN_Y26 -to sramData[0]
-set_location_assignment PIN_AD25 -to sramInterface.oe
-set_location_assignment PIN_AC25 -to sramInterface.we
+set_location_assignment PIN_AD25 -to sramInterface.oe_n
+set_location_assignment PIN_AC25 -to sramInterface.we_n
 set_location_assignment PIN_AC7 -to segmentDisplays[0]
 set_location_assignment PIN_AB8 -to segmentDisplays[1]
 set_location_assignment PIN_AC8 -to segmentDisplays[2]
@@ -202,6 +202,5 @@ set_global_assignment -name VERILOG_FILE KeyboardToUart.v
 set_global_assignment -name VERILOG_FILE ScanCodeToAscii.v
 set_global_assignment -name VERILOG_FILE Ps2StateMachine.v
 set_global_assignment -name VERILOG_FILE Ps2Receiver.v
-set_global_assignment -name VERILOG_FILE VgaSignalGenerator.v
 set_global_assignment -name VERILOG_FILE AsyncUartTransceiver.v
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

@@ -31,7 +31,8 @@ module VgaDisplayAdapter(
     assign nextEnable = (nextX < H_ACTIVE) & (nextY < V_ACTIVE) & rst;
 
     assign ramRequest.den = 0;
-    assign ramRequest.address = baseAddress + nextY * H_ACTIVE + nextX;
+    //assign ramRequest.address = baseAddress + nextY * H_ACTIVE + nextX;
+    assign ramRequest.address = 0;
     assign ramRequest.we_n = 1;
     assign ramRequest.oe_n = ~nextEnable;
 
@@ -50,13 +51,6 @@ module VgaDisplayAdapter(
     assign vga.hSync = ~((hCounter >= H_ACTIVE + H_FRONT_PORCH) & (hCounter < H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE));
     assign vga.vSync = ~((vCounter >= V_ACTIVE + V_FRONT_PORCH) & (vCounter < V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE));
 
-    // Demo: Four overlapping squares
-    wire sq_a, sq_b, sq_c, sq_d;
-    assign sq_a = ((nextX > 120) & (nextY >  40) & (nextX < 280) & (nextY < 200));
-    assign sq_b = ((nextX > 200) & (nextY > 120) & (nextX < 360) & (nextY < 280));
-    assign sq_c = ((nextX > 280) & (nextY > 200) & (nextX < 440) & (nextY < 360));
-    assign sq_d = ((nextX > 360) & (nextY > 280) & (nextX < 520) & (nextY < 440));
-
     always_ff @(posedge clk or negedge rst) begin
       if (~rst) begin
         hCounter <= 0;
@@ -68,9 +62,9 @@ module VgaDisplayAdapter(
         hCounter <= nextX;
         vCounter <= nextY;
         if (nextEnable) begin
-          vga.red[2] <= sq_b;
-          vga.green[2] <= sq_a | sq_d;
-          vga.blue[2] <= sq_c;
+          vga.red <= ramResult.din[31:29];
+          vga.green <= ramResult.din[28:26];
+          vga.blue <= ramResult.din[25:23];
         end else begin
           vga.red <= 0;
           vga.green <= 0;
@@ -79,5 +73,4 @@ module VgaDisplayAdapter(
       end
     end
 
-    // TODO: read from SRAM in a 25MHz clock
 endmodule

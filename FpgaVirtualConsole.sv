@@ -153,6 +153,8 @@ module FpgaVirtualConsole(
 
     SramRequest_t vgaRequest, rendererRequest;
     SramResult_t vgaResult, rendererResult;
+    logic paintDone;
+    SramAddress_t vgaBaseAddress;
     
     SramController sramController(
         .clk(clk25M),
@@ -165,16 +167,29 @@ module FpgaVirtualConsole(
         .rendererResult
     );
 
+    // Renderer module
+    TextRenderer renderer(
+        .clk(clk25M),
+        .rst,
+        .paintDone,
+        .ramRequest(rendererRequest),
+        .ramResult(rendererResult),
+        .vgaBaseAddress,
+        .textRamRequest(textRamRequestRenderer),
+        .textRamResult(textRamResultRenderer)
+    );
+
 
     // VGA module
 
     VgaDisplayAdapter display(
         .clk(clk25M),
         .rst,
+        .baseAddress(0),
         .ramRequest(vgaRequest),
         .ramResult(vgaResult),
         .vga,
-        //.paintDone()
+        .paintDone
     );
 
 

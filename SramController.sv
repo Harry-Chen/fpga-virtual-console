@@ -24,7 +24,7 @@ module SramController (
     logic den;
 
     always_ff @(posedge clk or negedge rst) begin
-        if(!rst) begin
+        if (~rst) begin
             currentState <= STATE_INIT;
             vgaData <= {`SRAM_DATA_WIDTH{1'b0}};
         end else begin
@@ -40,7 +40,7 @@ module SramController (
         end
     end
 
-    assign vgaResult.din = currentState == STATE_VGA_READ ? ramOut : vgaData;
+    assign vgaResult.din = currentState == STATE_VGA_READ ? sramData : vgaData;
     assign sramData = den ? ramOut : {`SRAM_DATA_WIDTH{1'bZ}};
 
     always_comb begin
