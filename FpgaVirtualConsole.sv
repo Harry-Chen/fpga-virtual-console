@@ -11,6 +11,9 @@ module FpgaVirtualConsole(
     output  reg         uartTx,
     // vga output
     output  VgaSignal_t vga,
+    // sram read/write
+    output  SramInterface_t sramInterface,
+    inout   [`SRAM_DATA_WIDTH - 1:0]  sramData,
     // debug output
     output  reg [55:0]  segmentDisplays   // eight 7-segmented displays
     );
@@ -49,20 +52,20 @@ module FpgaVirtualConsole(
 	
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit(
-        .clk(clk),
+        .clk,
         .reset(~rst),
         .ps2d(ps2Data),
         .ps2c(ps2Clk),
-        .scan_code(scan_code),
-        .scan_code_ready(scan_code_ready),
+        .scan_code,
+        .scan_code_ready,
         .letter_case_out(letter_case)
     );
 					
 	// instantiate key-to-ascii code conversion circuit
 	ScanCodeToAscii k2a_unit(
-        .letter_case(letter_case),
-        .scan_code(scan_code),
-        .ascii_code(ascii_code)
+        .letter_case,
+        .scan_code,
+        .ascii_code
     );
 
     // UART module
@@ -81,7 +84,7 @@ module FpgaVirtualConsole(
         .ClkFrequency(CLOCK_FREQUNCY),
         .Baud(BAUD_RATE)
     ) uartTransmitter(
-        .clk(clk), // input
+        .clk, // input
         .TxD_start(uartStartSend), // input
 		.TxD_data(uartDataToSend), // input
         .TxD(uartTx), // output
@@ -92,7 +95,7 @@ module FpgaVirtualConsole(
         .ClkFrequency(CLOCK_FREQUNCY),
         .Baud(BAUD_RATE)
     ) uartReceiver(
-        .clk(clk), // input
+        .clk, // input
         .RxD(uartRx), // input
         .RxD_data_ready(uartReady), // output
         .RxD_data(uartDataReceived) // output
@@ -113,6 +116,19 @@ module FpgaVirtualConsole(
 		.debug(segmentDisplays[55:14])
 	);
 
+    // Frequency Divider
+
+    logic clk25M;
+
+    FrequencyDivider #(
+        .clockFrequency(CLOCK_FREQUNCY),
+        .requiredFrequency(25000000)
+    ) divider25M (
+        .clk,
+        .rst,
+        .slowClock(clk25M)
+    );
+
     // Text RAM module
 
     TextRamRequest_t textRamRequestParser, textRamRequestRenderer;
@@ -124,24 +140,40 @@ module FpgaVirtualConsole(
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
         .clock_a(clk),
-        .clock_b(clk),
+        .clock_b(clk25M),
         .data_a(textRamRequestParser.data),
         .data_b(textRamRequestRenderer.data),
         .wren_a(textRamRequestParser.wren),
         .wren_b(textRamRequestRenderer.wren),
-        .q_a(textRamResultParser.q),
-        .q_b(textRamResultRenderer.q)
-	);
+        .q_a(textRamResultParser),
+        .q_b(textRamResultRenderer)
+    );
+
+    // Sram controller module
+
+    SramRequest_t vgaRequest, rendererRequest;
+    SramResult_t vgaResult, rendererResult;
+    
+    SramController sramController(
+        .clk(clk25M),
+        .rst,
+        .sramInterface,
+        .sramData,
+        .vgaRequest,
+        .vgaResult,
+        .rendererRequest,
+        .rendererResult
+    );
 
 
     // VGA module
 
-    VgaDisplayAdapter_640_480 #(
-        .ClkFrequency(CLOCK_FREQUNCY)
-    ) display(
-        .CLK(clk),
-        .RST_BTN(rst),
-        .vga(vga)
+    VgaDisplayAdapter_640_480 display(
+        .clk(clk25M),
+        .rst,
+        .ramRequest(vgaRequest),
+        .ramResult(vgaResult),
+        .vga
     );
 
 

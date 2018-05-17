@@ -5,18 +5,18 @@
 
 `define TEXT_RAM_ADDRESS_WIDTH 6
 `define TEXT_RAM_DATA_WIDTH 1280
+`define SRAM_ADDRESS_WIDTH 20
+`define SRAM_DATA_WIDTH 32
 
-typedef struct packed{
-	logic    [`TEXT_RAM_ADDRESS_WIDTH - 1:0] address;
-	logic	[`TEXT_RAM_DATA_WIDTH - 1:0]    data;
+typedef struct packed {
+	logic   [`TEXT_RAM_ADDRESS_WIDTH - 1:0] address;
+	logic   [`TEXT_RAM_DATA_WIDTH - 1:0]    data;
 	logic	wren;
 } TextRamRequest_t;
 
-typedef struct packed{
-    logic    [`TEXT_RAM_DATA_WIDTH - 1:0]    q;
-} TextRamResult_t;
+typedef logic [`TEXT_RAM_DATA_WIDTH - 1:0] TextRamResult_t;
 
-typedef struct packed{
+typedef struct packed {
     logic        hSync;
     logic        vSync;
     logic [2:0]  red;
@@ -32,5 +32,27 @@ typedef enum logic[7:0] {
 	INPUT,
 	CUP, CUU, CUD, CUF, CUB, IND, NEL, RI
 } CommandsType;
+
+typedef struct packed {
+    logic [`SRAM_ADDRESS_WIDTH - 1:0] address;
+    logic cs;
+    logic oe_n;
+    logic we_n;
+} SramInterface_t;
+
+typedef logic [`SRAM_DATA_WIDTH - 1:0] SramData_t;
+
+typedef struct packed {
+    logic [`SRAM_DATA_WIDTH - 1:0]      dout;
+    logic den;
+    logic [`SRAM_ADDRESS_WIDTH - 1:0]   address;
+    logic oe_n;
+    logic we_n;
+} SramRequest_t;
+
+typedef struct packed {
+    logic [`SRAM_DATA_WIDTH - 1:0]      din;
+    logic done;
+} SramResult_t;
 
 `endif

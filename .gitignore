@@ -92,4 +92,5 @@ sc_dpiheader.h
 vsim.dbg
 
 
+!*.mif
 # End of https://www.gitignore.io/api/modelsim,alteraquartusii
