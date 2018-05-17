@@ -24,25 +24,27 @@ typedef struct packed {
     logic [2:0]  blue;
 } VgaSignal_t;
 
+typedef logic [`SRAM_ADDRESS_WIDTH - 1:0] SramAddress_t;
+typedef logic [`SRAM_DATA_WIDTH - 1:0] SramData_t;
+
 typedef struct packed {
-    logic [`SRAM_ADDRESS_WIDTH - 1:0] address;
+    SramAddress_t address;
     logic cs;
     logic oe_n;
     logic we_n;
 } SramInterface_t;
 
-typedef logic [`SRAM_DATA_WIDTH - 1:0] SramData_t;
 
 typedef struct packed {
-    logic [`SRAM_DATA_WIDTH - 1:0]      dout;
+    SramData_t dout;
     logic den;
-    logic [`SRAM_ADDRESS_WIDTH - 1:0]   address;
+    SramAddress_t address;
     logic oe_n;
     logic we_n;
 } SramRequest_t;
 
 typedef struct packed {
-    logic [`SRAM_DATA_WIDTH - 1:0]      din;
+    SramData_t din;
     logic done;
 } SramResult_t;
 

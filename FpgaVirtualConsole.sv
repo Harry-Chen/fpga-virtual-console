@@ -153,12 +153,13 @@ module FpgaVirtualConsole(
 
     // VGA module
 
-    VgaDisplayAdapter_640_480 display(
+    VgaDisplayAdapter display(
         .clk(clk25M),
         .rst,
         .ramRequest(vgaRequest),
         .ramResult(vgaResult),
-        .vga
+        .vga,
+        .paintDone(segmentDisplays[55])
     );
 
 
