@@ -24,4 +24,13 @@ typedef struct packed{
     logic [2:0]  blue;
 } VgaSignal_t;
 
+typedef enum logic[7:0] {
+	START, ESC, BRACKET, PN1, PN2, DEL1
+} CommandsState;
+
+typedef enum logic[7:0] {
+	INPUT,
+	CUP, CUU, CUD, CUF, CUB, IND, NEL, RI
+} CommandsType;
+
 `endif

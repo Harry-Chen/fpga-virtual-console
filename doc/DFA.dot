@@ -6,7 +6,8 @@ digraph DFA {
 
 	Start;
 
-	Start->Start[label=others];
+	INPUT[style=filled];
+	Start->INPUT[label=others];
 
 	/* Basic structure */
 
@@ -17,13 +18,15 @@ digraph DFA {
 	Esc->Bracket[label="["];
 
 	// ESC [ Pn
-	Bracket->Pn1[label="\\d+", style=dashed];
+	Bracket->Pn1[label="digit"];
+	Pn1->Pn1[label="digit"];
 
 	// ESC [ Pn; 
 	Pn1->Del1[label=";"];
 
 	// ESC [ Pn; Pn
-	Del1->Pn2[label="\\d+", style=dashed];
+	Del1->Pn2[label="digit"];
+	Pn2->Pn2[label="digit"];
 
 
 	/* Cursor Movement Commands */
