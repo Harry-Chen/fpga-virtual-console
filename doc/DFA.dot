@@ -53,6 +53,9 @@ digraph DFA {
 	// ESC [ Pn; Pn H 
 	Pn2->CUP[label="H,f"]; // Cursor Position
 
+	// ESC [ H
+	Bracket->CUP[label="H,f"]; // Cursor Home
+
 	// ESC D
 	Esc->IND[label=D];  // Index
 

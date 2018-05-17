@@ -1,9 +1,13 @@
 `include "DataType.sv"
+
 `define SET_COMMAND(cmd_type) \
+	status = START; \
+	commandReady <= 1; \
+	commandType <= cmd_type; 
+
+`define SET_COMMAND_BLOCK(cmd_type) \
 	begin \
-		status = START; \
-		commandReady <= 1; \
-		commandType <= cmd_type; \
+		`SET_COMMAND(cmd_type) \
 	end
 
 module CommandsParser(
@@ -51,11 +55,11 @@ begin
 			ESC:
 				case(data)
 					8'h44: // 'D'
-						`SET_COMMAND(IND)
+						`SET_COMMAND_BLOCK(IND)
 					8'h45: // 'E'
-						`SET_COMMAND(NEL)
+						`SET_COMMAND_BLOCK(NEL)
 					8'h4d: // 'M'
-						`SET_COMMAND(RI)
+						`SET_COMMAND_BLOCK(RI)
 					8'h5b: // '['
 						status = BRACKET;
 					default: status = START;
@@ -68,7 +72,15 @@ begin
 				end
 				else  // non-digit
 				begin
-					status = START;
+					case(data)
+						8'h48, 8'h66: // 'H', 'f'
+						begin
+							Pn1 <= 1;
+							Pn2 <= 1;
+							`SET_COMMAND(CUP)
+						end
+						default: status = START;
+					endcase
 				end
 			DEL1:
 				if(data <= 8'h39 && data >= 8'h30) // digit
@@ -90,13 +102,13 @@ begin
 					8'h3b: // ';'
 						status = DEL1;
 					8'h41: // 'A'
-						`SET_COMMAND(CUU)
+						`SET_COMMAND_BLOCK(CUU)
 					8'h42: // 'B'
-						`SET_COMMAND(CUD)
+						`SET_COMMAND_BLOCK(CUD)
 					8'h43: // 'C'
-						`SET_COMMAND(CUF)
+						`SET_COMMAND_BLOCK(CUF)
 					8'h44: // 'D'
-						`SET_COMMAND(CUB)
+						`SET_COMMAND_BLOCK(CUB)
 					default:
 						status = START;
 				endcase
@@ -108,7 +120,7 @@ begin
 						Pn2 <= Pn2 * 8'd10 + (data - 8'h30);
 					end
 					8'h48, 8'h66: // 'H', 'f'
-						`SET_COMMAND(CUP)
+						`SET_COMMAND_BLOCK(CUP)
 					default:
 						status = START;
 				endcase
