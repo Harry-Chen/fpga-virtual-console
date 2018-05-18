@@ -30,15 +30,13 @@ module FpgaVirtualConsole(
     parameter BAUD_RATE = 115200;           // default baud rate of UART
 
 
-    // 7-segmented displays
-    logic     [3:0]   segmentDisplayHex[0:1]; // eight hex 	 
+    Probe debugProbe(
+		.probe({ascii_code, scan_code}),
+		.source(0)
+	);
 
-    always_ff @(posedge clk) begin
-
-    end
-
-    LedDecoder decoder_1(.hex(F), .segments(segment1[6:0]));
-    LedDecoder decoder_2(.hex(9), .segments(segment2[6:0]));
+    LedDecoder decoder_1(.hex(4'hF), .segments(segment1));
+    LedDecoder decoder_2(.hex(4'h9), .segments(segment2));
 	 
 	// keyboard test
 	logic [7:0] scan_code, ascii_code;

@@ -107,24 +107,24 @@ set_location_assignment PIN_E13 -to led[14]
 set_location_assignment PIN_N5 -to led[15]
 
 #DPY0
-set_location_assignment PIN_C15 -to segment1[7]
-set_location_assignment PIN_E8 -to segment1[2]
-set_location_assignment PIN_E12 -to segment1[3]
-set_location_assignment PIN_E7 -to segment1[4]
-set_location_assignment PIN_F7 -to segment1[1]
-set_location_assignment PIN_P6 -to segment1[0]
-set_location_assignment PIN_J17 -to segment1[5]
-set_location_assignment PIN_J7 -to segment1[6]
+set_location_assignment PIN_C15 -to segment1[0]
+set_location_assignment PIN_E8 -to segment1[1]
+set_location_assignment PIN_E12 -to segment1[2]
+set_location_assignment PIN_E7 -to segment1[3]
+set_location_assignment PIN_F7 -to segment1[4]
+set_location_assignment PIN_P6 -to segment1[5]
+set_location_assignment PIN_J17 -to segment1[6]
+set_location_assignment PIN_J7 -to segment1[7]
 
 #DPY2
-set_location_assignment PIN_J6 -to segment2[7]
-set_location_assignment PIN_N7 -to segment2[2]
-set_location_assignment PIN_K1 -to segment2[3]
-set_location_assignment PIN_M6 -to segment2[4]
-set_location_assignment PIN_N6 -to segment2[1]
-set_location_assignment PIN_M2 -to segment2[0]
-set_location_assignment PIN_P5 -to segment2[5]
-set_location_assignment PIN_R5 -to segment2[9]
+set_location_assignment PIN_J6 -to segment2[0]
+set_location_assignment PIN_N7 -to segment2[1]
+set_location_assignment PIN_K1 -to segment2[2]
+set_location_assignment PIN_M6 -to segment2[3]
+set_location_assignment PIN_N6 -to segment2[4]
+set_location_assignment PIN_M2 -to segment2[5]
+set_location_assignment PIN_P5 -to segment2[6]
+set_location_assignment PIN_R5 -to segment2[7]
 
 
 set_location_assignment PIN_W19 -to sramInterface.address[0]
@@ -182,6 +182,10 @@ set_location_assignment PIN_T17 -to sramData[31]
 set_location_assignment PIN_Y22 -to sramInterface.cs
 set_location_assignment PIN_M20 -to sramInterface.oe_n
 set_location_assignment PIN_AA17 -to sramInterface.we_n
+
+set_location_assignment PIN_AA1 -to ps2Clk
+set_location_assignment PIN_Y1 -to ps2Data
+
 set_global_assignment -name SLD_NODE_CREATOR_ID 110 -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_ENTITY_NAME sld_signaltap -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_RAM_BLOCK_TYPE=M9K" -section_id auto_signaltap_0
@@ -241,26 +245,6 @@ set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -
 set_global_assignment -name OUTPUT_IO_TIMING_FAR_END_VMEAS "HALF SIGNAL SWING" -fall
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[3] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[15] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
-set_global_assignment -name SDC_FILE FpgaVirtualConsole.out.sdc
-set_global_assignment -name SYSTEMVERILOG_FILE FontShapeRenderer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE ActionCursor.sv
-set_global_assignment -name SYSTEMVERILOG_FILE VT100Parser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE CommandsParser.sv
-set_global_assignment -name QIP_FILE TextRam.qip
-set_global_assignment -name QIP_FILE FontRom.qip
-set_global_assignment -name SYSTEMVERILOG_FILE FrenquencyDivider.sv
-set_global_assignment -name SYSTEMVERILOG_FILE SramController.sv
-set_global_assignment -name MIF_FILE FontShape.mif
-set_global_assignment -name SYSTEMVERILOG_FILE VgaDisplayAdapter.sv
-set_global_assignment -name SYSTEMVERILOG_FILE TextRenderer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FpgaVirtualConsole.sv
-set_global_assignment -name SYSTEMVERILOG_FILE LedDecoder.sv
-set_global_assignment -name VERILOG_FILE ScanCodeToAscii.v
-set_global_assignment -name VERILOG_FILE Ps2StateMachine.v
-set_global_assignment -name VERILOG_FILE Ps2Receiver.v
-set_global_assignment -name VERILOG_FILE AsyncUartTransceiver.v
-set_global_assignment -name SIGNALTAP_FILE stp1.stp
-set_global_assignment -name QIP_FILE TopPll.qip
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_clk -to "TextRenderer:renderer|clk" -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[9] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_trigger_in[0] -to "TextRenderer:renderer|FontShapeRenderer:subRenderer|currentState[0]" -section_id auto_signaltap_0
@@ -460,5 +444,26 @@ set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[23] -
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[25] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[29] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[31] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
+set_global_assignment -name QIP_FILE Probe/synthesis/Probe.qip
+set_global_assignment -name SDC_FILE FpgaVirtualConsole.out.sdc
+set_global_assignment -name SYSTEMVERILOG_FILE FontShapeRenderer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE ActionCursor.sv
+set_global_assignment -name SYSTEMVERILOG_FILE VT100Parser.sv
+set_global_assignment -name SYSTEMVERILOG_FILE CommandsParser.sv
+set_global_assignment -name QIP_FILE TextRam.qip
+set_global_assignment -name QIP_FILE FontRom.qip
+set_global_assignment -name SYSTEMVERILOG_FILE FrenquencyDivider.sv
+set_global_assignment -name SYSTEMVERILOG_FILE SramController.sv
+set_global_assignment -name MIF_FILE FontShape.mif
+set_global_assignment -name SYSTEMVERILOG_FILE VgaDisplayAdapter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE TextRenderer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FpgaVirtualConsole.sv
+set_global_assignment -name SYSTEMVERILOG_FILE LedDecoder.sv
+set_global_assignment -name VERILOG_FILE ScanCodeToAscii.v
+set_global_assignment -name VERILOG_FILE Ps2StateMachine.v
+set_global_assignment -name VERILOG_FILE Ps2Receiver.v
+set_global_assignment -name VERILOG_FILE AsyncUartTransceiver.v
+set_global_assignment -name SIGNALTAP_FILE stp1.stp
+set_global_assignment -name QIP_FILE TopPll.qip
 set_global_assignment -name SLD_FILE db/stp1_auto_stripped.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top

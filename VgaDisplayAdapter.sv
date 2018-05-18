@@ -61,16 +61,13 @@ module VgaDisplayAdapter(
         hCounter <= 0;
         vCounter <= 0;
         pixel <= 0;
-        // vga.color <= 0;
       end else begin
         hCounter <= nextX;
         vCounter <= nextY;
         if (nextEnable) begin
           if (ramResult.done) begin
             pixel <= Pixel_t'(ramResult.din);
-            //vga.color <= ramResult.din[31 -: 9];
           end else begin
-            //vga.color <= vga.color;
             pixel <= pixel;
           end
         end else begin

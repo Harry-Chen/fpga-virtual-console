@@ -3,6 +3,7 @@
 module FontShapeRenderer(
     input                 clk,
     input                 rst,
+    input                 fontReady,
     input   CharGrid_t    grid,
     input   SramAddress_t baseAddress,
     input   SramResult_t  ramResult,
@@ -15,11 +16,6 @@ module FontShapeRenderer(
     } FontShapeRendererState_t;
 
     FontShapeRendererState_t currentState, nextState;
-
-    LedDecoder decoder_x2(
-        .hex(currentState),
-        .segments(debug)
-    );
 
     assign done = currentState == STATE_DONE;
 

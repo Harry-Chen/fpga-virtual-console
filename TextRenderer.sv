@@ -45,11 +45,12 @@ module TextRenderer(
     assign currentCharGrid.background = {32{1'b1}};
     assign currentCharGrid.shape = fontRomData;
 
-    logic subRendererReset;
+    logic fontReady;
 
     FontShapeRenderer subRenderer(
         .clk,
-        .rst(subRendererReset),
+        .rst,
+        .fontReady,
         .grid(currentCharGrid),
         .baseAddress(subRendererBaseAddress),
         .ramRequest,
@@ -82,7 +83,6 @@ module TextRenderer(
         fontRomAddress = 0;
         nextColumn = 0;
         nextLine = 0;
-        subRendererReset = 0;
         
         unique case(currentState)
             STATE_INIT: begin
@@ -94,14 +94,11 @@ module TextRenderer(
                 nextState = STATE_READ_FONT;
             end
             STATE_READ_FONT: begin
-                subRendererReset = 1;
                 nextState = STATE_WAIT_FOR_RENDER;
             end
             STATE_WAIT_FOR_RENDER: begin
-                subRendererReset = 1;
                 nextState = STATE_WAIT_FOR_RENDER;
                 if (subRendererDone) begin
-                    subRendererReset = 0;
                     if(column == `CONSOLE_COLUMNS - 1) begin
                         nextColumn = 0;
                         if (line == `CONSOLE_LINES - 1) begin
