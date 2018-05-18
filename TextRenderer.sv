@@ -39,7 +39,7 @@ module TextRenderer(
 
     assign vgaBaseAddress = vgaRam ? 0 : `VIDEO_BUFFER_SIZE;
     assign renderBaseAddress = vgaRam ? `VIDEO_BUFFER_SIZE : 0;
-    assign subRendererBaseAddress = renderBaseAddress + nextLine * `HEIGHT_PER_CHARACTER + nextColumn * `WIDTH_PER_CHARACTER;
+    assign subRendererBaseAddress = renderBaseAddress + nextLine * `CONSOLE_COLUMNS * `PIXEL_PER_CHARACTER + nextColumn * `PIXEL_PER_CHARACTER;
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
     assign currentCharGrid.foreground = {32{1'b1}};
     assign currentCharGrid.background = {32{1'b1}};
@@ -83,6 +83,7 @@ module TextRenderer(
         fontRomAddress = 0;
         nextColumn = 0;
         nextLine = 0;
+        fontReady = 0;
         
         unique case(currentState)
             STATE_INIT: begin
@@ -90,10 +91,15 @@ module TextRenderer(
                 nextState = STATE_READ_TEXT;
             end
             STATE_READ_TEXT: begin
+                nextLine = line;
+                nextColumn = column;
                 fontRomAddress = currentLine[`FONT_ROM_ADDRESS_WIDTH - 1:0];
                 nextState = STATE_READ_FONT;
             end
             STATE_READ_FONT: begin
+                nextLine = line;
+                nextColumn = column;
+                fontReady = 1;
                 nextState = STATE_WAIT_FOR_RENDER;
             end
             STATE_WAIT_FOR_RENDER: begin

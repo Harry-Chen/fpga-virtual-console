@@ -22,10 +22,12 @@ module FontShapeRenderer(
     logic [2:0] nextX, x;
     logic [3:0] nextY, y;
     CharGrid_t gridData, nowRenderingData;
+    SramAddress_t baseAddressData, nowBaseAddress;
 
     assign nowRenderingData = currentState == STATE_INIT ? grid : gridData;
+    assign nowBaseAddress = currentState == STATE_INIT ? baseAddress : baseAddressData;
 
-    assign ramRequest.address = baseAddress + nextY * `CONSOLE_COLUMNS + nextX;
+    assign ramRequest.address = nowBaseAddress + nextY * `CONSOLE_COLUMNS + nextX;
     assign ramRequest.dout = nowRenderingData.shape[nextY * `WIDTH_PER_CHARACTER + nextX] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
     assign ramRequest.oe_n = 1;
     assign ramRequest.we_n = 0;
@@ -41,6 +43,7 @@ module FontShapeRenderer(
             currentState <= nextState;
             if (currentState == STATE_INIT) begin
                 gridData <= grid;
+                baseAddressData <= baseAddress;
             end
         end
     end
@@ -77,7 +80,8 @@ module FontShapeRenderer(
             end
             STATE_DONE: begin
                 ramRequest.den = 0;
-                nextState = STATE_INIT;
+                if (fontReady) nextState = STATE_INIT;
+                else nextState = STATE_DONE;
             end
         endcase
     end
