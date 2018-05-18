@@ -32,6 +32,8 @@ typedef struct packed {
     logic        hSync;
     logic        vSync;
     VgaColor_t   color;
+    logic        outClock;
+    logic        de;
 } VgaSignal_t;
 
 

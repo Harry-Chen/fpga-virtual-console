@@ -55,6 +55,7 @@
 ##
 !*.ptf
 !*.bsf
+!*.sdc
 ##
 !**/class.ptf
 ##

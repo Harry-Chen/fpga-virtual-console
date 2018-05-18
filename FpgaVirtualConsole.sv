@@ -1,8 +1,8 @@
 module FpgaVirtualConsole(
     // general signals
     input               clk,
-    input               rst,
-    input       [3:0]   buttons,
+    input               reset,
+    input       [4:0]   buttons,
     // PS/2 receiver
     input               ps2Clk,
     input               ps2Data,
@@ -17,10 +17,13 @@ module FpgaVirtualConsole(
     // debug output
     output  reg [55:0]  segmentDisplays   // eight 7-segmented displays
     );
+	 
+    logic rst;
+    assign rst = ~reset;
 
 
     // constants
-    parameter CLOCK_FREQUNCY = 100000000;   // default clock frequency is 100 MHz
+    parameter CLOCK_FREQUNCY = 48000000;   // default clock frequency is 100 MHz
     parameter BAUD_RATE = 115200;           // default baud rate of UART
 
 
@@ -114,14 +117,13 @@ module FpgaVirtualConsole(
     // Frequency Divider
 
     logic clk25M;
+    logic rst25M;
 
-    FrequencyDivider #(
-        .clockFrequency(CLOCK_FREQUNCY),
-        .requiredFrequency(25000000)
-    ) divider25M (
-        .clk,
-        .rst,
-        .slowClock(clk25M)
+    TopPll divider25M(
+        .areset(reset),
+        .inclk0(clk),
+        .c0(clk25M),
+        .locked(rst25M)
     );
 
     // Text RAM module
@@ -131,7 +133,7 @@ module FpgaVirtualConsole(
 
     TextRam ram(
         .aclr_a(~rst),
-        .aclr_b(~rst),
+        .aclr_b(~rst25M),
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
         .clock_a(clk),
@@ -153,7 +155,7 @@ module FpgaVirtualConsole(
     
     SramController sramController(
         .clk(clk25M),
-        .rst,
+        .rst(rst25M),
         .sramInterface,
         .sramData,
         .vgaRequest,
@@ -164,11 +166,12 @@ module FpgaVirtualConsole(
 
 
     // Font rom module
+
     FontRomData_t fontRomData;
     FontRomAddress_t fontRomAddress;
 
     FontRom fontRom(
-        .aclr(~rst),
+        .aclr(~rst25M),
         .address(fontRomAddress),
         .clock(clk25M),
         .q(fontRomData)
@@ -176,9 +179,10 @@ module FpgaVirtualConsole(
 
 
     // Renderer module
+
     TextRenderer renderer(
         .clk(clk25M),
-        .rst,
+        .rst(rst25M),
         .paintDone,
         .ramRequest(rendererRequest),
         .ramResult(rendererResult),
@@ -195,7 +199,7 @@ module FpgaVirtualConsole(
 
     VgaDisplayAdapter display(
         .clk(clk25M),
-        .rst,
+        .rst(rst25M),
         .baseAddress(vgaBaseAddress),
         .ramRequest(vgaRequest),
         .ramResult(vgaResult),

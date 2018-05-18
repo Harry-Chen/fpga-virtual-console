@@ -34,6 +34,9 @@ module VgaDisplayAdapter(
     assign ramRequest.address = baseAddress + nextY * H_ACTIVE + nextX;
     assign ramRequest.we_n = 1;
     assign ramRequest.oe_n = ~nextEnable;
+	 
+    assign vga.outClock = clk;
+    assign vga.de = outputEnable;
 
     always_comb begin
       if (hCounter == H_ALL - 1) begin
