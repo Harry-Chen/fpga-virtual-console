@@ -17,7 +17,7 @@ module SramController (
         STATE_INIT, STATE_VGA_READ, STATE_RENDERER_WRITE
     } SramControllerState_t;
 
-    SramControllerState_t currentState;
+    SramControllerState_t currentState, nextState;
 
     logic [`SRAM_DATA_WIDTH - 1:0] ramOut;
     logic [`SRAM_DATA_WIDTH - 1:0] vgaData;
@@ -28,15 +28,10 @@ module SramController (
             currentState <= STATE_INIT;
             vgaData <= {`SRAM_DATA_WIDTH{1'b0}};
         end else begin
-            unique case (currentState)
-                STATE_INIT: currentState <= STATE_VGA_READ;
-                STATE_VGA_READ: begin
-                    vgaData <= sramData;
-                    currentState <= STATE_RENDERER_WRITE;
-                end
-                STATE_RENDERER_WRITE: currentState <= STATE_VGA_READ;
-                default: currentState <= STATE_INIT;
-            endcase
+            currentState <= nextState;
+            if (currentState == STATE_VGA_READ) begin
+                vgaData <= sramData;
+            end
         end
     end
 
@@ -50,12 +45,14 @@ module SramController (
         vgaResult.done = 0;
         rendererResult.done = 0;
         unique case (currentState)
+            STATE_INIT: nextState = STATE_VGA_READ;
             STATE_VGA_READ: begin
                 sramInterface.address = vgaRequest.address;
                 sramInterface.oe_n = vgaRequest.oe_n;
                 sramInterface.we_n = vgaRequest.we_n;
                 den = vgaRequest.den;
                 vgaResult.done = 1;
+                nextState = STATE_RENDERER_WRITE;
             end
             STATE_RENDERER_WRITE: begin
                 sramInterface.address = rendererRequest.address;
@@ -64,8 +61,9 @@ module SramController (
                 den = rendererRequest.den;
                 ramOut = rendererRequest.dout;
                 rendererResult.done = 1;
+                nextState =  STATE_VGA_READ;
             end
-            default: ;
+            default: nextState = STATE_INIT;
         endcase
     end
 
