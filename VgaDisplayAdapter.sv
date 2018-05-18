@@ -31,8 +31,7 @@ module VgaDisplayAdapter(
     assign nextEnable = (nextX < H_ACTIVE) & (nextY < V_ACTIVE) & rst;
 
     assign ramRequest.den = 0;
-    //assign ramRequest.address = baseAddress + nextY * H_ACTIVE + nextX;
-    assign ramRequest.address = 0;
+    assign ramRequest.address = baseAddress + nextY * H_ACTIVE + nextX;
     assign ramRequest.we_n = 1;
     assign ramRequest.oe_n = ~nextEnable;
 
@@ -51,24 +50,28 @@ module VgaDisplayAdapter(
     assign vga.hSync = ~((hCounter >= H_ACTIVE + H_FRONT_PORCH) & (hCounter < H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE));
     assign vga.vSync = ~((vCounter >= V_ACTIVE + V_FRONT_PORCH) & (vCounter < V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE));
 
+    Pixel_t pixel;
+    assign vga.color = pixel.color;
+
     always_ff @(posedge clk or negedge rst) begin
       if (~rst) begin
         hCounter <= 0;
         vCounter <= 0;
-        vga.red <= 0;
-        vga.green <= 0;
-        vga.blue <= 0;
+        pixel <= 0;
+        // vga.color <= 0;
       end else begin
         hCounter <= nextX;
         vCounter <= nextY;
         if (nextEnable) begin
-          vga.red <= ramResult.din[31:29];
-          vga.green <= ramResult.din[28:26];
-          vga.blue <= ramResult.din[25:23];
+          if (ramResult.done) begin
+            pixel <= Pixel_t'(ramResult.din);
+            //vga.color <= ramResult.din[31 -: 9];
+          end else begin
+            //vga.color <= vga.color;
+            pixel <= pixel;
+          end
         end else begin
-          vga.red <= 0;
-          vga.green <= 0;
-          vga.blue <= 0;
+          pixel <= 0;
         end
       end
     end

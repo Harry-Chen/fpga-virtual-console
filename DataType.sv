@@ -15,14 +15,23 @@
 `define COLOR_NUMBERS_BITS 3
 `define CONSOLE_LINES 40
 `define CONSOLE_COLUMNS 80
+`define HEIGHT_PER_CHARACTER 12
+`define WIDTH_PER_CHARACTER 8
+`define PIXEL_PER_CHARACTER `HEIGHT_PER_CHARACTER * `WIDTH_PER_CHARACTER
+
+`define VIDEO_BUFFER_SIZE 307200
 
 // vga signal
 typedef struct packed {
-    logic        hSync;
-    logic        vSync;
     logic [2:0]  red;
     logic [2:0]  green;
     logic [2:0]  blue;
+} VgaColor_t;
+
+typedef struct packed {
+    logic        hSync;
+    logic        vSync;
+    VgaColor_t   color;
 } VgaSignal_t;
 
 
@@ -71,9 +80,14 @@ typedef struct packed {
 
 // char on screen
 typedef struct packed {
-    logic   [7:0]                       ascii;
-    logic   [`COLOR_NUMBERS_BITS - 1:0] foregroudColor;
-    logic   [`COLOR_NUMBERS_BITS - 1:0] backgroundColor;
+    VgaColor_t color;
+    logic [$bits(SramData_t) - $bits(VgaColor_t) - 1:0] placeholder;
+} Pixel_t;
+
+typedef struct packed {
+    logic   [`PIXEL_PER_CHARACTER - 1:0]shape;
+    Pixel_t foreground;
+    Pixel_t background;
 } CharGrid_t;
 
 

@@ -130,8 +130,8 @@ module FpgaVirtualConsole(
     TextRamResult_t textRamResultParser, textRamResultRenderer;
 
     TextRam ram(
-        .aclr_a(rst),
-        .aclr_b(rst),
+        .aclr_a(~rst),
+        .aclr_b(~rst),
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
         .clock_a(clk),
@@ -162,6 +162,19 @@ module FpgaVirtualConsole(
         .rendererResult
     );
 
+
+    // Font rom module
+    FontRomData_t fontRomData;
+    FontRomAddress_t fontRomAddress;
+
+    FontRom fontRom(
+        .aclr(~rst),
+        .address(fontRomAddress),
+        .clock(clk25M),
+        .q(fontRomData)
+    );
+
+
     // Renderer module
     TextRenderer renderer(
         .clk(clk25M),
@@ -171,7 +184,10 @@ module FpgaVirtualConsole(
         .ramResult(rendererResult),
         .vgaBaseAddress,
         .textRamRequest(textRamRequestRenderer),
-        .textRamResult(textRamResultRenderer)
+        .textRamResult(textRamResultRenderer),
+        .fontRomAddress,
+        .fontRomData,
+        .debug(segmentDisplays[13:0])
     );
 
 
@@ -180,7 +196,7 @@ module FpgaVirtualConsole(
     VgaDisplayAdapter display(
         .clk(clk25M),
         .rst,
-        .baseAddress(0),
+        .baseAddress(vgaBaseAddress),
         .ramRequest(vgaRequest),
         .ramResult(vgaResult),
         .vga,

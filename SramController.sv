@@ -19,8 +19,8 @@ module SramController (
 
     SramControllerState_t currentState, nextState;
 
-    logic [`SRAM_DATA_WIDTH - 1:0] ramOut;
-    logic [`SRAM_DATA_WIDTH - 1:0] vgaData;
+    SramData_t ramOut;
+    SramData_t vgaData;
     logic den;
 
     always_ff @(posedge clk or negedge rst) begin
