@@ -7,8 +7,7 @@ module FontShapeRenderer(
     input   SramAddress_t baseAddress,
     input   SramResult_t  ramResult,
     output  SramRequest_t ramRequest,
-    output  logic         done,
-    output  logic[6:0]    debug
+    output  logic         done
 );
 
     typedef enum logic[1:0] {

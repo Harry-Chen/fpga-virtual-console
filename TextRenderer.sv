@@ -10,8 +10,7 @@ module TextRenderer(
     output  TextRamRequest_t textRamRequest,
     input   TextRamResult_t  textRamResult,
     output  FontRomAddress_t fontRomAddress,
-    input   FontRomData_t    fontRomData,
-    output   logic[13:0]      debug
+    input   FontRomData_t    fontRomData
     //input [15:0] cursorPosition,
     //input [3:0]  cursorStates
 );
@@ -23,11 +22,6 @@ module TextRenderer(
     TextRendererState_t currentState, nextState;
     logic [6:0] nextColumn, column;
     logic [5:0] nextLine, line;
-
-    LedDecoder decoder_x1(
-        .hex(currentState),
-        .segments(debug[13:7])
-    );
 
     // typedef enum logic[1:0]{
     //     CURSOR_BLINKING, CURSOR_INVISIBLE, CURSOR_PERSISTENT
@@ -61,7 +55,6 @@ module TextRenderer(
         .ramRequest,
         .ramResult,
         .done(subRendererDone),
-        .debug(debug[6:0])
     );
 
     always_ff @(posedge clk or negedge rst) begin

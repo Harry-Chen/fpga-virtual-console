@@ -14,8 +14,11 @@ module FpgaVirtualConsole(
     // sram read/write
     output  SramInterface_t sramInterface,
     inout   [`SRAM_DATA_WIDTH - 1:0]  sramData,
+
     // debug output
-    output  reg [55:0]  segmentDisplays   // eight 7-segmented displays
+    output  reg [7:0]  segment1,
+    output  reg [7:0]  segment2,
+    output  reg [15:0] led
     );
 	 
     logic rst;
@@ -28,28 +31,20 @@ module FpgaVirtualConsole(
 
 
     // 7-segmented displays
-    logic     [3:0]   segmentDisplayHex[0:7]; // eight hex 	 
+    logic     [3:0]   segmentDisplayHex[0:1]; // eight hex 	 
 
     always_ff @(posedge clk) begin
 
     end
 
-    //LedDecoder decoder_1(.hex(segmentDisplayHex[7]), .segments(segmentDisplays[55:49]));
-    //LedDecoder decoder_2(.hex(segmentDisplayHex[6]), .segments(segmentDisplays[48:42]));
-    //LedDecoder decoder_3(.hex(segmentDisplayHex[5]), .segments(segmentDisplays[41:35]));
-    //LedDecoder decoder_4(.hex(segmentDisplayHex[4]), .segments(segmentDisplays[34:28]));
-    //LedDecoder decoder_5(.hex(segmentDisplayHex[3]), .segments(segmentDisplays[27:21]));
-    //LedDecoder decoder_6(.hex(segmentDisplayHex[2]), .segments(segmentDisplays[20:14]));
-    //LedDecoder decoder_7(.hex(segmentDisplayHex[1]), .segments(segmentDisplays[13:7]));
-    //LedDecoder decoder_8(.hex(segmentDisplayHex[0]), .segments(segmentDisplays[6:0]));
-	 
+    LedDecoder decoder_1(.hex(F), .segments(segment1[6:0]));
+    LedDecoder decoder_2(.hex(9), .segments(segment2[6:0]));
 	 
 	// keyboard test
 	logic [7:0] scan_code, ascii_code;
 	logic scan_code_ready;
 	logic letter_case;
 	
-//	assign segmentDisplays[7:0] = ascii_code;
 	
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit(
@@ -102,8 +97,6 @@ module FpgaVirtualConsole(
         .RxD_data(uartDataReceived) // output
     );
 
-//    assign segmentDisplays[15:8] = uartDataReceived;
-
 	// VT100 parser module
 	VT100Parser vt100Parser(
 		.clk,
@@ -111,7 +104,6 @@ module FpgaVirtualConsole(
 		.dataReady(uartReady),
 		.data(uartDataReceived),
 //		.cursorPosition(???),
-		.debug(segmentDisplays[55:14])
 	);
 
     // Frequency Divider
@@ -191,7 +183,6 @@ module FpgaVirtualConsole(
         .textRamResult(textRamResultRenderer),
         .fontRomAddress,
         .fontRomData,
-        .debug(segmentDisplays[13:0])
     );
 
 
