@@ -12,6 +12,9 @@
 `define SRAM_ADDRESS_WIDTH 20
 `define SRAM_DATA_WIDTH 32
 
+`define COLOR_NUMBERS_BITS 3
+`define CONSOLE_LINES 40
+`define CONSOLE_COLUMNS 80
 
 // vga signal
 typedef struct packed {
@@ -64,6 +67,14 @@ typedef struct packed {
     SramData_t din;
     logic done;
 } SramResult_t;
+
+
+// char on screen
+typedef struct packed {
+    logic   [7:0]                       ascii;
+    logic   [`COLOR_NUMBERS_BITS - 1:0] foregroudColor;
+    logic   [`COLOR_NUMBERS_BITS - 1:0] backgroundColor;
+} CharGrid_t;
 
 
 typedef enum logic[7:0] {

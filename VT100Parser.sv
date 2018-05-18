@@ -8,14 +8,11 @@ module VT100Parser(
 	output [41:0] debug
 );
 
-parameter CONSOLE_LINES = 24;
-parameter CONSOLE_COLUMNS = 80;
-
 // cursor position, starts from 0
 reg [7:0] cursor_x, cursor_y;
 
 // set flatten cursor position 
-assign cursorPosition = cursor_x * CONSOLE_COLUMNS + cursor_y;
+assign cursorPosition = cursor_x * `CONSOLE_COLUMNS + cursor_y;
 
 // input parameters
 reg [7:0] Pn1, Pn2, Pchar;
@@ -49,10 +46,7 @@ CommandsParser cmd_parser(
 );
 
 // dispatch commands
-ActionCursor #(
-	.CONSOLE_LINES(CONSOLE_LINES),
-	.CONSOLE_COLUMNS(CONSOLE_COLUMNS)
-) action_cursor(
+ActionCursor action_cursor(
 	.clk(clk),
 	.rst(rst),
 	.commandReady(commandReady),

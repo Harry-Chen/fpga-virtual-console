@@ -1,3 +1,5 @@
+`include "DataType.sv"
+
 module TextRenderer(
     input   clk,
     input   rst,
@@ -11,9 +13,6 @@ module TextRenderer(
     //input [3:0]  cursorStates
 );
 
-parameter CONSOLE_LINES = 24;
-parameter CONSOLE_COLUMNS = 80;
-parameter COLOR_NUMBERS_BITS = 4;
 parameter HEIGHT_PER_CHARACTER = 12;
 parameter WIDTH_PER_CHARACTER = 8;
 
@@ -25,11 +24,11 @@ typedef enum logic[1:0]{
     CURSOR_BLINKING, CURSOR_INVISIBLE, CURSOR_PERSISTENT
 } CursorState;
 
-assign ramRequest.oe_n = 1;
-assign ramRequest.we_n = 0;
-assign ramRequest.den = 1;
-assign ramRequest.address = 0;
-assign ramRequest.dout = {32{1'b1}};
+// assign ramRequest.oe_n = 1;
+// assign ramRequest.we_n = 0;
+// assign ramRequest.den = 1;
+// assign ramRequest.address = 0;
+// assign ramRequest.dout = {32{1'b1}};
 
 // read from ROM
 // write to sram

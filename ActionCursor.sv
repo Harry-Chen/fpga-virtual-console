@@ -9,9 +9,6 @@ module ActionCursor(
 	output [7:0] o_cursor_x, o_cursor_y
 );
 
-parameter CONSOLE_LINES = 24;
-parameter CONSOLE_COLUMNS = 80;
-
 always @(posedge clk or negedge rst)
 begin
 	if(~rst)

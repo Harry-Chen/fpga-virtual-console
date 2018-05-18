@@ -22,8 +22,6 @@ module FpgaVirtualConsole(
     // constants
     parameter CLOCK_FREQUNCY = 100000000;   // default clock frequency is 100 MHz
     parameter BAUD_RATE = 115200;           // default baud rate of UART
-	parameter CONSOLE_LINES = 40;
-	parameter CONSOLE_COLUMNS = 80;
 
 
     // 7-segmented displays
@@ -104,10 +102,7 @@ module FpgaVirtualConsole(
 //    assign segmentDisplays[15:8] = uartDataReceived;
 
 	// VT100 parser module
-	VT100Parser #(
-		.CONSOLE_LINES(CONSOLE_LINES),
-		.CONSOLE_COLUMNS(CONSOLE_COLUMNS)
-	) vt100Parser(
+	VT100Parser vt100Parser(
 		.clk,
 		.rst,
 		.dataReady(uartReady),
