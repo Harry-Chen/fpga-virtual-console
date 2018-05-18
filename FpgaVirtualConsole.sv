@@ -108,8 +108,8 @@ module FpgaVirtualConsole(
 		.CONSOLE_LINES(CONSOLE_LINES),
 		.CONSOLE_COLUMNS(CONSOLE_COLUMNS)
 	) vt100Parser(
-		.clk(clk),
-		.rst(rst),
+		.clk,
+		.rst,
 		.dataReady(uartReady),
 		.data(uartDataReceived),
 //		.cursorPosition(???),
