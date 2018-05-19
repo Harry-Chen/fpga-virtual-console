@@ -27,8 +27,8 @@ module FontShapeRenderer(
     assign nowRenderingData = currentState == STATE_INIT ? grid : gridData;
     assign nowBaseAddress = currentState == STATE_INIT ? baseAddress : baseAddressData;
 
-    assign ramRequest.address = nowBaseAddress + nextY * `CONSOLE_COLUMNS + nextX;
-    assign ramRequest.dout = nowRenderingData.shape[nextY * `WIDTH_PER_CHARACTER + nextX] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
+    assign ramRequest.address = nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
+    assign ramRequest.dout = nowRenderingData.shape[y * `WIDTH_PER_CHARACTER + x] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
     assign ramRequest.oe_n = 1;
     assign ramRequest.we_n = 0;
 

@@ -39,7 +39,7 @@ module TextRenderer(
 
     assign vgaBaseAddress = vgaRam ? 0 : `VIDEO_BUFFER_SIZE;
     assign renderBaseAddress = vgaRam ? `VIDEO_BUFFER_SIZE : 0;
-    assign subRendererBaseAddress = renderBaseAddress + nextLine * `CONSOLE_COLUMNS * `PIXEL_PER_CHARACTER + nextColumn * `PIXEL_PER_CHARACTER;
+    assign subRendererBaseAddress = renderBaseAddress + line * `CONSOLE_COLUMNS * `PIXEL_PER_CHARACTER + column * `WIDTH_PER_CHARACTER;
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
     assign currentCharGrid.foreground = {32{1'b1}};
     assign currentCharGrid.background = {32{1'b1}};
