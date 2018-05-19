@@ -1,0 +1,308 @@
+<session jtag_chain="USB-Blaster [USB-0]" jtag_device="@1: 10CL055(Y|Z)/EP3C55/EP4CE55 (0x020F50DD)">
+  <display_attributes is_max_probe_read_interval="1" is_write_immediate="1" probe_read_interval="1" probe_read_interval_units="s"/>
+  <instance enable_logging="true" entity_name="null" is_auto_node="true" name="null">
+    <node_ip_info instance_id="0" mfg_id="110" node_id="9" version="0"/>
+    <sources>
+      <source name="source[0]" value="false"/>
+      <source name="source[1]" value="false"/>
+      <source name="source[2]" value="false"/>
+      <source name="source[3]" value="false"/>
+      <source name="source[4]" value="false"/>
+      <source name="source[5]" value="false"/>
+      <source name="source[6]" value="false"/>
+      <source name="source[7]" value="false"/>
+      <source name="source[8]" value="false"/>
+      <source name="source[9]" value="false"/>
+      <source name="source[10]" value="false"/>
+      <source name="source[11]" value="false"/>
+      <source name="source[12]" value="false"/>
+      <source name="source[13]" value="false"/>
+      <source name="source[14]" value="false"/>
+      <source name="source[15]" value="false"/>
+    </sources>
+    <probes>
+      <probe name="probe[0]"/>
+      <probe name="probe[1]"/>
+      <probe name="probe[2]"/>
+      <probe name="probe[3]"/>
+      <probe name="probe[4]"/>
+      <probe name="probe[5]"/>
+      <probe name="probe[6]"/>
+      <probe name="probe[7]"/>
+      <probe name="probe[8]"/>
+      <probe name="probe[9]"/>
+      <probe name="probe[10]"/>
+      <probe name="probe[11]"/>
+      <probe name="probe[12]"/>
+      <probe name="probe[13]"/>
+      <probe name="probe[14]"/>
+      <probe name="probe[15]"/>
+      <probe name="probe[16]"/>
+      <probe name="probe[17]"/>
+      <probe name="probe[18]"/>
+      <probe name="probe[19]"/>
+      <probe name="probe[20]"/>
+      <probe name="probe[21]"/>
+      <probe name="probe[22]"/>
+      <probe name="probe[23]"/>
+      <probe name="probe[24]"/>
+      <probe name="probe[25]"/>
+      <probe name="probe[26]"/>
+      <probe name="probe[27]"/>
+      <probe name="probe[28]"/>
+      <probe name="probe[29]"/>
+      <probe name="probe[30]"/>
+      <probe name="probe[31]"/>
+      <probe name="probe[32]"/>
+      <probe name="probe[33]"/>
+      <probe name="probe[34]"/>
+      <probe name="probe[35]"/>
+      <probe name="probe[36]"/>
+      <probe name="probe[37]"/>
+      <probe name="probe[38]"/>
+      <probe name="probe[39]"/>
+      <probe name="probe[40]"/>
+      <probe name="probe[41]"/>
+      <probe name="probe[42]"/>
+      <probe name="probe[43]"/>
+      <probe name="probe[44]"/>
+      <probe name="probe[45]"/>
+      <probe name="probe[46]"/>
+      <probe name="probe[47]"/>
+      <probe name="probe[48]"/>
+      <probe name="probe[49]"/>
+      <probe name="probe[50]"/>
+      <probe name="probe[51]"/>
+      <probe name="probe[52]"/>
+      <probe name="probe[53]"/>
+      <probe name="probe[54]"/>
+      <probe name="probe[55]"/>
+      <probe name="probe[56]"/>
+      <probe name="probe[57]"/>
+      <probe name="probe[58]"/>
+      <probe name="probe[59]"/>
+      <probe name="probe[60]"/>
+      <probe name="probe[61]"/>
+      <probe name="probe[62]"/>
+      <probe name="probe[63]"/>
+      <probe name="probe[64]"/>
+      <probe name="probe[65]"/>
+      <probe name="probe[66]"/>
+      <probe name="probe[67]"/>
+      <probe name="probe[68]"/>
+      <probe name="probe[69]"/>
+      <probe name="probe[70]"/>
+      <probe name="probe[71]"/>
+      <probe name="probe[72]"/>
+      <probe name="probe[73]"/>
+      <probe name="probe[74]"/>
+      <probe name="probe[75]"/>
+      <probe name="probe[76]"/>
+      <probe name="probe[77]"/>
+      <probe name="probe[78]"/>
+      <probe name="probe[79]"/>
+      <probe name="probe[80]"/>
+      <probe name="probe[81]"/>
+      <probe name="probe[82]"/>
+      <probe name="probe[83]"/>
+      <probe name="probe[84]"/>
+      <probe name="probe[85]"/>
+      <probe name="probe[86]"/>
+      <probe name="probe[87]"/>
+      <probe name="probe[88]"/>
+      <probe name="probe[89]"/>
+      <probe name="probe[90]"/>
+      <probe name="probe[91]"/>
+      <probe name="probe[92]"/>
+      <probe name="probe[93]"/>
+      <probe name="probe[94]"/>
+      <probe name="probe[95]"/>
+      <probe name="probe[96]"/>
+      <probe name="probe[97]"/>
+      <probe name="probe[98]"/>
+      <probe name="probe[99]"/>
+      <probe name="probe[100]"/>
+      <probe name="probe[101]"/>
+      <probe name="probe[102]"/>
+      <probe name="probe[103]"/>
+      <probe name="probe[104]"/>
+      <probe name="probe[105]"/>
+      <probe name="probe[106]"/>
+      <probe name="probe[107]"/>
+      <probe name="probe[108]"/>
+      <probe name="probe[109]"/>
+      <probe name="probe[110]"/>
+      <probe name="probe[111]"/>
+      <probe name="probe[112]"/>
+      <probe name="probe[113]"/>
+      <probe name="probe[114]"/>
+      <probe name="probe[115]"/>
+      <probe name="probe[116]"/>
+      <probe name="probe[117]"/>
+      <probe name="probe[118]"/>
+      <probe name="probe[119]"/>
+      <probe name="probe[120]"/>
+      <probe name="probe[121]"/>
+      <probe name="probe[122]"/>
+      <probe name="probe[123]"/>
+      <probe name="probe[124]"/>
+      <probe name="probe[125]"/>
+      <probe name="probe[126]"/>
+      <probe name="probe[127]"/>
+    </probes>
+    <view>
+      <view_node expanded="true" index="127" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="126" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="125" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="124" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="123" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="122" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="121" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="120" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="119" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="118" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="117" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="116" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="115" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="114" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="113" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="112" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="111" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="110" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="109" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="108" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="107" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="106" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="105" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="104" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="103" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="102" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="101" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="100" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="99" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="98" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="97" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="96" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="95" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="94" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="93" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="92" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="91" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="90" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="89" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="88" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="87" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="86" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="85" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="84" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="83" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="82" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="81" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="80" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="79" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="78" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="77" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="76" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="75" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="74" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="73" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="72" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="71" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="70" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="69" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="68" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="67" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="66" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="65" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="64" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="63" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="62" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="61" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="60" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="59" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="58" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="57" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="56" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="55" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="54" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="53" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="52" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="51" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="50" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="49" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="48" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="47" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="46" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="45" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="44" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="43" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="42" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="41" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="40" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="39" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="38" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="37" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="36" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="35" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="34" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="33" node_type="probe" view_type="independent"/>
+      <view_node expanded="true" index="32" node_type="probe" view_type="independent"/>
+      <view_node expanded="false" group_name="probe[31..30]" index="0" lsb_to_msb="false" name="Reserved" node_type="probe" radix="unsigned" view_type="group_header"/>
+      <view_node expanded="true" index="31" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="30" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[29..27]" index="0" lsb_to_msb="false" name="Background" node_type="probe" radix="unsigned" view_type="group_header"/>
+      <view_node expanded="true" index="29" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="28" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="27" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[26..24]" index="0" lsb_to_msb="false" name="Foreground" node_type="probe" radix="unsigned" view_type="group_header"/>
+      <view_node expanded="true" index="26" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="25" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="24" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[23..16]" index="0" lsb_to_msb="false" name="Now Char" node_type="probe" radix="ascii" view_type="group_header"/>
+      <view_node expanded="true" index="23" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="22" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="21" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="20" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="19" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="18" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="17" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="16" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[15..8]" index="0" lsb_to_msb="false" name="Ascii" node_type="probe" view_type="group_header"/>
+      <view_node expanded="true" index="15" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="14" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="13" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="12" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="11" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="10" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="9" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="8" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[7..0]" index="0" lsb_to_msb="false" name="Scan Code" node_type="probe" view_type="group_header"/>
+      <view_node expanded="true" index="7" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="6" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="5" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="4" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="3" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="2" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="1" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="0" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="15" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="14" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="13" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="12" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="11" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="10" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="9" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="8" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="7" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="6" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="5" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="4" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="3" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="2" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="1" node_type="source" view_type="independent"/>
+      <view_node expanded="true" index="0" node_type="source" view_type="independent"/>
+    </view>
+    <alias_list/>
+    <log data="000000A248CF000000000000000000000000000000A2CAEF000000000000000000000000000000A28C4E000000000000000000000000000000A2C345000000000000000000000000000000A20A29000000000000000000000000000000A20BEB000000000000000000000000000000A2C316000000000000000000000000000000A205A9000000000000000000000000" max_size="8" size="8" time="B10EFFA500000000B10EFFA500000000B10EFFA500000000B10EFFA500000000B10EFFA500000000B10EFFA500000000B10EFFA500000000B10EFFA500000000" width="144"/>
+  </instance>
+</session>
