@@ -1,4 +1,4 @@
-`include "DataType.sv"
+`include "DataType.svh"
 
 module VT100Parser(
 	input         clk, rst,

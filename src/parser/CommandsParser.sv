@@ -1,4 +1,4 @@
-`include "DataType.sv"
+`include "DataType.svh"
 
 `define SET_COMMAND(cmd_type) \
 	status = START; \

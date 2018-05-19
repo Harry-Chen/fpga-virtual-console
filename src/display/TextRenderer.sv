@@ -1,4 +1,4 @@
-`include "DataType.sv"
+`include "DataType.svh"
 
 module TextRenderer(
     input   clk,

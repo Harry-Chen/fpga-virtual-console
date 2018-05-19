@@ -1,4 +1,4 @@
-`include "DataType.sv"
+`include "DataType.svh"
 
 module SramController (
     input clk, // need 25 MHz clock
