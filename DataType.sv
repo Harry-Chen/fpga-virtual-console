@@ -93,6 +93,7 @@ typedef struct packed {
 } CharGrid_t;
 
 
+// parser states
 typedef enum logic[7:0] {
 	START, ESC, BRACKET, PN1, PN2, DEL1
 } CommandsState;

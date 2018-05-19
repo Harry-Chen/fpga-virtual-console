@@ -1,7 +1,7 @@
 module LedDecoder(
 	input   [3:0]	hex,
 	output  [7:0]	segments
-	);
+);
 
 	logic [6:0] oSEG;
 

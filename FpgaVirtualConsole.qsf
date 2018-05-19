@@ -65,7 +65,7 @@ set_location_assignment PIN_AB12 -to buttons[1]
 set_location_assignment PIN_T21 -to buttons[2]
 set_location_assignment PIN_T22 -to buttons[3]
 set_location_assignment PIN_AA11 -to buttons[4]
-set_location_assignment PIN_AA12 -to reset
+set_location_assignment PIN_AA12 -to rst
 
 
 set_location_assignment PIN_U9 -to uartTx

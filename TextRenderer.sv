@@ -16,6 +16,10 @@ module TextRenderer(
     //input [3:0]  cursorStates
 );
 
+    // debug
+    assign nowRendering = currentLine[16 * nextColumn +: 16];
+
+
     typedef enum logic[2:0]{
         STATE_INIT, STATE_READ_TEXT, STATE_READ_FONT, STATE_WAIT_FOR_RENDER, STATE_DONE
     } TextRendererState_t;
@@ -42,11 +46,10 @@ module TextRenderer(
     assign renderBaseAddress = vgaRam ? `VIDEO_BUFFER_SIZE : 0;
     assign subRendererBaseAddress = renderBaseAddress + line * `CONSOLE_COLUMNS * `PIXEL_PER_CHARACTER + column * `WIDTH_PER_CHARACTER;
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
+
     assign currentCharGrid.foreground = {32{1'b1}};
     assign currentCharGrid.background = {32{1'b0}};
     assign currentCharGrid.shape = fontRomData;
-
-    assign nowRendering = currentLine[16 * nextColumn +: 16];
 
     logic fontReady;
 
@@ -61,8 +64,8 @@ module TextRenderer(
         .done(subRendererDone)
     );
 
-    always_ff @(posedge clk or negedge rst) begin
-        if (~rst) begin
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
             vgaRam <= 0;
             currentState <= STATE_INIT;
             column <= 0;
@@ -81,7 +84,6 @@ module TextRenderer(
     end
 
     always_comb begin
-
         textRamRequest.address = 0;
         fontRomAddress = 0;
         nextColumn = 0;

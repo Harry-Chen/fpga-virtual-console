@@ -27,8 +27,8 @@ module VgaDisplayAdapter(
 
     logic outputEnable, nextEnable;
 
-    assign outputEnable = (hCounter < H_ACTIVE) & (vCounter < V_ACTIVE) & rst;
-    assign nextEnable = (nextX < H_ACTIVE) & (nextY < V_ACTIVE) & rst;
+    assign outputEnable = (hCounter < H_ACTIVE) & (vCounter < V_ACTIVE) & !rst;
+    assign nextEnable = (nextX < H_ACTIVE) & (nextY < V_ACTIVE) & !rst;
 
     assign ramRequest.den = 0;
     assign ramRequest.address = baseAddress + nextY * H_ACTIVE + nextX;
@@ -56,8 +56,8 @@ module VgaDisplayAdapter(
     Pixel_t pixel;
     assign vga.color = pixel.color;
 
-    always_ff @(posedge clk or negedge rst) begin
-      if (~rst) begin
+    always_ff @(posedge clk or posedge rst) begin
+      if (rst) begin
         hCounter <= 0;
         vCounter <= 0;
         pixel <= 0;

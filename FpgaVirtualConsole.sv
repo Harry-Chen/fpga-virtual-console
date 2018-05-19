@@ -1,34 +1,37 @@
 module FpgaVirtualConsole(
     // general signals
-    input               clk,
-    input               reset,
-    input       [4:0]   buttons,
+    input                              clk,
+    input                              rst,
+    input  [4:0]                       buttons,
     // PS/2 receiver
-    input               ps2Clk,
-    input               ps2Data,
+    input                              ps2Clk,
+    input                              ps2Data,
     // uart transceiver
-    input               uartRx,
-    output  reg         uartTx,
+    input                              uartRx,
+    output reg                         uartTx,
     // vga output
-    output  VgaSignal_t vga,
+    output VgaSignal_t                 vga,
     // sram read/write
-    output  SramInterface_t sramInterface,
-    inout   [`SRAM_DATA_WIDTH - 1:0]  sramData,
-
+    output SramInterface_t             sramInterface,
+    inout  [`SRAM_DATA_WIDTH - 1:0]    sramData,
     // debug output
-    output  reg [7:0]  segment1,
-    output  reg [7:0]  segment2,
-    output  reg [15:0] led
+    output reg [7:0]                   segment1,
+    output reg [7:0]                   segment2,
+    output reg [15:0]                  led
     );
-	 
-    logic rst;
-    assign rst = ~reset;
+     
+    
+    // reset signals
+    logic rst_n;
+    assign rst_n = ~rst;
 
 
     // constants
-    parameter CLOCK_FREQUNCY = 48000000;   // default clock frequency is 100 MHz
+    parameter CLOCK_FREQUNCY = 48000000;   // default clock frequency is 48 MHz
     parameter BAUD_RATE = 115200;           // default baud rate of UART
 
+
+    // debug probe
     logic [127:0] debug;
 
     assign debug[7:0] = scan_code;
@@ -37,11 +40,14 @@ module FpgaVirtualConsole(
     Probe debugProbe(
 		.probe(debug),
 		.source(0)
-	);
+    );
+    
 
-    LedDecoder decoder_1(.hex(4'hF), .segments(segment1));
-    LedDecoder decoder_2(.hex(4'h9), .segments(segment2));
-	 
+    // segments test
+    LedDecoder decoder_1(.hex(4'h2), .segments(segment1));
+    LedDecoder decoder_2(.hex(4'h3), .segments(segment2));
+     
+    
 	// keyboard test
 	logic [7:0] scan_code, ascii_code;
 	logic scan_code_ready;
@@ -51,7 +57,7 @@ module FpgaVirtualConsole(
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit(
         .clk,
-        .reset(~rst),
+        .reset(rst),
         .ps2d(ps2Data),
         .ps2c(ps2Clk),
         .scan_code,
@@ -65,6 +71,7 @@ module FpgaVirtualConsole(
         .scan_code,
         .ascii_code
     );
+
 
     // UART module
     logic         uartReady;
@@ -99,39 +106,41 @@ module FpgaVirtualConsole(
         .RxD_data(uartDataReceived) // output
     );
 
+
 	// VT100 parser module
 	VT100Parser vt100Parser(
 		.clk,
-		.rst,
+		.rst(rst_n),
 		.dataReady(uartReady),
 		.data(uartDataReceived),
-//		.cursorPosition(???),
+		// .cursorPosition(???),
 	);
 
-    // Frequency Divider
 
+    // Phase-locked loops to generate clocks of different frequencies
     logic clk25M, clk50M, clk100M, clk10M, clk20M;
-    logic rst25M;
+    logic rstPll, rstPll_n;
+    assign rstPll_n = ~rstPll;
 
     TopPll divider25M(
-        .areset(reset),
+        .areset(rst),
         .inclk0(clk),
         .c0(clk25M),
         .c1(clk50M),
         .c2(clk100M),
         .c3(clk10M),
         .c4(clk20M),
-        .locked(rst25M)
+        .locked(rstPll)
     );
 
-    // Text RAM module
 
+    // Text RAM module
     TextRamRequest_t textRamRequestParser, textRamRequestRenderer;
     TextRamResult_t textRamResultParser, textRamResultRenderer;
 
-    TextRam ram(
-        .aclr_a(~rst),
-        .aclr_b(~rst25M),
+    TextRam textRam(
+        .aclr_a(rst),
+        .aclr_b(rstPll),
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
         .clock_a(clk),
@@ -144,8 +153,8 @@ module FpgaVirtualConsole(
         .q_b(textRamResultRenderer)
     );
 
-    // Sram controller module
 
+    // Sram controller module
     SramRequest_t vgaRequest, rendererRequest;
     SramResult_t vgaResult, rendererResult;
     logic paintDone;
@@ -153,7 +162,7 @@ module FpgaVirtualConsole(
     
     SramController sramController(
         .clk(clk25M),
-        .rst(rst25M),
+        .rst(rstPll),
         .sramInterface,
         .sramData,
         .vgaRequest,
@@ -163,13 +172,12 @@ module FpgaVirtualConsole(
     );
 
 
-    // Font rom module
-
+    // Font ROM module
     FontRomData_t fontRomData;
     FontRomAddress_t fontRomAddress;
 
     FontRom fontRom(
-        .aclr(~rst25M),
+        .aclr(rstPll),
         .address(fontRomAddress),
         .clock(clk25M),
         .q(fontRomData)
@@ -177,10 +185,9 @@ module FpgaVirtualConsole(
 
 
     // Renderer module
-
     TextRenderer renderer(
         .clk(clk25M),
-        .rst(rst25M),
+        .rst(rstPll),
         .paintDone,
         .ramRequest(rendererRequest),
         .ramResult(rendererResult),
@@ -194,10 +201,9 @@ module FpgaVirtualConsole(
 
 
     // VGA module
-
     VgaDisplayAdapter display(
         .clk(clk25M),
-        .rst(rst25M),
+        .rst(rstPll),
         .baseAddress(vgaBaseAddress),
         .ramRequest(vgaRequest),
         .ramResult(vgaResult),

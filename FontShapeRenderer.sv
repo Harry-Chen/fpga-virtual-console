@@ -28,13 +28,13 @@ module FontShapeRenderer(
     assign nowBaseAddress = currentState == STATE_INIT ? baseAddress : baseAddressData;
 
     assign ramRequest.address = nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
-	 // the bit order of the font shape is inverted
+	// the bit order of the font shape is inverted
     assign ramRequest.dout = nowRenderingData.shape[`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x)] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
     assign ramRequest.oe_n = 1;
-    // assign ramRequest.we_n = 0;
 
-    always_ff @(posedge clk or negedge rst) begin
-        if (~rst) begin
+
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
             x <= 0;
             y <= 0;
             currentState <= STATE_INIT;

@@ -23,8 +23,8 @@ module SramController (
     SramData_t vgaData;
     logic den;
 
-    always_ff @(posedge clk or negedge rst) begin
-        if (~rst) begin
+    always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
             currentState <= STATE_INIT;
             vgaData <= {`SRAM_DATA_WIDTH{1'b0}};
         end else begin
