@@ -10,7 +10,8 @@ module TextRenderer(
     output  TextRamRequest_t textRamRequest,
     input   TextRamResult_t  textRamResult,
     output  FontRomAddress_t fontRomAddress,
-    input   FontRomData_t    fontRomData
+    input   FontRomData_t    fontRomData,
+    output  [15:0]           nowRendering           
     //input [15:0] cursorPosition,
     //input [3:0]  cursorStates
 );
@@ -42,8 +43,10 @@ module TextRenderer(
     assign subRendererBaseAddress = renderBaseAddress + line * `CONSOLE_COLUMNS * `PIXEL_PER_CHARACTER + column * `WIDTH_PER_CHARACTER;
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
     assign currentCharGrid.foreground = {32{1'b1}};
-    assign currentCharGrid.background = {32{1'b1}};
+    assign currentCharGrid.background = {32{1'b0}};
     assign currentCharGrid.shape = fontRomData;
+
+    assign nowRendering = currentLine[16 * nextColumn +: 16];
 
     logic fontReady;
 
@@ -55,7 +58,7 @@ module TextRenderer(
         .baseAddress(subRendererBaseAddress),
         .ramRequest,
         .ramResult,
-        .done(subRendererDone),
+        .done(subRendererDone)
     );
 
     always_ff @(posedge clk or negedge rst) begin
@@ -93,13 +96,13 @@ module TextRenderer(
             STATE_READ_TEXT: begin
                 nextLine = line;
                 nextColumn = column;
-                fontRomAddress = currentLine[`FONT_ROM_ADDRESS_WIDTH - 1:0];
+                fontRomAddress = currentLine[0 +: 8];
                 nextState = STATE_READ_FONT;
+                fontReady = 1;
             end
             STATE_READ_FONT: begin
                 nextLine = line;
                 nextColumn = column;
-                fontReady = 1;
                 nextState = STATE_WAIT_FOR_RENDER;
             end
             STATE_WAIT_FOR_RENDER: begin
@@ -118,7 +121,8 @@ module TextRenderer(
                     end else begin
                         nextColumn = column + 1;
                         nextLine = line;
-                        fontRomAddress = currentLine[16 * nextColumn + 8 - 1 -: 8];
+                        fontRomAddress = currentLine[16 * nextColumn +: 8];
+                        fontReady = 1;
                         nextState = STATE_READ_FONT;
                     end
                 end else begin

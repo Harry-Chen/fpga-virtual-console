@@ -28,9 +28,10 @@ module FontShapeRenderer(
     assign nowBaseAddress = currentState == STATE_INIT ? baseAddress : baseAddressData;
 
     assign ramRequest.address = nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
-    assign ramRequest.dout = nowRenderingData.shape[y * `WIDTH_PER_CHARACTER + x] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
+	 // the bit order of the font shape is inverted
+    assign ramRequest.dout = nowRenderingData.shape[`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x)] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
     assign ramRequest.oe_n = 1;
-    assign ramRequest.we_n = 0;
+    // assign ramRequest.we_n = 0;
 
     always_ff @(posedge clk or negedge rst) begin
         if (~rst) begin
@@ -54,6 +55,7 @@ module FontShapeRenderer(
         nextY = 0;
         nextState = STATE_INIT;
         ramRequest.den = 1;
+        ramRequest.we_n = 0;
         unique case(currentState)
             STATE_INIT: begin
                 nextState = STATE_WAIT_WRITE;
@@ -80,6 +82,7 @@ module FontShapeRenderer(
             end
             STATE_DONE: begin
                 ramRequest.den = 0;
+                ramRequest.we_n = 1;
                 if (fontReady) nextState = STATE_INIT;
                 else nextState = STATE_DONE;
             end

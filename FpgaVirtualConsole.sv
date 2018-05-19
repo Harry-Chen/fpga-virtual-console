@@ -29,9 +29,13 @@ module FpgaVirtualConsole(
     parameter CLOCK_FREQUNCY = 48000000;   // default clock frequency is 100 MHz
     parameter BAUD_RATE = 115200;           // default baud rate of UART
 
+    logic [127:0] debug;
+
+    assign debug[7:0] = scan_code;
+    assign debug[15:8] = ascii_code;
 
     Probe debugProbe(
-		.probe({ascii_code, scan_code}),
+		.probe(debug),
 		.source(0)
 	);
 
@@ -106,13 +110,17 @@ module FpgaVirtualConsole(
 
     // Frequency Divider
 
-    logic clk25M;
+    logic clk25M, clk50M, clk100M, clk10M, clk20M;
     logic rst25M;
 
     TopPll divider25M(
         .areset(reset),
         .inclk0(clk),
         .c0(clk25M),
+        .c1(clk50M),
+        .c2(clk100M),
+        .c3(clk10M),
+        .c4(clk20M),
         .locked(rst25M)
     );
 
@@ -181,6 +189,7 @@ module FpgaVirtualConsole(
         .textRamResult(textRamResultRenderer),
         .fontRomAddress,
         .fontRomData,
+        .nowRendering(debug[31:16])
     );
 
 
