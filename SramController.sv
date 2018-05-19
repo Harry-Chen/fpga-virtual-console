@@ -40,6 +40,8 @@ module SramController (
 
     always_comb begin
         sramInterface.address = {`SRAM_ADDRESS_WIDTH{1'b0}};
+        sramInterface.we_n = 1;
+        sramInterface.oe_n = 1;
         ramOut =  {`SRAM_DATA_WIDTH{1'b0}};
         den = 0;
         vgaResult.done = 0;

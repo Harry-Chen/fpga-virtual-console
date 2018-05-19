@@ -45,7 +45,7 @@ module FontRom (
 	input	  aclr;
 	input	[7:0]  address;
 	input	  clock;
-	output	[191:0]  q;
+	output	[95:0]  q;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
@@ -55,8 +55,8 @@ module FontRom (
 // synopsys translate_on
 `endif
 
-	wire [191:0] sub_wire0;
-	wire [191:0] q = sub_wire0[191:0];
+	wire [95:0] sub_wire0;
+	wire [95:0] q = sub_wire0[95:0];
 
 	altsyncram	altsyncram_component (
 				.aclr0 (aclr),
@@ -74,7 +74,7 @@ module FontRom (
 				.clocken1 (1'b1),
 				.clocken2 (1'b1),
 				.clocken3 (1'b1),
-				.data_a ({192{1'b1}}),
+				.data_a ({96{1'b1}}),
 				.data_b (1'b1),
 				.eccstatus (),
 				.q_b (),
@@ -94,7 +94,7 @@ module FontRom (
 		altsyncram_component.outdata_aclr_a = "CLEAR0",
 		altsyncram_component.outdata_reg_a = "UNREGISTERED",
 		altsyncram_component.widthad_a = 8,
-		altsyncram_component.width_a = 192,
+		altsyncram_component.width_a = 96,
 		altsyncram_component.width_byteena_a = 1;
 
 
@@ -129,7 +129,7 @@ endmodule
 // Retrieval info: PRIVATE: SingleClock NUMERIC "1"
 // Retrieval info: PRIVATE: UseDQRAM NUMERIC "0"
 // Retrieval info: PRIVATE: WidthAddr NUMERIC "8"
-// Retrieval info: PRIVATE: WidthData NUMERIC "192"
+// Retrieval info: PRIVATE: WidthData NUMERIC "96"
 // Retrieval info: PRIVATE: rden NUMERIC "0"
 // Retrieval info: LIBRARY: altera_mf altera_mf.altera_mf_components.all
 // Retrieval info: CONSTANT: ADDRESS_ACLR_A STRING "CLEAR0"
@@ -143,16 +143,16 @@ endmodule
 // Retrieval info: CONSTANT: OUTDATA_ACLR_A STRING "CLEAR0"
 // Retrieval info: CONSTANT: OUTDATA_REG_A STRING "UNREGISTERED"
 // Retrieval info: CONSTANT: WIDTHAD_A NUMERIC "8"
-// Retrieval info: CONSTANT: WIDTH_A NUMERIC "192"
+// Retrieval info: CONSTANT: WIDTH_A NUMERIC "96"
 // Retrieval info: CONSTANT: WIDTH_BYTEENA_A NUMERIC "1"
 // Retrieval info: USED_PORT: aclr 0 0 0 0 INPUT GND "aclr"
 // Retrieval info: USED_PORT: address 0 0 8 0 INPUT NODEFVAL "address[7..0]"
 // Retrieval info: USED_PORT: clock 0 0 0 0 INPUT VCC "clock"
-// Retrieval info: USED_PORT: q 0 0 192 0 OUTPUT NODEFVAL "q[191..0]"
+// Retrieval info: USED_PORT: q 0 0 96 0 OUTPUT NODEFVAL "q[95..0]"
 // Retrieval info: CONNECT: @aclr0 0 0 0 0 aclr 0 0 0 0
 // Retrieval info: CONNECT: @address_a 0 0 8 0 address 0 0 8 0
 // Retrieval info: CONNECT: @clock0 0 0 0 0 clock 0 0 0 0
-// Retrieval info: CONNECT: q 0 0 192 0 @q_a 0 0 192 0
+// Retrieval info: CONNECT: q 0 0 96 0 @q_a 0 0 96 0
 // Retrieval info: GEN_FILE: TYPE_NORMAL FontRom.v TRUE
 // Retrieval info: GEN_FILE: TYPE_NORMAL FontRom.inc FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL FontRom.cmp FALSE
