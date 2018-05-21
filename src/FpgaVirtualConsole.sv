@@ -120,7 +120,7 @@ module FpgaVirtualConsole(
     // Phase-locked loops to generate clocks of different frequencies
     logic clk25M, clk50M, clk100M, clk10M, clk20M;
     logic rstPll, rstPll_n;
-    assign rstPll_n = ~rstPll;
+    assign rstPll = ~rstPll_n;
 
     TopPll divider25M(
         .areset(rst),
@@ -130,7 +130,7 @@ module FpgaVirtualConsole(
         .c2(clk100M),
         .c3(clk10M),
         .c4(clk20M),
-        .locked(rstPll)
+        .locked(rstPll_n)
     );
 
 
@@ -144,7 +144,7 @@ module FpgaVirtualConsole(
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
         .clock_a(clk),
-        .clock_b(clk25M),
+        .clock_b(clk50M),
         .data_a(textRamRequestParser.data),
         .data_b(textRamRequestRenderer.data),
         .wren_a(textRamRequestParser.wren),
@@ -161,7 +161,7 @@ module FpgaVirtualConsole(
     SramAddress_t vgaBaseAddress;
     
     SramController sramController(
-        .clk(clk25M),
+        .clk(clk50M),
         .rst(rstPll),
         .sramInterface,
         .sramData,
@@ -179,14 +179,14 @@ module FpgaVirtualConsole(
     FontRom fontRom(
         .aclr(rstPll),
         .address(fontRomAddress),
-        .clock(clk25M),
+        .clock(clk50M),
         .q(fontRomData)
     );
 
 
     // Renderer module
     TextRenderer renderer(
-        .clk(clk25M),
+        .clk(clk50M),
         .rst(rstPll),
         .paintDone,
         .ramRequest(rendererRequest),
