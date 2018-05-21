@@ -45,33 +45,44 @@ CursorControl cursor_control(
 	.i_cursor(term.cursor)
 );
 
+TextEdit text_edit(
+	.clk,
+	.rst,
+	.commandReady,
+	.commandType,
+	.term,
+	.param,
+	.ramRes,
+	.ramReq
+);
+
 // test text input
-logic [1:0] wrs = 0;
-always @(posedge clk)
-begin
-	case(wrs)
-		1: begin
-			ramReq.address <= term.cursor.x;
-			ramReq.wren <= 0;
-			wrs <= 2;
-		end
-		2: begin
-			ramReq.data <= {ramRes[`TEXT_RAM_DATA_WIDTH - 1 -: (`CONSOLE_COLUMNS - 1) * 16], 8'd0, param.Pchar};
-			ramReq.wren <= 1;
-			wrs <= 3;
-		end
-		3: begin
-			ramReq.wren <= 0;
-			wrs <= 0;
-		end
-	endcase
-	if(commandReady)
-	begin
-		if(commandType == INPUT)
-		begin
-			wrs <= 1;
-		end
-	end
-end
+// logic [1:0] wrs = 0;
+// always @(posedge clk)
+// begin
+// 	case(wrs)
+// 		1: begin
+// 			ramReq.address <= term.cursor.x;
+// 			ramReq.wren <= 0;
+// 			wrs <= 2;
+// 		end
+// 		2: begin
+// 			ramReq.data <= {ramRes[`TEXT_RAM_DATA_WIDTH - 1 -: (`CONSOLE_COLUMNS - 1) * 16], 8'd0, param.Pchar};
+// 			ramReq.wren <= 1;
+// 			wrs <= 3;
+// 		end
+// 		3: begin
+// 			ramReq.wren <= 0;
+// 			wrs <= 0;
+// 		end
+// 	endcase
+// 	if(commandReady)
+// 	begin
+// 		if(commandType == INPUT)
+// 		begin
+// 			wrs <= 1;
+// 		end
+// 	end
+// end
 
 endmodule
