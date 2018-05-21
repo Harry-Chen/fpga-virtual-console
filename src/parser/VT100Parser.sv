@@ -1,62 +1,77 @@
 `include "DataType.svh"
 
 module VT100Parser(
-	input         clk, rst,
-	input         dataReady,
-	input  [7:0]  data,
-	output [15:0] cursorPosition,
-	output [41:0] debug
+	input                   clk, rst,
+	input                   dataReady,
+	input  [7:0]            data,
+	input  TextRamResult_t  ramRes,
+	output TextRamRequest_t ramReq,
+	output Cursor_t         cursorInfo,
+	output [31:0]           debug
 );
 
-// cursor position, starts from 0
-reg [7:0] cursor_x, cursor_y;
-
-// set flatten cursor position 
-assign cursorPosition = cursor_x * `CONSOLE_COLUMNS + cursor_y;
-
-// input parameters
-reg [7:0] Pn1, Pn2, Pchar;
+Terminal_t term;
+Param_t param;
 
 wire commandReady;
 CommandsType commandType;
 
-reg [7:0] status;
+assign cursorInfo = term.cursor;
 
-// DEBUG INFO BEGIN
-LedDecoder decoder_x1(.hex(cursor_x[7:4]), .segments(debug[41:35]));
-LedDecoder decoder_x2(.hex(cursor_x[3:0]), .segments(debug[34:28]));
-LedDecoder decoder_y1(.hex(cursor_y[7:4]), .segments(debug[27:21]));
-LedDecoder decoder_y2(.hex(cursor_y[3:0]), .segments(debug[20:14]));
-LedDecoder decoder_c1(.hex(status[7:4]), .segments(debug[13:7]));
-LedDecoder decoder_c2(.hex(status[3:0]), .segments(debug[6:0]));
-// DEBUG INFO END
+assign debug[31:24] = commandType;
+assign debug[15:8] = term.cursor.x;
+assign debug[7:0] = term.cursor.y;
 
 // commands parser
 CommandsParser cmd_parser(
-	.clk(clk),
-	.rst(rst),
-	.data(data),
-	.dataReady(dataReady),
-	.commandReady(commandReady),
-	.commandType(commandType),
-	.Pn1(Pn1),
-	.Pn2(Pn2),
-	.Pchar(Pchar),
-	.debug(status)
+	.clk,
+	.rst,
+	.data,
+	.dataReady,
+	.commandReady,
+	.commandType,
+	.param,
+	.debug(debug[23:16])
 );
 
 // dispatch commands
-ActionCursor action_cursor(
-	.clk(clk),
-	.rst(rst),
-	.commandReady(commandReady),
-	.commandType(commandType),
-	.Pn1(Pn1),
-	.Pn2(Pn2),
-	.o_cursor_x(cursor_x),
-	.o_cursor_y(cursor_y),
-	.i_cursor_x(cursor_x),
-	.i_cursor_y(cursor_y)
+CursorControl cursor_control(
+	.clk,
+	.rst,
+	.commandReady,
+	.commandType,
+	.param,
+	.o_cursor(term.cursor),
+	.i_cursor(term.cursor)
 );
+
+// test text input
+logic [1:0] wrs = 0;
+always @(posedge clk)
+begin
+	case(wrs)
+		1: begin
+			ramReq.address <= term.cursor.x;
+			ramReq.wren <= 0;
+			wrs <= 2;
+		end
+		2: begin
+			ramReq.data <= {ramRes[`TEXT_RAM_DATA_WIDTH - 1 -: (`CONSOLE_COLUMNS - 1) * 16], 8'd0, param.Pchar};
+			ramReq.wren <= 1;
+			wrs <= 3;
+		end
+		3: begin
+			ramReq.wren <= 0;
+			wrs <= 0;
+		end
+	endcase
+	if(commandReady)
+	begin
+		if(commandType == INPUT)
+		begin
+			wrs <= 1;
+		end
+	end
+end
 
 endmodule

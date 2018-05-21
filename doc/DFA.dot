@@ -15,10 +15,10 @@ digraph DFA {
 	Start->Esc[label=ESC];
 
 	// ESC [
-	Esc->Bracket[label="["];
+	Esc->CSI[label="["];
 
 	// ESC [ Pn
-	Bracket->Pn1[label="digit"];
+	CSI->Pn1[label="digit"];
 	Pn1->Pn1[label="digit"];
 
 	// ESC [ Pn; 
@@ -54,7 +54,7 @@ digraph DFA {
 	Pn2->CUP[label="H,f"]; // Cursor Position
 
 	// ESC [ H
-	Bracket->CUP[label="H,f"]; // Cursor Home
+	CSI->CUP[label="H,f"]; // Cursor Home
 
 	// ESC D
 	Esc->IND[label=D];  // Index

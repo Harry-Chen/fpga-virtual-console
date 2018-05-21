@@ -1,4 +1,4 @@
-<session jtag_chain="USB-Blaster [USB-0]" jtag_device="@1: 10CL055(Y|Z)/EP3C55/EP4CE55 (0x020F50DD)">
+<session jtag_chain="" jtag_device="">
   <display_attributes is_max_probe_read_interval="1" is_write_immediate="1" probe_read_interval="1" probe_read_interval_units="s"/>
   <instance enable_logging="true" entity_name="null" is_auto_node="true" name="null">
     <node_ip_info instance_id="0" mfg_id="110" node_id="9" version="0"/>
@@ -215,38 +215,42 @@
       <view_node expanded="true" index="66" node_type="probe" view_type="independent"/>
       <view_node expanded="true" index="65" node_type="probe" view_type="independent"/>
       <view_node expanded="true" index="64" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="63" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="62" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="61" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="60" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="59" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="58" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="57" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="56" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="55" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="54" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="53" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="52" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="51" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="50" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="49" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="48" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="47" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="46" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="45" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="44" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="43" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="42" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="41" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="40" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="39" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="38" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="37" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="36" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="35" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="34" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="33" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="32" node_type="probe" view_type="independent"/>
+      <view_node expanded="false" group_name="probe[63..56]" index="0" lsb_to_msb="false" name="CMDType" node_type="probe" view_type="group_header"/>
+      <view_node expanded="true" index="63" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="62" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="61" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="60" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="59" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="58" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="57" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="56" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[55..48]" index="0" lsb_to_msb="false" name="VTStatus" node_type="probe" view_type="group_header"/>
+      <view_node expanded="true" index="55" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="54" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="53" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="52" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="51" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="50" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="49" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="48" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[47..40]" index="0" lsb_to_msb="false" name="CursorX" node_type="probe" view_type="group_header"/>
+      <view_node expanded="true" index="47" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="46" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="45" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="44" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="43" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="42" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="41" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="40" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[39..32]" index="0" lsb_to_msb="false" name="CursorY" node_type="probe" view_type="group_header"/>
+      <view_node expanded="true" index="39" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="38" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="37" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="36" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="35" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="34" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="33" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="32" node_type="probe" view_type="group_member"/>
       <view_node expanded="false" group_name="probe[31..30]" index="0" lsb_to_msb="false" name="Reserved" node_type="probe" radix="unsigned" view_type="group_header"/>
       <view_node expanded="true" index="31" node_type="probe" view_type="group_member"/>
       <view_node expanded="true" index="30" node_type="probe" view_type="group_member"/>

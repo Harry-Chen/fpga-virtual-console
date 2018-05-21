@@ -36,6 +36,7 @@ module FpgaVirtualConsole(
 
     assign debug[7:0] = scan_code;
     assign debug[15:8] = ascii_code;
+	assign debug[63:32] = vt100_debug;
 
     Probe debugProbe(
 		.probe(debug),
@@ -44,8 +45,8 @@ module FpgaVirtualConsole(
     
 
     // segments test
-    LedDecoder decoder_1(.hex(4'h2), .segments(segment1));
-    LedDecoder decoder_2(.hex(4'h3), .segments(segment2));
+    LedDecoder decoder_1(.hex(vt100_debug[19:16]), .segments(segment1));
+    LedDecoder decoder_2(.hex(vt100_debug[23:20]), .segments(segment2));
      
     
 	// keyboard test
@@ -56,8 +57,8 @@ module FpgaVirtualConsole(
 	
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit(
-        .clk,
-        .reset(rst),
+        .clk(clk100M),
+        .reset(rstPll),
         .ps2d(ps2Data),
         .ps2c(ps2Clk),
         .scan_code,
@@ -86,10 +87,10 @@ module FpgaVirtualConsole(
     end
 
     async_transmitter #(
-        .ClkFrequency(CLOCK_FREQUNCY),
+        .ClkFrequency(100_000_000),
         .Baud(BAUD_RATE)
     ) uartTransmitter(
-        .clk, // input
+        .clk(clk100M), // input
         .TxD_start(uartStartSend), // input
 		.TxD_data(uartDataToSend), // input
         .TxD(uartTx), // output
@@ -97,22 +98,26 @@ module FpgaVirtualConsole(
     );
 
     async_receiver #(
-        .ClkFrequency(CLOCK_FREQUNCY),
+        .ClkFrequency(100_000_000),
         .Baud(BAUD_RATE)
     ) uartReceiver(
-        .clk, // input
+        .clk(clk100M), // input
         .RxD(uartRx), // input
         .RxD_data_ready(uartReady), // output
         .RxD_data(uartDataReceived) // output
     );
 
+	logic [31:0] vt100_debug;
 
 	// VT100 parser module
 	VT100Parser vt100Parser(
-		.clk,
-		.rst(rst_n),
+		.clk(clk100M),
+		.rst(rstPll),
 		.dataReady(uartReady),
 		.data(uartDataReceived),
+		.ramRes(textRamResultParser),
+		.ramReq(textRamRequestParser),
+		.debug(vt100_debug)
 		// .cursorPosition(???),
 	);
 
@@ -139,11 +144,11 @@ module FpgaVirtualConsole(
     TextRamResult_t textRamResultParser, textRamResultRenderer;
 
     TextRam textRam(
-        .aclr_a(rst),
+        .aclr_a(rstPll),
         .aclr_b(rstPll),
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
-        .clock_a(clk),
+        .clock_a(clk100M),
         .clock_b(clk50M),
         .data_a(textRamRequestParser.data),
         .data_b(textRamRequestRenderer.data),
