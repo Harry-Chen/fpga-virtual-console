@@ -8,6 +8,18 @@
 `define TEXT_RAM_LINE_WIDTH (`TEXT_RAM_CHAR_WIDTH * `CONSOLE_COLUMNS)
 `define TEXT_RAM_DATA_WIDTH `TEXT_RAM_LINE_WIDTH
 
+/*
+  [K][N][B][U][  BG  ][  FG  ][ CS ][ ASCII ]
+   31 30 29 28      19      10     8        0
+ 
+  K: Blink
+  N: Negative   ( swaps bg and fg )
+  B: Bright     ( applies brightness/intensity flag to fg )
+  U: Underline
+  BG: Background color ( RGB333 )
+  FG: Foreground color ( RGB333 )
+  CS: Charset 
+ */
 `define CHAR_ASCII_OFFSET 0
 `define CHAR_ASCII_LENGTH 10
 `define CHAR_FOREGROUND_OFFSET (`CHAR_ASCII_OFFSET + `CHAR_ASCII_LENGTH)
@@ -104,7 +116,7 @@ typedef struct packed {
 
 // parser states
 typedef enum logic[7:0] {
-	START, ESC, CSI, PN1, PN2, DEL1,
+	START, ESC, CSI, PN1, PN2, DEL1, DEL2, PNS,
 	RBRACKET, LBRACKET, QUES, QPN1
 } CommandsState;
 
@@ -120,7 +132,9 @@ typedef enum logic[7:0] {
 	/* Charset */
 	SCS0, SCS1, SS2, SS3,
 	/* Mode */
-	SETMODE, RESETMODE
+	SETMODE, RESETMODE,
+	/* Graphics */
+	SGR0, SGR, LOAD_SGR, EMIT_SGR
 } CommandsType;
 
 // cursor status
@@ -142,7 +156,7 @@ typedef struct packed {
 
 typedef struct packed {
 	logic [7:0] Pchar;
-	logic [7:0] Pn1, Pn2;
+	logic [7:0] Pn1, Pn2, Pns;
 } Param_t;
 
 `endif

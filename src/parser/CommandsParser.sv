@@ -71,6 +71,11 @@ begin
 					status = PN2;
 				else  // non-digit
 					status = START;
+			DEL2:
+				if(`IS_DIGIT(data)) // digit
+					status = PNS;
+				else // non-digit
+					status = START;
 			PN1:
 				case(data)
 					`CASE_DIGIT: // digit
@@ -87,10 +92,21 @@ begin
 				endcase
 			PN2:
 				case(data)
-					`CASE_DIGIT: // digit
+					`CASE_DIGIT:  // digit
 						status = PN2;
+					8'h3b:        // ';'
+						status = DEL2;
 					8'h48, 8'h66: // 'H', 'f'
 						status = START;
+					default:
+						status = START;
+				endcase
+			PNS:
+				case(data)
+					`CASE_DIGIT: // digit
+						status = PNS;
+					8'h3b:       // ';'
+						status = DEL2;
 					default:
 						status = START;
 				endcase
@@ -142,37 +158,43 @@ begin
 						`SET_COMMAND_BLOCK(SS3)
 				endcase
 			CSI:
-				if(`IS_DIGIT(data)) // digit
-					param.Pn1 <= data - 8'h30;
-				else begin  // non-digit
-					case(data)
-						8'h48, 8'h66: // 'H', 'f'
-						begin
-							param.Pn1 <= 1;
-							param.Pn2 <= 1;
-							`SET_COMMAND(CUP)
-						end
-						8'h72:  // 'r'
-						begin
-							param.Pn1 <= 1;
-							param.Pn2 <= `CONSOLE_LINES;
-							`SET_COMMAND(DECSTBM)
-						end
-						8'h4a: // 'J'
-						begin
-							param.Pn1 <= 0;
-							`SET_COMMAND(ED)
-						end
-						8'h4b: // 'K'
-						begin
-							param.Pn1 <= 0;
-							`SET_COMMAND(EL)
-						end
-					endcase
-				end
+				case(data)
+					`CASE_DIGIT: // digit
+					begin
+						`SET_COMMAND(LOAD_SGR)
+						param.Pn1 <= data - 8'h30;
+					end
+					8'h48, 8'h66: // 'H', 'f'
+					begin
+						param.Pn1 <= 1;
+						param.Pn2 <= 1;
+						`SET_COMMAND(CUP)
+					end
+					8'h72:  // 'r'
+					begin
+						param.Pn1 <= 1;
+						param.Pn2 <= `CONSOLE_LINES;
+						`SET_COMMAND(DECSTBM)
+					end
+					8'h4a: // 'J'
+					begin
+						param.Pn1 <= 0;
+						`SET_COMMAND(ED)
+					end
+					8'h4b: // 'K'
+					begin
+						param.Pn1 <= 0;
+						`SET_COMMAND(EL)
+					end
+					8'h6d: // 'm'
+						`SET_COMMAND_BLOCK(SGR0)
+				endcase
 			DEL1:
 				if(`IS_DIGIT(data)) // digit
 					param.Pn2 <= data - 8'h30;
+			DEL2:
+				if(`IS_DIGIT(data)) // digit
+					param.Pns <= data - 8'h30;
 			QUES:
 				if(`IS_DIGIT(data)) // digit
 					param.Pn1 <= data - 8'h30;
@@ -197,7 +219,14 @@ begin
 					8'h4c: // 'L'
 						`SET_COMMAND_BLOCK(IL)
 					8'h4d: // 'M'
-						`SET_COMMAND_BLOCK(LD)
+						`SET_COMMAND_BLOCK(DL)
+					8'h6d: // 'm'
+						`SET_COMMAND_BLOCK(SGR)
+					8'h3b: // ';'
+					begin
+						param.Pns <= param.Pn1;
+						`SET_COMMAND_BLOCK(EMIT_SGR)
+					end
 				endcase
 			PN2:
 				case(data)
@@ -205,8 +234,24 @@ begin
 						param.Pn2 <= param.Pn2 * 8'd10 + (data - 8'h30);
 					8'h48, 8'h66: // 'H', 'f'
 						`SET_COMMAND_BLOCK(CUP)
-					8'h72:       // 'r'
+					8'h72: // 'r'
 						`SET_COMMAND_BLOCK(DECSTBM)
+					8'h6d: // 'm'
+						`SET_COMMAND_BLOCK(SGR)
+					8'h3b: // ';'
+					begin
+						param.Pns <= param.Pn2;
+						`SET_COMMAND_BLOCK(EMIT_SGR)
+					end
+				endcase
+			PNS:
+				case(data)
+					`CASE_DIGIT: // digit
+						param.Pns <= param.Pns * 8'd10 + (data - 8'h30);
+					8'h3b: // ';'
+						`SET_COMMAND_BLOCK(EMIT_SGR)
+					8'h6d: // 'm'
+						`SET_COMMAND_BLOCK(SGR)
 				endcase
 			QPN1:
 				case(data)
