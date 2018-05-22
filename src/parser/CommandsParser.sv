@@ -55,8 +55,8 @@ begin
 						status = LBRACKET;
 					8'h29: // '('
 						status = RBRACKET;
-					8'h23: // '#'
-						status = SHARP;
+					8'h23, 8'h2a, 8'h2b: // '#', '*', '+'
+						status = TRAP;
 					default: status = START;
 				endcase
 			CSI:
@@ -76,6 +76,11 @@ begin
 			DEL2:
 				if(`IS_DIGIT(data)) // digit
 					status = PNS;
+				else // non-digit
+					status = START;
+			QDEL1:
+				if(`IS_DIGIT(data)) // digit
+					status = QPNS;
 				else // non-digit
 					status = START;
 			PN1:
@@ -118,11 +123,24 @@ begin
 				else // non-digit
 					status = START;
 			QPN1:
-				if(`IS_DIGIT(data)) // digit
-					status = QPN1;
-				else // non-digit
-					status = START;
-			SHARP:
+				case(data)
+					`CASE_DIGIT: // digit
+						status = QPN1;
+					8'h3b:       // ';'
+						status = QDEL1;
+					default:
+						status = START;
+				endcase
+			QPNS:
+				case(data)
+					`CASE_DIGIT: // digit
+						status = QPNS;
+					8'h3b:       // ';'
+						status = QDEL1;
+					default:
+						status = START;
+				endcase
+			TRAP:
 				status = START;  // trapped and ignored
 			default:
 				status = START;
@@ -165,7 +183,7 @@ begin
 				case(data)
 					`CASE_DIGIT: // digit
 					begin
-						`SET_COMMAND(LOAD_SGR)
+						`SET_COMMAND(INIT_PN)
 						param.Pn1 <= data - 8'h30;
 					end
 					8'h48, 8'h66: // 'H', 'f'
@@ -199,9 +217,15 @@ begin
 			DEL2:
 				if(`IS_DIGIT(data)) // digit
 					param.Pns <= data - 8'h30;
+			QDEL1:
+				if(`IS_DIGIT(data)) // digit
+					param.Pns <= data - 8'h30;
 			QUES:
 				if(`IS_DIGIT(data)) // digit
+				begin
 					param.Pn1 <= data - 8'h30;
+					`SET_COMMAND(INIT_PN)
+				end
 			PN1:
 				case(data)
 					`CASE_DIGIT: // digit
@@ -229,7 +253,7 @@ begin
 					8'h3b: // ';'
 					begin
 						param.Pns <= param.Pn1;
-						`SET_COMMAND_BLOCK(EMIT_SGR)
+						`SET_COMMAND_BLOCK(EMIT_PN)
 					end
 				endcase
 			PN2:
@@ -245,7 +269,7 @@ begin
 					8'h3b: // ';'
 					begin
 						param.Pns <= param.Pn2;
-						`SET_COMMAND_BLOCK(EMIT_SGR)
+						`SET_COMMAND(EMIT_PN)
 					end
 				endcase
 			PNS:
@@ -253,7 +277,7 @@ begin
 					`CASE_DIGIT: // digit
 						param.Pns <= param.Pns * 8'd10 + (data - 8'h30);
 					8'h3b: // ';'
-						`SET_COMMAND_BLOCK(EMIT_SGR)
+						`SET_COMMAND_BLOCK(EMIT_PN)
 					8'h6d: // 'm'
 						`SET_COMMAND_BLOCK(SGR)
 				endcase
@@ -261,6 +285,22 @@ begin
 				case(data)
 					`CASE_DIGIT: // digit
 						param.Pn1 <= param.Pn1 * 8'd10 + (data - 8'h30);
+					8'h3b: // ';'
+					begin
+						param.Pns <= param.Pn1;
+						`SET_COMMAND(EMIT_PN)
+					end
+					8'h68: // 'h'
+						`SET_COMMAND_BLOCK(SETMODE)
+					8'h6c: // 'l'
+						`SET_COMMAND_BLOCK(RESETMODE)
+				endcase
+			QPNS:
+				case(data)
+					`CASE_DIGIT: // digit
+						param.Pns <= param.Pns * 8'd10 + (data - 8'h30);
+					8'h3b: // ';'
+						`SET_COMMAND_BLOCK(EMIT_PN)
 					8'h68: // 'h'
 						`SET_COMMAND_BLOCK(SETMODE)
 					8'h6c: // 'l'

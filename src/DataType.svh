@@ -117,7 +117,7 @@ typedef struct packed {
 // parser states
 typedef enum logic[7:0] {
 	START, ESC, CSI, PN1, PN2, DEL1, DEL2, PNS,
-	RBRACKET, LBRACKET, QUES, QPN1, SHARP
+	RBRACKET, LBRACKET, QUES, QPN1, QDEL1, QPNS, TRAP
 } CommandsState;
 
 typedef enum logic[7:0] {
@@ -134,7 +134,9 @@ typedef enum logic[7:0] {
 	/* Mode */
 	SETMODE, RESETMODE,
 	/* Graphics */
-	SGR0, SGR, LOAD_SGR, EMIT_SGR
+	SGR0, SGR,
+	/* Multi-param */
+	EMIT_PN, INIT_PN
 } CommandsType;
 
 // cursor status

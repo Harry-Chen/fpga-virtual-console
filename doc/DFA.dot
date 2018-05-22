@@ -2,6 +2,7 @@ digraph DFA {
 //	edge[fontname="FangSong"];  
 //	node[peripheries=2, fontname="FangSong"];  
 //	size="16, 16";  
+	rankdir=TB;
 	node[shape=circle];  
 
 	Start;
@@ -11,8 +12,8 @@ digraph DFA {
 	// ESC
 	Start->Esc[label=ESC];
 
-	// ESC #
-	Start->Sharp[label="#"];
+	// ESC #,*,+
+	Start->Trap[label="#,+,*"];
 
 	// ESC [
 	Esc->CSI[label="["];
@@ -45,9 +46,35 @@ digraph DFA {
 	// ESC [ ?
 	CSI->Ques[label="?"];
 
-	// ESC [? Pn
+	// ESC [ ? Pn
 	Ques->QPn1[label="digit"];
 	QPn1->QPn1[label="digit"];
+
+	// ESC [ ? Pn; Pns
+	QPn1->QDel1[label=";"];
+	QDel1->QPns[label="digit"];
+	QPns->QPns[label="digit"];
+	QPns->QDel1[label=";"];
+
+	/* Multi-parameter Signal */
+	subgraph cluster7 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Multi-parameter Signal";  
+		EMIT_PN[label="EMIT\nPN"];
+		INIT_PN[label="INIT\nPN"];
+	}
+
+	CSI->INIT_PN[label="digit"];
+	Pn1->EMIT_PN[label=";"];
+	Pn2->EMIT_PN[label=";"];
+	Pns->EMIT_PN[label=";"];
+
+	Ques->INIT_PN[label="digit"];
+	QPn1->EMIT_PN[label=";"];
+
+	// QPns->EMIT_PN
+	EMIT_PN->QPns[label=";", dir="back"];
 	
 	/* Format Commands */
 	subgraph cluster0 {
@@ -55,18 +82,25 @@ digraph DFA {
         color=blue;
         label="Format Commands";  
 		SGR; SGR0;
-		EMIT_SGR[label="EMIT\nSGR"];
-		LOAD_SGR[label="LOAD\nSGR"];
 	}
 
-	Pn1->EMIT_SGR[label=";"];
-	Pn2->EMIT_SGR[label=";"];
-	Pns->EMIT_SGR[label=";"];
 	Pn1->SGR[label="m"];
 	Pn2->SGR[label="m"];
 	Pns->SGR[label="m"];
 	CSI->SGR0[label="m"];
-	CSI->LOAD_SGR[label="digit"];
+
+	/* Charset Commands */
+	subgraph cluster3 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Charset Commands";  
+		SCS0; SCS1; SS2; SS3;
+	}
+
+	LBracket->SCS0[label="A,B,0,1,2"];
+	RBracket->SCS1[label="A,B,0,1,2"];
+	Esc->SS2[label=N];
+	Esc->SS3[label=0];
 
 	/* Cursor Movement Commands */
 	subgraph cluster1a {
@@ -128,19 +162,6 @@ digraph DFA {
 	Pn2->DECSTBM[label=r]; // Set top and bottom margins
 	CSI->DECSTBM[label=r];
 
-	/* Charset Commands */
-	subgraph cluster3 {
-		node[style=filled,shape=square];
-        color=blue;
-        label="Charset Commands";  
-		SCS0; SCS1; SS2; SS3;
-	}
-
-	LBracket->SCS0[label="A,B,0,1,2"];
-	RBracket->SCS1[label="A,B,0,1,2"];
-	Esc->SS2[label=N];
-	Esc->SS3[label=0];
-
 	/* Erasing */
 	subgraph cluster4 {
 		node[style=filled,shape=square];
@@ -176,6 +197,9 @@ digraph DFA {
 	}
 	QPn1->SETMODE[label=h]
 	QPn1->RESETMODE[label=l]
+
+	SETMODE->QPns[label=h,dir="back"];
+	RESETMODE->QPns[label=l,dir="back"];
 
 	subgraph cluster6 {
 		node[style=filled,shape=square];
