@@ -50,8 +50,6 @@ begin
 			input_ReadRam0:
 				status = input_ReadRam1;
 			input_ReadRam1:
-				status = input_LockData;
-			input_LockData:
 				status = input_WriteRam;
 			input_WriteRam:
 				status = Idle;
