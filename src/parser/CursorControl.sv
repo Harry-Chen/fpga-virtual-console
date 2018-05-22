@@ -7,12 +7,14 @@ module CursorControl(
 	input               commandReady,
 	input  CommandsType commandType,
 	input  Param_t      param,
-	input  Cursor_t     i_cursor,
+	input  Terminal_t   term,
 	output Cursor_t     o_cursor
 );
 
 wire [7:0] Pn, Pl, Pc;
+Cursor_t i_cursor;
 
+assign i_cursor = term.cursor;
 assign Pl = (param.Pn1 == 8'd0) ? 8'd0 : param.Pn1 - 8'd1;  // line number
 assign Pc = (param.Pn2 == 8'd0) ? 8'd0 : param.Pn2 - 8'd1;  // column number
 assign Pn = (param.Pn1 == 8'd0) ? 8'd1 : param.Pn1;         // number 

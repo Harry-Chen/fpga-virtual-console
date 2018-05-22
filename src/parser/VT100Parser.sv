@@ -41,8 +41,8 @@ CursorControl cursor_control(
 	.commandReady,
 	.commandType,
 	.param,
-	.o_cursor(term.cursor),
-	.i_cursor(term.cursor)
+	.term,
+	.o_cursor(term.cursor)
 );
 
 TextEdit text_edit(
