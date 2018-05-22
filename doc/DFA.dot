@@ -51,8 +51,9 @@ digraph DFA {
 		node[style=filled,shape=square];
         color=blue;
         label="Format Commands";  
-		SGR; 
+		SGR; SGR0;
 		EMIT_SGR[label="EMIT\nSGR"];
+		LOAD_SGR[label="LOAD\nSGR"];
 	}
 
 	Pn1->EMIT_SGR[label=";"];
@@ -61,7 +62,8 @@ digraph DFA {
 	Pn1->SGR[label="m"];
 	Pn2->SGR[label="m"];
 	Pns->SGR[label="m"];
-	CSI->SGR[label="m"];
+	CSI->SGR0[label="m"];
+	CSI->LOAD_SGR[label="digit"];
 
 	/* Cursor Movement Commands */
 	subgraph cluster1a {
