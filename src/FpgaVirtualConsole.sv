@@ -27,7 +27,7 @@ module FpgaVirtualConsole(
 
 
     // constants
-    parameter CLOCK_FREQUNCY = 48000000;   // default clock frequency is 48 MHz
+    parameter CLOCK_FREQUNCY = 48_000_000;   // default clock frequency is 48 MHz
     parameter BAUD_RATE = 115200;           // default baud rate of UART
 
 
@@ -47,6 +47,23 @@ module FpgaVirtualConsole(
     // segments test
     LedDecoder decoder_1(.hex(vt100_debug[19:16]), .segments(segment1));
     LedDecoder decoder_2(.hex(vt100_debug[23:20]), .segments(segment2));
+
+
+    // Phase-locked loops to generate clocks of different frequencies
+    logic clk25M, clk50M, clk100M, clk10M, clk20M;
+    logic rstPll, rstPll_n;
+    assign rstPll = ~rstPll_n;
+
+    TopPll topPll(
+        .areset(rst),
+        .inclk0(clk),
+        .c0(clk25M),
+        .c1(clk50M),
+        .c2(clk100M),
+        .c3(clk10M),
+        .c4(clk20M),
+        .locked(rstPll_n)
+    );
      
     
 	// keyboard test
@@ -81,10 +98,8 @@ module FpgaVirtualConsole(
     logic [7:0]   uartDataToSend;
     logic         uartBusy;
 
-    always_ff @(posedge clk) begin
-        uartStartSend <= scan_code_ready;
-        uartDataToSend <= ascii_code;
-    end
+    assign uartStartSend = scan_code_ready;
+    assign uartDataToSend = ascii_code;
 
     async_transmitter #(
         .ClkFrequency(100_000_000),
@@ -120,23 +135,6 @@ module FpgaVirtualConsole(
 		.debug(vt100_debug)
 		// .cursorPosition(???),
 	);
-
-
-    // Phase-locked loops to generate clocks of different frequencies
-    logic clk25M, clk50M, clk100M, clk10M, clk20M;
-    logic rstPll, rstPll_n;
-    assign rstPll = ~rstPll_n;
-
-    TopPll divider25M(
-        .areset(rst),
-        .inclk0(clk),
-        .c0(clk25M),
-        .c1(clk50M),
-        .c2(clk100M),
-        .c3(clk10M),
-        .c4(clk20M),
-        .locked(rstPll_n)
-    );
 
 
     // Text RAM module
