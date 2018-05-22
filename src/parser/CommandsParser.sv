@@ -55,6 +55,8 @@ begin
 						status = LBRACKET;
 					8'h29: // '('
 						status = RBRACKET;
+					8'h23: // '#'
+						status = SHARP;
 					default: status = START;
 				endcase
 			CSI:
@@ -120,6 +122,8 @@ begin
 					status = QPN1;
 				else // non-digit
 					status = START;
+			SHARP:
+				status = START;  // trapped and ignored
 			default:
 				status = START;
 		endcase

@@ -11,6 +11,9 @@ digraph DFA {
 	// ESC
 	Start->Esc[label=ESC];
 
+	// ESC #
+	Start->Sharp[label="#"];
+
 	// ESC [
 	Esc->CSI[label="["];
 

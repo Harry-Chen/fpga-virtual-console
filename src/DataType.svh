@@ -117,7 +117,7 @@ typedef struct packed {
 // parser states
 typedef enum logic[7:0] {
 	START, ESC, CSI, PN1, PN2, DEL1, DEL2, PNS,
-	RBRACKET, LBRACKET, QUES, QPN1
+	RBRACKET, LBRACKET, QUES, QPN1, SHARP
 } CommandsState;
 
 typedef enum logic[7:0] {
