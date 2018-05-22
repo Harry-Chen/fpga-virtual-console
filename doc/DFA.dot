@@ -1,13 +1,10 @@
 digraph DFA {   
 //	edge[fontname="FangSong"];  
 //	node[peripheries=2, fontname="FangSong"];  
-	size="16, 16";  
+//	size="16, 16";  
 	node[shape=circle];  
 
 	Start;
-
-	INPUT[style=filled];
-	Start->INPUT[label=others];
 
 	/* Basic structure */
 
@@ -28,14 +25,57 @@ digraph DFA {
 	Del1->Pn2[label="digit"];
 	Pn2->Pn2[label="digit"];
 
+	// ESC [ Pn; Pn; 
+	Pn2->Del2[label=";"];
+
+	// ESC [ Pn; Pn; Pns
+	Del2->Pns[label="digit"];
+	Pns->Pns[label="digit"];
+	Pns->Del2[label=";"];
+
+	// ESC (
+	Esc->LBracket[label="("];
+
+	// ESC )
+	Esc->RBracket[label=")"];
+
+	// ESC [ ?
+	CSI->Ques[label="?"];
+
+	// ESC [? Pn
+	Ques->QPn1[label="digit"];
+	QPn1->QPn1[label="digit"];
+	
+	/* Format Commands */
+	subgraph cluster0 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Format Commands";  
+		SGR; 
+		EMIT_SGR[label="EMIT\nSGR"];
+	}
+
+	Pn1->EMIT_SGR[label=";"];
+	Pn2->EMIT_SGR[label=";"];
+	Pns->EMIT_SGR[label=";"];
+	Pn1->SGR[label="m"];
+	Pn2->SGR[label="m"];
+	Pns->SGR[label="m"];
+	CSI->SGR[label="m"];
 
 	/* Cursor Movement Commands */
-	subgraph cluster1 {
-		node[style=filled];
+	subgraph cluster1a {
+		node[style=filled,shape=square];
         color=blue;
-        label="Cursor Commands";  
-		CUU; CUD; CUF; CUB; 
-		CUP; IND; NEL; RI;
+        label="Cursor Commands (Part A)";  
+		CUU; CUD; CUF; CUB; CUP;
+	}
+
+	subgraph cluster1b {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Cursor Commands (Part B)";  
+		IND; NEL; RI; DECSC; DECRC;
 	}
 
 	// ESC [ Pn A
@@ -64,4 +104,79 @@ digraph DFA {
 
 	// ESC M
 	Esc->RI[label=M];  // Reserve Index
+
+	// ESC 7
+	Esc->DECSC[label=7]; // Save cursor
+
+	// ESC 8
+	Esc->DECRC[label=8]; // Restore cursor
+
+	/* Scrolling */
+	subgraph cluster2 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Scrolling";  
+		DECSTBM;
+	}
+
+	// ESC [ Pn; Pn r
+	Pn2->DECSTBM[label=r]; // Set top and bottom margins
+	CSI->DECSTBM[label=r];
+
+	/* Charset Commands */
+	subgraph cluster3 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Charset Commands";  
+		SCS0; SCS1; SS2; SS3;
+	}
+
+	LBracket->SCS0[label="A,B,0,1,2"];
+	RBracket->SCS1[label="A,B,0,1,2"];
+	Esc->SS2[label=N];
+	Esc->SS3[label=0];
+
+	/* Erasing */
+	subgraph cluster4 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Erasing";  
+		EL; ED;
+	}
+
+	CSI->EL[label=K];  // Erase in line
+	Pn1->EL[label=K];
+
+	CSI->ED[label=J];  // Erase in display
+	Pn1->ED[label=J];
+
+	/* Editing */
+	subgraph cluster4 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Editing";  
+		DCH; IL; DL;
+	}
+
+	Pn1->DCH[label=P]; // Delete character
+	Pn1->IL[label=L];  // Insert line
+	Pn1->DL[label=M];  // Delete line
+
+	/* Set/Reset Mode Commands */
+	subgraph cluster5 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Set/Reset Mode";  
+		SETMODE[label="SET\nMODE"]; RESETMODE[label="RESET\nMODE"];
+	}
+	QPn1->SETMODE[label=h]
+	QPn1->RESETMODE[label=l]
+
+	subgraph cluster6 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Text Input";  
+		INPUT;
+	}
+	Start->INPUT[label=others];
 }         
