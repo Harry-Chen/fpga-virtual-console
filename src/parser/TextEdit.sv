@@ -55,15 +55,15 @@ begin
 end
 
 // setup write info
-logic [`TEXT_RAM_DATA_WIDTH - 1:0] next_line, cur_line;
+logic [`TEXT_RAM_LINE_WIDTH - 1:0] next_line, cur_line;
 genvar i;
 generate
 	for(i = 0; i < `CONSOLE_COLUMNS; i = i + 1)
 	begin: gen_for
-		logic [`TEXT_RAM_BIT_WIDTH - 1:0] next_char, cur_char;
-		assign cur_char = cur_line[`TEXT_RAM_BIT_WIDTH * i +: `TEXT_RAM_BIT_WIDTH];
+		logic [`TEXT_RAM_CHAR_WIDTH - 1:0] next_char, cur_char;
+		assign cur_char = cur_line[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH];
 
-		assign next_line[`TEXT_RAM_BIT_WIDTH * i +: `TEXT_RAM_BIT_WIDTH] = (i == col) ? data : cur_char;
+		assign next_line[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH] = (i == col) ? data : cur_char;
 	end
 endgenerate
 

@@ -47,8 +47,11 @@ module TextRenderer(
     assign subRendererBaseAddress = renderBaseAddress + line * `CONSOLE_COLUMNS * `PIXEL_PER_CHARACTER + column * `WIDTH_PER_CHARACTER;
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
 
-    assign currentCharGrid.foreground = {32{1'b1}};
-    assign currentCharGrid.background = {32{1'b0}};
+
+    //assign currentCharGrid.foreground = {32{1'b1}};
+    //assign currentCharGrid.background = {32{1'b0}};
+    assign currentCharGrid.foreground = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_FOREGROUND_OFFSET +: `CHAR_FOREGROUND_LENGTH];
+    assign currentCharGrid.background = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_BACKGROUND_OFFSET +: `CHAR_BACKGROUND_LENGTH];
     assign currentCharGrid.shape = fontRomData;
 
     logic fontReady;
@@ -123,7 +126,7 @@ module TextRenderer(
                     end else begin
                         nextColumn = column + 1;
                         nextLine = line;
-                        fontRomAddress = currentLine[16 * nextColumn +: 8];
+                        fontRomAddress = currentLine[`TEXT_RAM_CHAR_WIDTH * nextColumn +: 8];
                         fontReady = 1;
                         nextState = STATE_READ_FONT;
                     end

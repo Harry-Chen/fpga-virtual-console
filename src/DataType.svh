@@ -4,8 +4,16 @@
 
 // constants
 `define TEXT_RAM_ADDRESS_WIDTH 6
-`define TEXT_RAM_DATA_WIDTH 1280
-`define TEXT_RAM_BIT_WIDTH (`TEXT_RAM_DATA_WIDTH / `CONSOLE_COLUMNS)
+`define TEXT_RAM_CHAR_WIDTH 32
+`define TEXT_RAM_LINE_WIDTH (`TEXT_RAM_CHAR_WIDTH * `CONSOLE_COLUMNS)
+`define TEXT_RAM_DATA_WIDTH `TEXT_RAM_LINE_WIDTH
+
+`define CHAR_ASCII_OFFSET 0
+`define CHAR_ASCII_LENGTH 10
+`define CHAR_FOREGROUND_OFFSET (`CHAR_ASCII_OFFSET + `CHAR_ASCII_LENGTH)
+`define CHAR_FOREGROUND_LENGTH 9
+`define CHAR_BACKGROUND_OFFSET (`CHAR_FOREGROUND_OFFSET + `CHAR_FOREGROUND_LENGTH)
+`define CHAR_BACKGROUND_LENGTH 9
 
 `define FONT_ROM_ADDRESS_WIDTH 8
 `define FONT_ROM_DATA_WIDTH 96
@@ -83,8 +91,8 @@ typedef struct packed {
 
 // char on screen
 typedef struct packed {
-    VgaColor_t color;
     logic [$bits(SramData_t) - $bits(VgaColor_t) - 1:0] placeholder;
+    VgaColor_t color;
 } Pixel_t;
 
 typedef struct packed {
