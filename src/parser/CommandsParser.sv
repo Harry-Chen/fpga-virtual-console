@@ -51,13 +51,21 @@ begin
 						status = START;
 					8'h5b: // '['
 						status = CSI;
+					8'h28: // '('
+						status = LBRACKET;
+					8'h29: // '('
+						status = RBRACKET;
 					default: status = START;
 				endcase
 			CSI:
-				if(`IS_DIGIT(data)) // digit
-					status = PN1;
-				else // non-digit
-					status = START;
+				case(data)
+					`CASE_DIGIT:
+						status = PN1;
+					8'h3f:  // '?'
+						status = QUES;
+					default:
+						status = START;
+				endcase
 			DEL1:
 				if(`IS_DIGIT(data)) // digit
 					status = PN2;
@@ -86,6 +94,16 @@ begin
 					default:
 						status = START;
 				endcase
+			QUES:
+				if(`IS_DIGIT(data)) // digit
+					status = QPN1;
+				else // non-digit
+					status = START;
+			QPN1:
+				if(`IS_DIGIT(data)) // digit
+					status = QPN1;
+				else // non-digit
+					status = START;
 			default:
 				status = START;
 		endcase
@@ -114,6 +132,14 @@ begin
 						`SET_COMMAND_BLOCK(NEL)
 					8'h4d: // 'M'
 						`SET_COMMAND_BLOCK(RI)
+					8'h37: // '7'
+						`SET_COMMAND_BLOCK(DECSC)
+					8'h38: // '8'
+						`SET_COMMAND_BLOCK(DECRC)
+					8'h4e: // 'N'
+						`SET_COMMAND_BLOCK(SS2)
+					8'h30: // '0'
+						`SET_COMMAND_BLOCK(SS3)
 				endcase
 			CSI:
 				if(`IS_DIGIT(data)) // digit
@@ -126,11 +152,30 @@ begin
 							param.Pn2 <= 1;
 							`SET_COMMAND(CUP)
 						end
+						8'h72:  // 'r'
+						begin
+							param.Pn1 <= 1;
+							param.Pn2 <= `CONSOLE_LINES;
+							`SET_COMMAND(DECSTBM)
+						end
+						8'h4a: // 'J'
+						begin
+							param.Pn1 <= 0;
+							`SET_COMMAND(ED)
+						end
+						8'h4b: // 'K'
+						begin
+							param.Pn1 <= 0;
+							`SET_COMMAND(EL)
+						end
 					endcase
 				end
 			DEL1:
 				if(`IS_DIGIT(data)) // digit
 					param.Pn2 <= data - 8'h30;
+			QUES:
+				if(`IS_DIGIT(data)) // digit
+					param.Pn1 <= data - 8'h30;
 			PN1:
 				case(data)
 					`CASE_DIGIT: // digit
@@ -143,6 +188,16 @@ begin
 						`SET_COMMAND_BLOCK(CUF)
 					8'h44: // 'D'
 						`SET_COMMAND_BLOCK(CUB)
+					8'h4a: // 'J'
+						`SET_COMMAND_BLOCK(ED)
+					8'h4b: // 'K'
+						`SET_COMMAND_BLOCK(EL)
+					8'h50: // 'P'
+						`SET_COMMAND_BLOCK(DCH)
+					8'h4c: // 'L'
+						`SET_COMMAND_BLOCK(IL)
+					8'h4d: // 'M'
+						`SET_COMMAND_BLOCK(LD)
 				endcase
 			PN2:
 				case(data)
@@ -150,6 +205,33 @@ begin
 						param.Pn2 <= param.Pn2 * 8'd10 + (data - 8'h30);
 					8'h48, 8'h66: // 'H', 'f'
 						`SET_COMMAND_BLOCK(CUP)
+					8'h72:       // 'r'
+						`SET_COMMAND_BLOCK(DECSTBM)
+				endcase
+			QPN1:
+				case(data)
+					`CASE_DIGIT: // digit
+						param.Pn1 <= param.Pn1 * 8'd10 + (data - 8'h30);
+					8'h68: // 'h'
+						`SET_COMMAND_BLOCK(SETMODE)
+					8'h6c: // 'l'
+						`SET_COMMAND_BLOCK(RESETMODE)
+				endcase
+			LBRACKET:
+				case(data)
+					8'h41, 8'h42, 8'h30, 8'h31, 8'h32:
+					begin
+						param.Pn1 <= data;
+						`SET_COMMAND(SCS0)
+					end
+				endcase
+			RBRACKET:
+				case(data)
+					8'h41, 8'h42, 8'h30, 8'h31, 8'h32:
+					begin
+						param.Pn1 <= data;
+						`SET_COMMAND(SCS1)
+					end
 				endcase
 		endcase
 	end  // end if

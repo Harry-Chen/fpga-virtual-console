@@ -19,7 +19,7 @@ logic [15:0] data;
 logic [7:0] row, col;
 logic char_printable;
 
-assign char_printable = param.Pchar >= 8'h30;
+assign char_printable = param.Pchar >= 8'h20 || param.Pchar == 8'h00;
 
 always @(posedge clk or posedge rst)
 begin
