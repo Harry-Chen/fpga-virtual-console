@@ -208,4 +208,14 @@ digraph DFA {
 		INPUT;
 	}
 	Start->INPUT[label=others];
-}         
+
+	subgraph cluster8 {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Tab Stop";  
+		HTS; TBC;
+	}
+
+	Esc->HTS[label=H];
+	TBC->Pn1[label=g,dir="back"];
+}

@@ -178,6 +178,8 @@ begin
 						`SET_COMMAND_BLOCK(SS2)
 					8'h30: // '0'
 						`SET_COMMAND_BLOCK(SS3)
+					8'h48: // 'H'
+						`SET_COMMAND_BLOCK(HTS)
 				endcase
 			CSI:
 				case(data)
@@ -248,6 +250,8 @@ begin
 						`SET_COMMAND_BLOCK(IL)
 					8'h4d: // 'M'
 						`SET_COMMAND_BLOCK(DL)
+					8'h67: // 'g'
+						`SET_COMMAND_BLOCK(TBC)
 					8'h6d: // 'm'
 						`SET_COMMAND_BLOCK(SGR)
 					8'h3b: // ';'

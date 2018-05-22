@@ -136,7 +136,9 @@ typedef enum logic[7:0] {
 	/* Graphics */
 	SGR0, SGR,
 	/* Multi-param */
-	EMIT_PN, INIT_PN
+	EMIT_PN, INIT_PN,
+	/* Tab Stop */
+	TBC, HTS
 } CommandsType;
 
 // cursor status
