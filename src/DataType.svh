@@ -155,7 +155,7 @@ typedef struct packed {
 	logic [8:0] fg, bg;
 	logic [1:0] charset;
 	logic [7:0] scroll_top, scroll_bottom;
-	logic origin_mode, auto_wrap, replace_mode;
+	logic origin_mode, auto_wrap, replace_mode, line_feed;
 } Terminal_t;
 
 typedef struct packed {

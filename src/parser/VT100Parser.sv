@@ -42,7 +42,7 @@ CursorControl cursor_control(
 	.commandType,
 	.param,
 	.term,
-	.o_cursor(term.cursor)
+	.cursor(term.cursor)
 );
 
 TextEdit text_edit(
