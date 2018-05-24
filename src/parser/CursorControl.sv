@@ -1,15 +1,16 @@
 `include "DataType.svh"
 `define MIN(a, b) (((a) < (b)) ? (a) : (b))
 `define MAX(a, b) (((a) < (b)) ? (b) : (a))
-`define SET_SCROLLING(DIR, STEP) \
+`define SET_SCROLLING(sc_dir, sc_step) \
 	begin \
-		scrolling.dir = DIR;  \
-		scrolling.step = STEP; \
-		scrolling.top = term.scroll_top; \
-		scrolling.bottom = term.scroll_bottom; \
+		scrolling.dir <= sc_dir;  \
+		scrolling.step <= sc_step; \
+		scrolling.top <= term.mode.scroll_top; \
+		scrolling.bottom <= term.mode.scroll_bottom; \
+		scrollReady <= 1'b1; \
 	end
-`define SET_SCROLLING_UP(STEP) `SET_SCROLLING(1'b1, STEP)
-`define SET_SCROLLING_DOWN(STEP) `SET_SCROLLING(1'b0, STEP)
+`define SET_SCROLLING_UP(sc_step) `SET_SCROLLING(1'b0, sc_step)
+`define SET_SCROLLING_DOWN(sc_step) `SET_SCROLLING(1'b1, sc_step)
 
 module CursorControl(
 	input               clk, rst,
@@ -18,13 +19,17 @@ module CursorControl(
 	input  Param_t      param,
 	input  Terminal_t   term,
 	output Cursor_t     cursor,
-	output Scrolling_t  scrolling
+	output Scrolling_t  o_scrolling,
+	output              scrollReady,
+	output              debug
 );
+
+assign debug = scrollReady;
 
 // the origin of cursor is (origin_x, 0)
 wire [7:0] origin_x, cursor_x_max;
-assign origin_x     = term.origin_mode ? term.scroll_top : 8'd0;
-assign cursor_x_max = term.scroll_bottom - origin_x;
+assign origin_x     = term.mode.origin_mode ? term.mode.scroll_top : 8'd0;
+assign cursor_x_max = term.mode.scroll_bottom - origin_x;
 
 // i_cursor and o_cursor is relative to (origin_x, 0)
 Cursor_t i_cursor, o_cursor;
@@ -37,7 +42,7 @@ assign i_cursor.x = term.cursor.x - origin_x;
 wire [7:0] next_line;
 wire is_final_line;
 assign next_line = `MIN(i_cursor.x + 8'd1, cursor_x_max);
-assign is_final_line = (i_cursor.x + 8'd1 == cursor_x_max);
+assign is_final_line = (i_cursor.x == cursor_x_max);
 
 // Pn is used for single parameter commands
 // Pl, Pc is used for CUP command
@@ -46,12 +51,16 @@ assign Pl = (param.Pn1 == 8'd0) ? 8'd0 : param.Pn1 - 8'd1;  // line number
 assign Pc = (param.Pn2 == 8'd0) ? 8'd0 : param.Pn2 - 8'd1;  // column number
 assign Pn = (param.Pn1 == 8'd0) ? 8'd1 : param.Pn1;         // number 
 
-assign scrolling.reset = (
+Scrolling_t scrolling;
+assign o_scrolling.reset = (
 	commandReady &&
 	(commandType == CUP) &&
-	~term.origin_mode &&
-	(Pl > term.scroll_bottom)
+	~term.mode.origin_mode &&
+	(Pl > term.mode.scroll_bottom)
 );
+assign o_scrolling.dir = scrolling.dir;
+assign o_scrolling.step = scrolling.step;
+assign o_scrolling.bottom = scrolling.bottom;
 
 always @(posedge clk or posedge rst)
 begin
@@ -59,11 +68,13 @@ begin
 	begin
 		o_cursor.x <= 8'd0;
 		o_cursor.y <= 8'd0;
+	end else if(scrollReady) begin
+		scrollReady <= 1'b0;
 	end else if(commandReady) begin
 		unique case(commandType)
 			CUP:  // Cursor Position
 			begin
-				o_cursor.x <= `MIN(Pl, term.origin_mode ? cursor_x_max : `CONSOLE_LINES - 1);
+				o_cursor.x <= `MIN(Pl, term.mode.origin_mode ? cursor_x_max : `CONSOLE_LINES - 1);
 				o_cursor.y <= `MIN(Pc, `CONSOLE_COLUMNS - 1);
 			end
 			CUF:  // Cursor Forward 
@@ -100,7 +111,7 @@ begin
 				8'o12,8'o13,8'o14:  // LF, VT, FF
 				begin
 					o_cursor.x <= next_line;
-					o_cursor.y <= term.line_feed ? 8'd0 : o_cursor.y;
+					o_cursor.y <= term.mode.line_feed ? 8'd0 : o_cursor.y;
 				end
 				8'o15: // CR
 					o_cursor.y <= 8'd0;
@@ -113,7 +124,7 @@ begin
 					if(i_cursor.y + 8'd1 < `CONSOLE_COLUMNS)
 					begin
 						o_cursor.y <= i_cursor.y + 8'd1;
-					end else if(term.auto_wrap) begin
+					end else if(term.mode.auto_wrap) begin
 						o_cursor.x <= next_line;
 						o_cursor.y <= 8'd0;
 						if(is_final_line)

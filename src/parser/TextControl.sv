@@ -7,11 +7,13 @@ module TextControl(
 	input  Terminal_t       term,
 	input  Param_t          param,
 	input  Scrolling_t      i_scrolling,
+	input                   scrollReady,
 	input  TextRamResult_t  ramRes,
-	output TextRamRequest_t ramReq
+	output TextRamRequest_t ramReq,
+	output [4:0]            debug
 );
 
-enum {
+enum logic[4:0] {
 	Idle, 
 	input_ReadRam0,
 	input_ReadRam1,
@@ -23,6 +25,8 @@ enum {
 	reset_Start,
 	reset_WriteRam
 } status;
+
+assign debug = status;
 
 // attribute for input text
 wire [`TEXT_RAM_CHAR_WIDTH - 9:0] text_attribute;
@@ -36,7 +40,6 @@ logic [7:0] row, col;
 // scrolling scroll_step line between [scroll_top, scroll_bottom]
 Scrolling_t scrolling;
 logic [7:0] scrolling_row;
-logic scrolling_enabled;
 assign scrolling_enabled = scrolling.step != 8'd0;
 
 /* reset parameters */
@@ -49,21 +52,22 @@ always @(posedge clk or posedge rst)
 begin
 	if(rst)
 	begin
+		status = Idle;
 	end else begin
 		unique case(status)
 			Idle:
 			begin
-				if(commandReady)
+				if(scrollReady)
 				begin
+					status = scroll_Start;
+					scrolling = i_scrolling;
+				end else if(commandReady) begin
 					if(commandType == INPUT && char_printable)
 					begin
 						status = input_ReadRam0;
 						data = { text_attribute, param.Pchar };
 						row = term.cursor.x;
 						col = term.cursor.y;
-					end else if(scrolling_enabled) begin
-						status = scroll_Start;
-						scrolling = i_scrolling;
 					end else begin
 						status = Idle;
 					end
@@ -97,7 +101,7 @@ begin
 			reset_Start:
 				status = reset_WriteRam;
 			reset_WriteRam:
-				status = (reset_row == reset_bottom) ? Idle : reset_WriteRam;
+				status = (reset_row >= reset_bottom) ? Idle : reset_WriteRam;
 			default:
 				status = Idle;
 		endcase
@@ -121,7 +125,7 @@ endgenerate
 
 always @(posedge clk)
 begin
-	unique case(status)
+	case(status)
 		Idle:  // clear write request
 		begin
 			ramReq.wren <= 1'b0;
@@ -138,7 +142,7 @@ begin
 			ramReq.data <= next_line;
 		end
 		scroll_Start:
-			scrolling_row <= i_scrolling.dir ? i_scrolling.bottom : i_scrolling.top;
+			scrolling_row <= scrolling.dir ? scrolling.bottom : scrolling.top;
 		scroll_ReadRam0:
 		begin
 			ramReq.address <= scrolling.dir ? scrolling_row - scrolling.step : scrolling_row + scrolling.step;

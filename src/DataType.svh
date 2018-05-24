@@ -149,13 +149,21 @@ typedef struct packed {
 	logic [7:0] x, y;
 } Cursor_t;
 
-// terminal status
 typedef struct packed {
-	Cursor_t cursor;
 	logic [8:0] fg, bg;
+} Graphics_t;
+
+typedef struct packed {
 	logic [1:0] charset;
 	logic [7:0] scroll_top, scroll_bottom;
 	logic origin_mode, auto_wrap, replace_mode, line_feed;
+} TermMode_t;
+
+// terminal status
+typedef struct packed {
+	Cursor_t cursor;
+	Graphics_t graphics;
+	TermMode_t mode;
 } Terminal_t;
 
 typedef struct packed {
