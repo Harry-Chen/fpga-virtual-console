@@ -12,6 +12,7 @@ module VT100Parser(
 
 Terminal_t term;
 Param_t param;
+Scrolling_t scrolling;
 
 wire commandReady;
 CommandsType commandType;
@@ -42,47 +43,20 @@ CursorControl cursor_control(
 	.commandType,
 	.param,
 	.term,
-	.cursor(term.cursor)
+	.cursor(term.cursor),
+	.scrolling
 );
 
-TextEdit text_edit(
+TextControl text_control(
 	.clk,
 	.rst,
 	.commandReady,
 	.commandType,
 	.term,
 	.param,
+	.i_scrolling(scrolling),
 	.ramRes,
 	.ramReq
 );
-
-// test text input
-// logic [1:0] wrs = 0;
-// always @(posedge clk)
-// begin
-// 	case(wrs)
-// 		1: begin
-// 			ramReq.address <= term.cursor.x;
-// 			ramReq.wren <= 0;
-// 			wrs <= 2;
-// 		end
-// 		2: begin
-// 			ramReq.data <= {ramRes[`TEXT_RAM_DATA_WIDTH - 1 -: (`CONSOLE_COLUMNS - 1) * 16], 8'd0, param.Pchar};
-// 			ramReq.wren <= 1;
-// 			wrs <= 3;
-// 		end
-// 		3: begin
-// 			ramReq.wren <= 0;
-// 			wrs <= 0;
-// 		end
-// 	endcase
-// 	if(commandReady)
-// 	begin
-// 		if(commandType == INPUT)
-// 		begin
-// 			wrs <= 1;
-// 		end
-// 	end
-// end
 
 endmodule

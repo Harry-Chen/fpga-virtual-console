@@ -1,6 +1,6 @@
 `include "DataType.svh"
 
-module TextEdit(
+module TextControl(
 	input                   clk, rst,
 	input                   commandReady,
 	input  CommandsType     commandType,
