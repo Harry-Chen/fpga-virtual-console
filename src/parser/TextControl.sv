@@ -41,6 +41,10 @@ logic [7:0] row, col;
 Scrolling_t scrolling;
 logic [7:0] scrolling_row;
 
+// this is for the case that the cursor is at (CONSOLE_LINE - 1,
+// CONSOLE_COLUMN - 1), and requiring scrolling and input
+logic delay_scrolling;
+
 /* reset parameters */
 logic [7:0] reset_top, reset_bottom, reset_row;
 
@@ -97,11 +101,21 @@ begin
 				end
 			end
 			input_ReadRam0:
+			begin
 				status = input_ReadRam1;
+				// for the case that cursor is at the end of screen
+				if(scrollReady)
+				begin
+					delay_scrolling = 1'b1;
+					scrolling = i_scrolling;
+				end else begin
+					delay_scrolling = 1'b0;
+				end
+			end
 			input_ReadRam1:
 				status = input_WriteRam;
 			input_WriteRam:
-				status = Idle;
+				status = delay_scrolling ? scroll_Start : Idle;
 			scroll_Start:
 				status = scroll_ReadRam0;
 			scroll_ReadRam0:
