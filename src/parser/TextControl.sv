@@ -40,13 +40,15 @@ logic [7:0] row, col;
 // scrolling scroll_step line between [scroll_top, scroll_bottom]
 Scrolling_t scrolling;
 logic [7:0] scrolling_row;
-assign scrolling_enabled = scrolling.step != 8'd0;
 
 /* reset parameters */
 logic [7:0] reset_top, reset_bottom, reset_row;
 
+/* data preprocess */
+logic [7:0] char;
 logic char_printable;
-assign char_printable = param.Pchar >= 8'h20 || param.Pchar == 8'h00;
+assign char = (param.Pchar == 8'h0) ? 8'h20 : param.Pchar;
+assign char_printable = param.Pchar >= 8'h20;
 
 always @(posedge clk or posedge rst)
 begin
@@ -62,15 +64,36 @@ begin
 					status = scroll_Start;
 					scrolling = i_scrolling;
 				end else if(commandReady) begin
-					if(commandType == INPUT && char_printable)
+					case(commandType)
+					INPUT:
 					begin
-						status = input_ReadRam0;
-						data = { text_attribute, param.Pchar };
-						row = term.cursor.x;
-						col = term.cursor.y;
-					end else begin
-						status = Idle;
+						if(char_printable)
+						begin
+							status = input_ReadRam0;
+							data = { text_attribute, param.Pchar };
+							row = term.cursor.x;
+							col = term.cursor.y;
+						end
 					end
+					ED:
+					begin
+						status = reset_Start;
+						reset_top = (param.Pn1 == 8'h0) ? 8'h0 : term.cursor.x;
+						reset_bottom = (param.Pn1 == 8'h1) ? `CONSOLE_LINES - 1 : term.cursor.x;
+					end
+					IL, DL:
+					begin
+						// deletes/inserts Pn1 lines from the buffer
+						// starting with the row the cursor is on.
+						status = scroll_Start;
+						scrolling.top = term.cursor.x;
+						scrolling.bottom = `CONSOLE_LINES;
+						scrolling.step = param.Pn1;
+						scrolling.dir = (commandType == DL) ? 1'b0 : 1'b1;
+					end
+					default:
+						status = Idle;
+					endcase
 				end
 			end
 			input_ReadRam0:

@@ -190,24 +190,24 @@ begin
 					end
 					8'h48, 8'h66: // 'H', 'f'
 					begin
-						param.Pn1 <= 1;
-						param.Pn2 <= 1;
+						param.Pn1 <= 8'd1;
+						param.Pn2 <= 8'd1;
 						`SET_COMMAND(CUP)
 					end
 					8'h72:  // 'r'
 					begin
-						param.Pn1 <= 1;
+						param.Pn1 <= 8'd1;
 						param.Pn2 <= `CONSOLE_LINES;
 						`SET_COMMAND(DECSTBM)
 					end
 					8'h4a: // 'J'
 					begin
-						param.Pn1 <= 0;
+						param.Pn1 <= 8'd1;
 						`SET_COMMAND(ED)
 					end
 					8'h4b: // 'K'
 					begin
-						param.Pn1 <= 0;
+						param.Pn1 <= 8'd1;
 						`SET_COMMAND(EL)
 					end
 					8'h6d: // 'm'
