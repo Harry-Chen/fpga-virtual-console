@@ -1,6 +1,15 @@
 `include "DataType.svh"
 `define MIN(a, b) (((a) < (b)) ? (a) : (b))
 `define MAX(a, b) (((a) < (b)) ? (b) : (a))
+`define SET_SCROLLING(DIR, STEP) \
+	begin \
+		scrolling.dir = DIR;  \
+		scrolling.step = STEP; \
+		scrolling.top = term.scroll_top; \
+		scrolling.bottom = term.scroll_bottom; \
+	end
+`define SET_SCROLLING_UP(STEP) `SET_SCROLLING(1'b1, STEP)
+`define SET_SCROLLING_DOWN(STEP) `SET_SCROLLING(1'b0, STEP)
 
 module CursorControl(
 	input               clk, rst,
@@ -9,7 +18,7 @@ module CursorControl(
 	input  Param_t      param,
 	input  Terminal_t   term,
 	output Cursor_t     cursor,
-	output              resetScrollRegion
+	output Scrolling_t  scrolling
 );
 
 // the origin of cursor is (origin_x, 0)
@@ -26,7 +35,9 @@ assign i_cursor.x = term.cursor.x - origin_x;
 
 // some wires
 wire [7:0] next_line;
+wire is_final_line;
 assign next_line = `MIN(i_cursor.x + 8'd1, cursor_x_max);
+assign is_final_line = (i_cursor.x + 8'd1 == cursor_x_max);
 
 // Pn is used for single parameter commands
 // Pl, Pc is used for CUP command
@@ -35,7 +46,7 @@ assign Pl = (param.Pn1 == 8'd0) ? 8'd0 : param.Pn1 - 8'd1;  // line number
 assign Pc = (param.Pn2 == 8'd0) ? 8'd0 : param.Pn2 - 8'd1;  // column number
 assign Pn = (param.Pn1 == 8'd0) ? 8'd1 : param.Pn1;         // number 
 
-assign resetScrollRegion = (
+assign scrolling.reset = (
 	commandReady &&
 	(commandType == CUP) &&
 	~term.origin_mode &&
@@ -64,16 +75,25 @@ begin
 			CUU:  // Cursor Up
 				o_cursor.x <= (i_cursor.x < Pn) ? 8'd0 : i_cursor.x - Pn;
 			IND:  // Index
-				// TODO: SCROLL NEEDED
+			begin
 				o_cursor.x <= next_line;
+				if(is_final_line)
+					`SET_SCROLLING_UP(8'b1)
+			end
 			RI:  // Reverse Index
-				// TODO: SCROLL NEEDED
-				o_cursor.x <= (i_cursor.x == 8'd0) ? 8'd0 : i_cursor.x - 8'd1;
+				if(i_cursor.x == 8'd0)
+				begin
+					o_cursor.x <= 8'd0;
+					`SET_SCROLLING_DOWN(8'd1)
+				end else begin
+					o_cursor.x <= i_cursor.x - 8'd1;
+				end
 			NEL:  // Next Line
 			begin
-				// TODO: SCROLL NEEDED
 				o_cursor.x <= next_line;
 				o_cursor.y <= 8'd0;
+				if(is_final_line)
+					`SET_SCROLLING_UP(8'b1)
 			end
 			INPUT:
 				unique case(param.Pchar)
@@ -94,9 +114,10 @@ begin
 					begin
 						o_cursor.y <= i_cursor.y + 8'd1;
 					end else if(term.auto_wrap) begin
-						// TODO: SCROLL NEEDED
 						o_cursor.x <= next_line;
 						o_cursor.y <= 8'd0;
+						if(is_final_line)
+							`SET_SCROLLING_UP(8'b1)
 					end
 				endcase
 			default:

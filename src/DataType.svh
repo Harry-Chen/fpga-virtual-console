@@ -163,4 +163,10 @@ typedef struct packed {
 	logic [7:0] Pn1, Pn2, Pns;
 } Param_t;
 
+typedef struct packed {
+	logic reset;
+	logic dir;   // 0 - scroll down, 1 - scroll up
+	logic [7:0] step, top, bottom;
+} Scrolling_t;
+
 `endif
