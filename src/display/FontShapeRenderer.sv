@@ -12,7 +12,7 @@ module FontShapeRenderer(
 );
 
     typedef enum logic[1:0] {
-        STATE_INIT, STATE_WAIT_WRITE, STATE_LOAD_PIXEL, STATE_DONE
+        STATE_INIT, STATE_WAIT_WRITE, STATE_DONE
     } FontShapeRendererState_t;
 
     FontShapeRendererState_t currentState, nextState;
@@ -28,9 +28,8 @@ module FontShapeRenderer(
     assign nowBaseAddress = currentState == STATE_INIT ? baseAddress : baseAddressData;
 
     assign ramRequest.address = nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
-    // the bit order of the font shape is inverted
-    SramData_t pixelBuffer;
-    assign pixelBuffer = nowRenderingData.shape[`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x)] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
+	// the bit order of the font shape is inverted
+    assign ramRequest.dout = nowRenderingData.shape[`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x)] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
     assign ramRequest.oe_n = 1;
 
 
@@ -43,7 +42,6 @@ module FontShapeRenderer(
             x <= nextX;
             y <= nextY;
             currentState <= nextState;
-            ramRequest.dout <= pixelBuffer;
             if (currentState == STATE_INIT) begin
                 gridData <= grid;
                 baseAddressData <= baseAddress;
@@ -53,24 +51,18 @@ module FontShapeRenderer(
 
 
     always_comb begin
-        nextX = x;
-        nextY = y;
+        nextX = 0;
+        nextY = 0;
         nextState = STATE_INIT;
-        ramRequest.den = 0;
-        ramRequest.we_n = 1;
+        ramRequest.den = 1;
+        ramRequest.we_n = 0;
         unique case(currentState)
             STATE_INIT: begin
-                nextX = 0;
-                nextY = 0;
                 nextState = STATE_WAIT_WRITE;
             end
-
             STATE_WAIT_WRITE: begin
-                ramRequest.den = 1;
-                ramRequest.we_n = 0;
                 nextState = STATE_WAIT_WRITE;
                 if (ramResult.done) begin
-                    nextState = STATE_LOAD_PIXEL;
                     if (x == `WIDTH_PER_CHARACTER - 1) begin
                         nextX = 0;
                         if (y == `HEIGHT_PER_CHARACTER - 1) begin
@@ -83,14 +75,14 @@ module FontShapeRenderer(
                         nextX = x + 1;
                         nextY = y;
                     end
+                end else begin
+                    nextX = x;
+                    nextY = y;
                 end
             end
-
-            STATE_LOAD_PIXEL: begin
-                nextState = STATE_WAIT_WRITE;
-            end
-
             STATE_DONE: begin
+                ramRequest.den = 0;
+                ramRequest.we_n = 1;
                 if (fontReady) nextState = STATE_INIT;
                 else nextState = STATE_DONE;
             end

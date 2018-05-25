@@ -38,7 +38,6 @@ set_time_format -unit ns -decimal_places 3
 # Create Clock
 #**************************************************************
 
-create_clock -name {altera_reserved_tck} -period 100.000 -waveform { 0.000 50.000 } [get_ports {altera_reserved_tck}]
 create_clock -name {clk} -period 20.833 -waveform { 0.000 10.417 } [get_ports {clk}]
 
 
@@ -60,7 +59,7 @@ set out_clk50 "topPll|altpll_component|auto_generated|pll1|clk[1]"
 # Set Clock Uncertainty
 #**************************************************************
 
-derive_clock_uncertainty
+
 
 #**************************************************************
 # Set Input Delay

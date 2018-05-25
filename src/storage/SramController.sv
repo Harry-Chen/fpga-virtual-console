@@ -1,7 +1,7 @@
 `include "DataType.svh"
 
 module SramController (
-    input clk, // need 25 MHz clock
+    input clk, // need 50 MHz clock
     input rst,
     // directly connect to sram
     output  SramInterface_t sramInterface,
@@ -21,7 +21,6 @@ module SramController (
 
     SramData_t ramOut;
     SramData_t vgaData;
-    logic den;
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -29,40 +28,47 @@ module SramController (
             vgaData <= {`SRAM_DATA_WIDTH{1'b0}};
         end else begin
             currentState <= nextState;
-            if (currentState == STATE_VGA_READ) begin
-                vgaData <= sramData;
-            end
+
+            sramInterface.address <= {`SRAM_ADDRESS_WIDTH{1'b0}};
+            sramInterface.we_n <= 1;
+            sramInterface.oe_n <= 1;
+            vgaResult.done <= 0;
+            rendererResult.done <= 0;
+
+            unique case (currentState)
+
+                STATE_VGA_READ: begin
+                    vgaData <= sramData;
+                    sramInterface.address <= rendererRequest.address;
+                    sramInterface.oe_n <= rendererRequest.oe_n;
+                    sramInterface.we_n <= rendererRequest.we_n;
+                    sramData <= rendererRequest.den ? rendererRequest.dout : {`SRAM_DATA_WIDTH{1'bZ}};
+                    rendererResult.done <= 1;
+                end
+
+                STATE_RENDERER_WRITE: begin
+                    sramInterface.address <= vgaRequest.address;
+                    sramInterface.oe_n <= vgaRequest.oe_n;
+                    sramInterface.we_n <= vgaRequest.we_n;
+                    vgaResult.done <= 1;
+                end
+
+                STATE_INIT: begin
+                end
+                
+            endcase 
         end
     end
 
     assign vgaResult.din = currentState == STATE_VGA_READ ? sramData : vgaData;
-    assign sramData = den ? ramOut : {`SRAM_DATA_WIDTH{1'bZ}};
 
     always_comb begin
-        sramInterface.address = {`SRAM_ADDRESS_WIDTH{1'b0}};
-        sramInterface.we_n = 1;
-        sramInterface.oe_n = 1;
-        ramOut =  {`SRAM_DATA_WIDTH{1'b0}};
-        den = 0;
-        vgaResult.done = 0;
-        rendererResult.done = 0;
         unique case (currentState)
             STATE_INIT: nextState = STATE_VGA_READ;
             STATE_VGA_READ: begin
-                sramInterface.address = vgaRequest.address;
-                sramInterface.oe_n = vgaRequest.oe_n;
-                sramInterface.we_n = vgaRequest.we_n;
-                den = vgaRequest.den;
-                vgaResult.done = 1;
                 nextState = STATE_RENDERER_WRITE;
             end
             STATE_RENDERER_WRITE: begin
-                sramInterface.address = rendererRequest.address;
-                sramInterface.oe_n = rendererRequest.oe_n;
-                sramInterface.we_n = rendererRequest.we_n;
-                den = rendererRequest.den;
-                ramOut = rendererRequest.dout;
-                rendererResult.done = 1;
                 nextState =  STATE_VGA_READ;
             end
             default: nextState = STATE_INIT;
