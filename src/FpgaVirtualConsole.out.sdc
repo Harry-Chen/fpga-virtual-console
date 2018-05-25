@@ -59,7 +59,7 @@ set out_clk50 "topPll|altpll_component|auto_generated|pll1|clk[1]"
 # Set Clock Uncertainty
 #**************************************************************
 
-derive_clock_uncertainty
+
 
 #**************************************************************
 # Set Input Delay
