@@ -135,12 +135,12 @@ module FpgaVirtualConsole(
 
 	// VT100 parser module
 	VT100Parser vt100Parser(
-		.clk(clk100M),
-		.rst(rstPll),
-		.dataReady(uartReady),
-		.data(uartDataReceived),
-		.ramRes(textRamResultParser),
-		.ramReq(textRamRequestParser),
+        .clk(clk100M),
+        .rst(rstPll),
+        .dataReady(uartReady),
+        .data(uartDataReceived),
+        .ramRes(textRamResultParser),
+        .ramReq(textRamRequestParser),
         .debug(vt100_debug),
         .cursorInfo(cursor)
     );

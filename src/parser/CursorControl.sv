@@ -18,7 +18,7 @@ module CursorControl(
 	input  CommandsType commandType,
 	input  Param_t      param,
 	input  Terminal_t   term,
-	input				blinkStatus,
+	input               blinkStatus,
 	output Cursor_t     cursor,
 	output Scrolling_t  o_scrolling,
 	output              scrollReady,

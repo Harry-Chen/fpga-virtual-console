@@ -4,7 +4,7 @@ module VT100Parser(
 	input                   clk, rst,
 	input                   dataReady,
 	input  [7:0]            data,
-	input					blinkStatus,
+	input                   blinkStatus,
 	input  TextRamResult_t  ramRes,
 	output TextRamRequest_t ramReq,
 	output Cursor_t         cursorInfo,
