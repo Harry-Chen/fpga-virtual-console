@@ -97,7 +97,7 @@ set_clock_groups -asynchronous -group [get_clocks {altera_reserved_tck}]
 # Set False Path
 #**************************************************************
 
-
+set_false_path -to {*signaltap*}
 
 #**************************************************************
 # Set Multicycle Path
