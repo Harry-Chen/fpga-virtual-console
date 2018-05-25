@@ -2,8 +2,8 @@
 
 `define RESET_GRAPHICS(gs) \
 begin \
-	gs.fg        <= 9'b110_110_110; \
-	gs.bg        <= 9'b000_000_000; \
+	gs.fg        <= `DEFAULT_FG; \
+	gs.bg        <= `DEFAULT_BG; \
 	gs.underline <= 1'b0; \
 	gs.blink     <= 1'b0; \
 	gs.negative  <= 1'b0; \
@@ -148,12 +148,12 @@ begin
 						end
 					endcase
 				end
-				SGR_BG_R: new_graphics.bg[8:6] <= (Pns >> 5);
-				SGR_BG_G: new_graphics.bg[5:3] <= (Pns >> 5);
-				SGR_BG_B: new_graphics.bg[2:0] <= (Pns >> 5);
-				SGR_FG_R: new_graphics.fg[8:6] <= (Pns >> 5);
-				SGR_FG_G: new_graphics.fg[5:3] <= (Pns >> 5);
-				SGR_FG_B: new_graphics.fg[2:0] <= (Pns >> 5);
+				SGR_BG_R: new_graphics.bg[8:6] <= Pns[7:5];
+				SGR_BG_G: new_graphics.bg[5:3] <= Pns[7:5];
+				SGR_BG_B: new_graphics.bg[2:0] <= Pns[7:5];
+				SGR_FG_R: new_graphics.fg[8:6] <= Pns[7:5];
+				SGR_FG_G: new_graphics.fg[5:3] <= Pns[7:5];
+				SGR_FG_B: new_graphics.fg[2:0] <= Pns[7:5];
 				SGR_BG_TB: new_graphics.bg <= decoded_color;
 				SGR_FG_TB: new_graphics.fg <= decoded_color;
 			endcase  // end case status

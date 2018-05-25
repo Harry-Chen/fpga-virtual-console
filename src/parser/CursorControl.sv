@@ -61,8 +61,9 @@ assign o_scrolling.reset = (
 	~term.mode.origin_mode &&
 	(Pl > term.mode.scroll_bottom)
 );
-assign o_scrolling.dir = scrolling.dir;
-assign o_scrolling.step = scrolling.step;
+assign o_scrolling.dir    = scrolling.dir;
+assign o_scrolling.step   = scrolling.step;
+assign o_scrolling.top    = scrolling.top;
 assign o_scrolling.bottom = scrolling.bottom;
 
 // counter for cursor blinking status

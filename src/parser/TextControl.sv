@@ -1,4 +1,16 @@
 `include "DataType.svh"
+`define MODE_SETCHAR    1'b0
+`define MODE_REMOVELINE 1'b1
+
+typedef struct packed {
+	logic mode;  // 0 - SET_CHAR, 1 - REMOVE_LINE
+	logic [7:0] row;  // which line to be edit
+
+	logic [`TEXT_RAM_CHAR_WIDTH - 1:0] data;
+	logic [7:0] col_start, col_end;  // including the two end points
+
+	logic [7:0] col_now;
+} LineEdit_t;
 
 module TextControl(
 	input                   clk, rst,
@@ -17,6 +29,7 @@ enum logic[4:0] {
 	Idle, 
 	input_ReadRam0,
 	input_ReadRam1,
+	input_SetData,
 	input_WriteRam,
 	scroll_Start,
 	scroll_ReadRam0,
@@ -40,9 +53,8 @@ assign text_attribute = {
 	term.mode.charset
 };
 
-// single line edit parameters
-logic [`TEXT_RAM_CHAR_WIDTH - 1:0] data;
-logic [7:0] row, col;
+/* single line edit parameters */
+LineEdit_t line_edit;
 
 /* scrolling parameters */
 // scrolling scroll_step line between [scroll_top, scroll_bottom]
@@ -82,15 +94,34 @@ begin
 						if(char_printable)
 						begin
 							status = input_ReadRam0;
-							data = { text_attribute, char };
-							row = term.cursor.x;
-							col = term.cursor.y;
+							line_edit.mode      = `MODE_SETCHAR;  
+							line_edit.data      = { text_attribute, char };
+							line_edit.row       = term.cursor.x;
+							line_edit.col_start = term.cursor.y;
+							line_edit.col_end   = term.cursor.y;
 						end
+					end
+					EL:
+					begin
+						status = input_ReadRam0;
+						line_edit.mode      = `MODE_SETCHAR;  
+						line_edit.data      = `EMPTY_DATA;
+						line_edit.row       = term.cursor.x;
+						line_edit.col_start = (param.Pn1 == 8'h0) ? 8'h0 : term.cursor.y;
+						line_edit.col_end   = (param.Pn1 == 8'h1) ? `CONSOLE_COLUMNS - 1 : term.cursor.y;
+					end
+					DCH:
+					begin
+						status = input_ReadRam0;
+						line_edit.mode      = `MODE_REMOVELINE;  
+						line_edit.row       = term.cursor.x;
+						line_edit.col_start = term.cursor.x;
+						line_edit.col_end   = term.cursor.x + param.Pn1 - 8'd1;
 					end
 					ED:
 					begin
 						status = reset_Start;
-						reset_top = (param.Pn1 == 8'h0) ? 8'h0 : term.cursor.x;
+						reset_top    = (param.Pn1 == 8'h0) ? 8'h0 : term.cursor.x;
 						reset_bottom = (param.Pn1 == 8'h1) ? `CONSOLE_LINES - 1 : term.cursor.x;
 					end
 					IL, DL:
@@ -121,7 +152,9 @@ begin
 				end
 			end
 			input_ReadRam1:
-				status = input_WriteRam;
+				status = input_SetData;
+			input_SetData:
+				status = line_edit.col_now == `CONSOLE_COLUMNS - 1 ? input_WriteRam : input_SetData;
 			input_WriteRam:
 				status = delay_scrolling ? scroll_Start : Idle;
 			scroll_Start:
@@ -154,19 +187,13 @@ begin
 end
 
 // setup write info
-logic [`TEXT_RAM_LINE_WIDTH - 1:0] next_line, cur_line;
-assign cur_line = ramRes;
-genvar i;
-generate
-	for(i = 0; i < `CONSOLE_COLUMNS; i = i + 1)
-	begin: gen_for
-		logic [`TEXT_RAM_CHAR_WIDTH - 1:0] next_char, cur_char;
-		assign cur_char = cur_line[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH];
-		assign next_line[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH] = next_char;
-		
-		assign next_char = (i == col) ? data : cur_char;
-	end
-endgenerate
+logic [`TEXT_RAM_CHAR_WIDTH - 1:0] next_char;
+wire [`TEXT_RAM_LINE_WIDTH - 1:0] next_line;
+TextControlSetData text_control_set_data(
+	.line_edit,
+	.cur_line(ramRes),
+	.next_char
+);
 
 always @(posedge clk)
 begin
@@ -177,12 +204,21 @@ begin
 		end
 		input_ReadRam0:  // setup read request
 		begin
-			ramReq.address <= row;
+			ramReq.address <= line_edit.row;
 			ramReq.wren <= 1'b0;
+		end
+		input_ReadRam1:  // data arrived
+		begin
+			line_edit.col_now <= 8'd0;
+		end
+		input_SetData:
+		begin
+			line_edit.col_now <= line_edit.col_now + 8'd1;
+			next_line[`TEXT_RAM_CHAR_WIDTH * line_edit.col_now +: `TEXT_RAM_CHAR_WIDTH] <= next_char;
 		end
 		input_WriteRam:  // setup write request
 		begin
-			ramReq.address <= row;
+			ramReq.address <= line_edit.row;
 			ramReq.wren <= 1'b1;
 			ramReq.data <= next_line;
 		end
@@ -213,6 +249,39 @@ begin
 			reset_row <= reset_row + 8'b1;
 		end
 	endcase
+end
+
+endmodule
+
+module TextControlSetData(
+	input  LineEdit_t line_edit,
+	input  [`TEXT_RAM_LINE_WIDTH - 1:0] cur_line,
+	output [`TEXT_RAM_CHAR_WIDTH - 1:0] next_char
+);
+
+logic [7:0] col_len, col_now;
+assign col_len = line_edit.col_end - line_edit.col_start + 8'd1;
+assign col_now = line_edit.col_now;
+
+logic [`TEXT_RAM_CHAR_WIDTH - 1:0] cur_char;
+assign cur_char = cur_line[`TEXT_RAM_CHAR_WIDTH * col_now +: `TEXT_RAM_CHAR_WIDTH];
+
+logic [7:0] col_left, col_in;
+assign col_left  = col_now < line_edit.col_start;
+assign col_in    = line_edit.col_start <= col_now && col_now <= line_edit.col_end;
+
+always_comb
+begin
+	if(line_edit.mode == `MODE_SETCHAR)
+	begin
+		next_char = col_in ? line_edit.data : cur_char;
+	end else begin
+		if(col_left)
+			next_char = cur_char;
+		else if(col_in) 
+			next_char = cur_line[`TEXT_RAM_CHAR_WIDTH * (col_now + col_len) +: `TEXT_RAM_CHAR_WIDTH];
+		else next_char = `EMPTY_DATA;
+	end
 end
 
 endmodule
