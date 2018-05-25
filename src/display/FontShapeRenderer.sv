@@ -27,7 +27,8 @@ module FontShapeRenderer(
     assign nowRenderingData = currentState == STATE_INIT ? grid : gridData;
     assign nowBaseAddress = currentState == STATE_INIT ? baseAddress : baseAddressData;
 
-    assign ramRequest.address = nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
+    SramAddress_t addressBuffer;
+    assign addressBuffer = nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
     // the bit order of the font shape is inverted
     SramData_t pixelBuffer;
     assign pixelBuffer = nowRenderingData.shape[`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x)] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
@@ -44,6 +45,7 @@ module FontShapeRenderer(
             y <= nextY;
             currentState <= nextState;
             ramRequest.dout <= pixelBuffer;
+            ramRequest.address <= addressBuffer;
             if (currentState == STATE_INIT) begin
                 gridData <= grid;
                 baseAddressData <= baseAddress;
