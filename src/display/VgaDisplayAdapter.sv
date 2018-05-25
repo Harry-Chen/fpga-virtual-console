@@ -6,7 +6,7 @@ module VgaDisplayAdapter(
     input  SramAddress_t baseAddress,
     input  SramResult_t  ramResult,
     output SramRequest_t ramRequest,
-    output VgaSignal_t   vga,
+    output VgaSignal_t vga,
     output paintDone
     );
 
@@ -27,10 +27,16 @@ module VgaDisplayAdapter(
 
     logic outputEnable, nextEnable;
 
+    assign outputEnable = (hCounter < H_ACTIVE) & (vCounter < V_ACTIVE) & !rst;
+    assign nextEnable = (nextX < H_ACTIVE) & (nextY < V_ACTIVE) & !rst;
+
     assign ramRequest.den = 0;
+    assign ramRequest.address = baseAddress + nextY * H_ACTIVE + nextX;
     assign ramRequest.we_n = 1;
+    assign ramRequest.oe_n = ~nextEnable;
 	 
     assign vga.outClock = clk;
+    assign vga.de = outputEnable;
 
     always_comb begin
       if (hCounter == H_ALL - 1) begin
@@ -43,6 +49,10 @@ module VgaDisplayAdapter(
       end
     end
 
+    assign paintDone = nextY >= V_ACTIVE;
+    assign vga.hSync = ~((hCounter >= H_ACTIVE + H_FRONT_PORCH) & (hCounter < H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE));
+    assign vga.vSync = ~((vCounter >= V_ACTIVE + V_FRONT_PORCH) & (vCounter < V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE));
+
     Pixel_t pixel;
     assign vga.color = pixel.color;
 
@@ -51,23 +61,9 @@ module VgaDisplayAdapter(
         hCounter <= 0;
         vCounter <= 0;
         pixel <= 0;
-        outputEnable <= 0;
-        nextEnable <= 0;
       end else begin
         hCounter <= nextX;
         vCounter <= nextY;
-
-        outputEnable <= (hCounter < H_ACTIVE) & (vCounter < V_ACTIVE);
-        nextEnable <= (nextX < H_ACTIVE) & (nextY < V_ACTIVE);
-
-        ramRequest.oe_n <= ~nextEnable;
-        ramRequest.address <= baseAddress + nextY * H_ACTIVE + nextX - 1;
-
-        vga.hSync <= ~((hCounter >= H_ACTIVE + H_FRONT_PORCH) & (hCounter < H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE));
-        vga.vSync <= ~((vCounter >= V_ACTIVE + V_FRONT_PORCH) & (vCounter < V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE));
-        vga.de <= outputEnable;
-        paintDone <= nextY >= V_ACTIVE;
-
         if (nextEnable) begin
           if (ramResult.done) begin
             pixel <= Pixel_t'(ramResult.din);
