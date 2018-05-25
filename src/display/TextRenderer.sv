@@ -51,6 +51,9 @@ module TextRenderer(
     assign foregroundColor = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_FOREGROUND_OFFSET +: `CHAR_FOREGROUND_LENGTH];
     assign backgroundColor = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_BACKGROUND_OFFSET +: `CHAR_BACKGROUND_LENGTH];
 
+    CharEffect_t effect;
+    assign effect = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_EFFECT_OFFSET +: `CHAR_EFFECT_LENGTH];
+
     logic currentCursor;
     assign currentCursor = line == cursor.x & column == cursor.y & cursor.visible;
 
@@ -68,6 +71,7 @@ module TextRenderer(
         .baseAddress(subRendererBaseAddress),
         .ramRequest,
         .ramResult,
+        .effect,
         .currentCursor,
         .done(subRendererDone)
     );
