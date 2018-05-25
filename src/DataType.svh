@@ -1,13 +1,17 @@
-// user-defined data structured
+// user-defined data structures
 `ifndef DATATYPE_SV
 `define DATATYPE_SV
 
 // constants
+`define BAUD_RATE 115200
+`define BOARD_CLOCK_FRENQUENCY 48_000_000
+`define CURSOR_BLINKING_FREQ  2
+
 `define TEXT_RAM_ADDRESS_WIDTH 6
 `define TEXT_RAM_CHAR_WIDTH 32
 `define TEXT_RAM_LINE_WIDTH (`TEXT_RAM_CHAR_WIDTH * `CONSOLE_COLUMNS)
 `define TEXT_RAM_DATA_WIDTH `TEXT_RAM_LINE_WIDTH
-`define CURSOR_BLINKING_FREQ  2
+
 `define DEFAULT_BG 9'b000_000_000
 `define DEFAULT_FG 9'b110_110_110
 `define EMPTY_DATA { 4'b0, `DEFAULT_BG, `DEFAULT_FG, 2'b00, 8'h20 }

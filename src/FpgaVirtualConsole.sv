@@ -1,3 +1,4 @@
+`include "DataType.svh"
 module FpgaVirtualConsole(
     // general signals
     input                              clk,
@@ -19,17 +20,8 @@ module FpgaVirtualConsole(
     output reg [7:0]                   segment2,
     output reg [15:0]                  led
     );
-     
+
     
-    // reset signals
-    logic rst_n;
-    assign rst_n = ~rst;
-
-
-    // constants
-    parameter CLOCK_FREQUNCY = 48_000_000;   // default clock frequency is 48 MHz
-    parameter BAUD_RATE = 115200;           // default baud rate of UART
-
 
     // debug probe
     logic [127:0] debug;
@@ -51,8 +43,7 @@ module FpgaVirtualConsole(
 
     // Phase-locked loops to generate clocks of different frequencies
     logic clk25M, clk50M, clk100M, clk10M, clk20M;
-    logic rstPll, rstPll_n;
-    assign rstPll = ~rstPll_n;
+    logic rstPll;
 
     TopPll topPll(
         .areset(rst),
@@ -62,7 +53,7 @@ module FpgaVirtualConsole(
         .c2(clk100M),
         .c3(clk10M),
         .c4(clk20M),
-        .locked(rstPll_n)
+        .locked(~rstPll)
     );
      
     
@@ -70,7 +61,6 @@ module FpgaVirtualConsole(
 	logic [7:0] scan_code, ascii_code;
 	logic scan_code_ready;
 	logic letter_case;
-	
 	
 	// instantiate keyboard scan code circuit
 	Ps2StateMachine kb_unit(
@@ -92,8 +82,6 @@ module FpgaVirtualConsole(
 
 
     // UART module
-    logic         uartReady;
-    logic [7:0]   uartDataReceived;
     logic         uartStartSend;
     logic [7:0]   uartDataToSend;
     logic         uartBusy;
@@ -101,27 +89,32 @@ module FpgaVirtualConsole(
     assign uartStartSend = scan_code_ready;
     assign uartDataToSend = ascii_code;
 
-    async_transmitter #(
+    AsyncUartTransmitter #(
         .ClkFrequency(100_000_000),
-        .Baud(BAUD_RATE)
+        .Baud(`BAUD_RATE)
     ) uartTransmitter(
-        .clk(clk100M), // input
-        .TxD_start(uartStartSend), // input
-		.TxD_data(uartDataToSend), // input
-        .TxD(uartTx), // output
-        .TxD_busy(uartBusy) // output
+        .clk(clk100M),
+        .TxD_start(uartStartSend),
+		.TxD_data(uartDataToSend),
+        .TxD(uartTx),
+        .TxD_busy(uartBusy)
     );
 
-    async_receiver #(
+    logic         uartReady;
+    logic [7:0]   uartDataReceived;
+
+    AsyncUartReceiver #(
         .ClkFrequency(100_000_000),
-        .Baud(BAUD_RATE)
+        .Baud(`BAUD_RATE)
     ) uartReceiver(
-        .clk(clk100M), // input
-        .RxD(uartRx), // input
-        .RxD_data_ready(uartReady), // output
-        .RxD_data(uartDataReceived) // output
+        .clk(clk100M),
+        .RxD(uartRx),
+        .RxD_data_ready(uartReady),
+        .RxD_data(uartDataReceived)
     );
 
+
+	// VT100 parser module
     logic [70:0] vt100_debug;
     Cursor_t cursor;
     logic blinkStatus;
@@ -133,7 +126,6 @@ module FpgaVirtualConsole(
         .status(blinkStatus)
     );
 
-	// VT100 parser module
 	VT100Parser vt100Parser(
         .clk(clk100M),
         .rst(rstPll),
