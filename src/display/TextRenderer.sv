@@ -12,8 +12,6 @@ module TextRenderer(
     output  FontRomAddress_t fontRomAddress,
     input   FontRomData_t    fontRomData,
     output  [15:0]           nowRendering           
-    //input [15:0] cursorPosition,
-    //input [3:0]  cursorStates
 );
 
     // debug
@@ -48,8 +46,6 @@ module TextRenderer(
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
 
 
-    //assign currentCharGrid.foreground = {32{1'b1}};
-    //assign currentCharGrid.background = {32{1'b0}};
     assign currentCharGrid.foreground = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_FOREGROUND_OFFSET +: `CHAR_FOREGROUND_LENGTH];
     assign currentCharGrid.background = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_BACKGROUND_OFFSET +: `CHAR_BACKGROUND_LENGTH];
     assign currentCharGrid.shape = fontRomData;
