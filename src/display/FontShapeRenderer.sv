@@ -7,10 +7,11 @@ module FontShapeRenderer(
     input   CharGrid_t    grid,
     input   SramAddress_t baseAddress,
     input   SramResult_t  ramResult,
+    output  SramRequest_t ramRequest,
     input   CharEffect_t  effect,
     input                 currentCursor,
-    output  SramRequest_t ramRequest,
-    output  logic         done
+    input                 blinkStatus,
+    output                done
     );
 
     typedef enum logic[1:0] {
@@ -60,11 +61,15 @@ module FontShapeRenderer(
         if (effect.underline & y == (`HEIGHT_PER_CHARACTER - 1)) begin
             nowColor = foreground;
         end else begin
-            nowColor = pixelSolid ? foreground : background;
+            if (effect.blink & !blinkStatus) begin
+                nowColor = foreground;
+            end else begin
+                nowColor = pixelSolid ? foreground : background;
+            end
         end
     end
 
-    
+
     Pixel_t nowPixel;
     assign nowPixel.color = nowColor;
 

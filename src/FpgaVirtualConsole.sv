@@ -124,11 +124,17 @@ module FpgaVirtualConsole(
 
     logic [70:0] vt100_debug;
     Cursor_t cursor;
+    logic blinkStatus;
+
+    BlinkGenerator #(
+        .ClkFrequency(100_000_000)
+    ) blink(
+        .clk(clk100M),
+        .status(blinkStatus)
+    );
 
 	// VT100 parser module
-	VT100Parser #(
-        .ClkFrequency(100_000_000)
-    ) vt100Parser(
+	VT100Parser vt100Parser(
 		.clk(clk100M),
 		.rst(rstPll),
 		.dataReady(uartReady),
@@ -137,7 +143,7 @@ module FpgaVirtualConsole(
 		.ramReq(textRamRequestParser),
         .debug(vt100_debug),
         .cursorInfo(cursor)
-        );
+    );
 
 
     // Text RAM module
@@ -203,6 +209,7 @@ module FpgaVirtualConsole(
         .fontRomAddress,
         .fontRomData,
         .cursor,
+        .blinkStatus,
         .nowRendering(debug[31:16])
     );
 

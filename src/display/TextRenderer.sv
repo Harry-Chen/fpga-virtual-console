@@ -1,18 +1,20 @@
 `include "DataType.svh"
 
 module TextRenderer(
-    input   clk,
-    input   rst,
-    input   paintDone,
-    input   SramResult_t  ramResult,
-    output  SramRequest_t ramRequest,
-    output  SramAddress_t vgaBaseAddress,
-    output  TextRamRequest_t textRamRequest,
-    input   TextRamResult_t  textRamResult,
-    output  FontRomAddress_t fontRomAddress,
-    input   FontRomData_t    fontRomData,
-    output  [15:0]           nowRendering,
-    input   Cursor_t         cursor
+    input                       clk,
+    input                       rst,
+    input                       paintDone,
+    input   SramResult_t        ramResult,
+    output  SramRequest_t       ramRequest,
+    output  SramAddress_t       vgaBaseAddress,
+    output  TextRamRequest_t    textRamRequest,
+    input   TextRamResult_t     textRamResult,
+    output  FontRomAddress_t    fontRomAddress,
+    input   FontRomData_t       fontRomData,
+    input   Cursor_t            cursor,
+    input                       blinkStatus,
+    // debug
+    output  [15:0]              nowRendering               
 );
 
     // debug
@@ -27,9 +29,6 @@ module TextRenderer(
     logic [6:0] nextColumn, column;
     logic [5:0] nextLine, line;
 
-    // typedef enum logic[1:0]{
-    //     CURSOR_BLINKING, CURSOR_INVISIBLE, CURSOR_PERSISTENT
-    // } CursorState_t;
 
     logic subRendererDone;
     logic vgaRam;
@@ -73,6 +72,7 @@ module TextRenderer(
         .ramResult,
         .effect,
         .currentCursor,
+        .blinkStatus,
         .done(subRendererDone)
     );
 

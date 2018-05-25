@@ -787,33 +787,6 @@ set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[18] -
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[29] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_instance_assignment -name CONNECT_TO_SLD_NODE_ENTITY_PORT acq_clk -to "TopPll:topPll|c2" -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[17] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
-set_global_assignment -name SYSTEMVERILOG_FILE parser/Color256Decoder.sv
-set_global_assignment -name SYSTEMVERILOG_FILE parser/GraphicsControl.sv
-set_global_assignment -name SYSTEMVERILOG_FILE parser/ModeControl.sv
-set_global_assignment -name SYSTEMVERILOG_FILE parser/TextControl.sv
-set_global_assignment -name SYSTEMVERILOG_FILE parser/CursorControl.sv
-set_global_assignment -name SYSTEMVERILOG_FILE DataType.svh
-set_global_assignment -name MIF_FILE storage/TextRamDemo.mif
-set_global_assignment -name QIP_FILE debug/Probe/synthesis/Probe.qip
-set_global_assignment -name SDC_FILE FpgaVirtualConsole.out.sdc
-set_global_assignment -name SYSTEMVERILOG_FILE display/FontShapeRenderer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE parser/VT100Parser.sv
-set_global_assignment -name SYSTEMVERILOG_FILE parser/CommandsParser.sv
-set_global_assignment -name QIP_FILE storage/TextRam.qip
-set_global_assignment -name QIP_FILE storage/FontRom.qip
-set_global_assignment -name SYSTEMVERILOG_FILE storage/SramController.sv
-set_global_assignment -name MIF_FILE storage/FontShape.mif
-set_global_assignment -name SYSTEMVERILOG_FILE display/VgaDisplayAdapter.sv
-set_global_assignment -name SYSTEMVERILOG_FILE display/TextRenderer.sv
-set_global_assignment -name SYSTEMVERILOG_FILE FpgaVirtualConsole.sv
-set_global_assignment -name SYSTEMVERILOG_FILE utility/LedDecoder.sv
-set_global_assignment -name VERILOG_FILE keyboard/ScanCodeToAscii.v
-set_global_assignment -name VERILOG_FILE keyboard/Ps2StateMachine.v
-set_global_assignment -name VERILOG_FILE keyboard/Ps2Receiver.v
-set_global_assignment -name VERILOG_FILE utility/AsyncUartTransceiver.v
-set_global_assignment -name SIGNALTAP_FILE debug/stp.stp
-set_global_assignment -name QIP_FILE utility/TopPll.qip
-set_global_assignment -name SOURCE_FILE debug/spf.spf
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK=00000000000000000000000" -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_INVERSION_MASK_LENGTH=23" -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[2] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
@@ -1144,5 +1117,33 @@ set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[22] -
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[26] -to auto_signaltap_0|vcc -section_id auto_signaltap_0
 set_instance_assignment -name POST_FIT_CONNECT_TO_SLD_NODE_ENTITY_PORT crc[28] -to auto_signaltap_0|gnd -section_id auto_signaltap_0
 set_global_assignment -name SLD_NODE_PARAMETER_ASSIGNMENT "SLD_ADVANCED_TRIGGER_ENTITY=sld_reserved_FpgaVirtualConsole_auto_signaltap_0_1_3153," -section_id auto_signaltap_0
+set_global_assignment -name SYSTEMVERILOG_FILE utility/BlinkGenerator.sv
+set_global_assignment -name SYSTEMVERILOG_FILE parser/Color256Decoder.sv
+set_global_assignment -name SYSTEMVERILOG_FILE parser/GraphicsControl.sv
+set_global_assignment -name SYSTEMVERILOG_FILE parser/ModeControl.sv
+set_global_assignment -name SYSTEMVERILOG_FILE parser/TextControl.sv
+set_global_assignment -name SYSTEMVERILOG_FILE parser/CursorControl.sv
+set_global_assignment -name SYSTEMVERILOG_FILE DataType.svh
+set_global_assignment -name MIF_FILE storage/TextRamDemo.mif
+set_global_assignment -name QIP_FILE debug/Probe/synthesis/Probe.qip
+set_global_assignment -name SDC_FILE FpgaVirtualConsole.out.sdc
+set_global_assignment -name SYSTEMVERILOG_FILE display/FontShapeRenderer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE parser/VT100Parser.sv
+set_global_assignment -name SYSTEMVERILOG_FILE parser/CommandsParser.sv
+set_global_assignment -name QIP_FILE storage/TextRam.qip
+set_global_assignment -name QIP_FILE storage/FontRom.qip
+set_global_assignment -name SYSTEMVERILOG_FILE storage/SramController.sv
+set_global_assignment -name MIF_FILE storage/FontShape.mif
+set_global_assignment -name SYSTEMVERILOG_FILE display/VgaDisplayAdapter.sv
+set_global_assignment -name SYSTEMVERILOG_FILE display/TextRenderer.sv
+set_global_assignment -name SYSTEMVERILOG_FILE FpgaVirtualConsole.sv
+set_global_assignment -name SYSTEMVERILOG_FILE utility/LedDecoder.sv
+set_global_assignment -name VERILOG_FILE keyboard/ScanCodeToAscii.v
+set_global_assignment -name VERILOG_FILE keyboard/Ps2StateMachine.v
+set_global_assignment -name VERILOG_FILE keyboard/Ps2Receiver.v
+set_global_assignment -name VERILOG_FILE utility/AsyncUartTransceiver.v
+set_global_assignment -name SIGNALTAP_FILE debug/stp.stp
+set_global_assignment -name QIP_FILE utility/TopPll.qip
+set_global_assignment -name SOURCE_FILE debug/spf.spf
 set_global_assignment -name SLD_FILE db/stp_auto_stripped.stp
 set_instance_assignment -name PARTITION_HIERARCHY root_partition -to | -section_id Top
