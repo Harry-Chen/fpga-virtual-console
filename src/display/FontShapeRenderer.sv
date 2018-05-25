@@ -10,7 +10,7 @@ module FontShapeRenderer(
     input                 currentCursor,
     output  SramRequest_t ramRequest,
     output  logic         done
-);
+    );
 
     typedef enum logic[1:0] {
         STATE_INIT, STATE_WAIT_WRITE, STATE_LOAD_PIXEL, STATE_DONE
@@ -27,15 +27,11 @@ module FontShapeRenderer(
 
     assign nowRenderingData = currentState == STATE_INIT ? grid : gridData;
     assign nowBaseAddress = currentState == STATE_INIT ? baseAddress : baseAddressData;
-
-    SramAddress_t addressBuffer;
-    assign addressBuffer = nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
-    // the bit order of the font shape is inverted
-    SramData_t pixelBuffer;
-    assign pixelBuffer = currentCursor ? nowRenderingData.foreground :
-                                        nowRenderingData.shape[`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x)] == 1 ? nowRenderingData.foreground : nowRenderingData.background;
+    
     assign ramRequest.oe_n = 1;
 
+    // the bit order of the font shape is inverted
+    `define CURRENT_PIXEL (`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x))
 
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
@@ -46,8 +42,8 @@ module FontShapeRenderer(
             x <= nextX;
             y <= nextY;
             currentState <= nextState;
-            ramRequest.dout <= pixelBuffer;
-            ramRequest.address <= addressBuffer;
+            ramRequest.dout <= nowRenderingData.shape[`CURRENT_PIXEL] == ~currentCursor ? nowRenderingData.foreground : nowRenderingData.background;
+            ramRequest.address <= nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
             if (currentState == STATE_INIT) begin
                 gridData <= grid;
                 baseAddressData <= baseAddress;
