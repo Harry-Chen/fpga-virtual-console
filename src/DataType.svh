@@ -152,6 +152,7 @@ typedef struct packed {
 
 typedef struct packed {
 	logic [8:0] fg, bg;
+	logic blink, negative, bright, underline;
 } Graphics_t;
 
 typedef struct packed {

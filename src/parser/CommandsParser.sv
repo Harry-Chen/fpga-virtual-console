@@ -253,7 +253,10 @@ begin
 					8'h67: // 'g'
 						`SET_COMMAND_BLOCK(TBC)
 					8'h6d: // 'm'
+					begin
+						param.Pns <= param.Pn1;
 						`SET_COMMAND_BLOCK(SGR)
+					end
 					8'h3b: // ';'
 					begin
 						param.Pns <= param.Pn1;
@@ -269,7 +272,10 @@ begin
 					8'h72: // 'r'
 						`SET_COMMAND_BLOCK(DECSTBM)
 					8'h6d: // 'm'
+					begin
+						param.Pns <= param.Pn2;
 						`SET_COMMAND_BLOCK(SGR)
+					end
 					8'h3b: // ';'
 					begin
 						param.Pns <= param.Pn2;

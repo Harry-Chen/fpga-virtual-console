@@ -176,24 +176,26 @@
       <view_node expanded="true" index="105" node_type="probe" view_type="independent"/>
       <view_node expanded="true" index="104" node_type="probe" view_type="independent"/>
       <view_node expanded="true" index="103" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="102" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="101" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="100" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="99" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="98" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="97" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="96" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="95" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="94" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="93" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="92" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="91" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="90" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="89" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="88" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="87" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="86" node_type="probe" view_type="independent"/>
-      <view_node expanded="true" index="85" node_type="probe" view_type="independent"/>
+      <view_node expanded="false" group_name="probe[102..94]" index="0" lsb_to_msb="false" name="FG" node_type="probe" radix="bin" view_type="group_header"/>
+      <view_node expanded="true" index="102" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="101" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="100" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="99" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="98" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="97" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="96" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="95" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="94" node_type="probe" view_type="group_member"/>
+      <view_node expanded="false" group_name="probe[93..85]" index="0" lsb_to_msb="false" name="BG" node_type="probe" radix="bin" view_type="group_header"/>
+      <view_node expanded="true" index="93" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="92" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="91" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="90" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="89" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="88" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="87" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="86" node_type="probe" view_type="group_member"/>
+      <view_node expanded="true" index="85" node_type="probe" view_type="group_member"/>
       <view_node expanded="true" index="84" node_type="probe" view_type="independent"/>
       <view_node expanded="false" group_name="probe[83..76]" index="0" lsb_to_msb="false" name="ScrTop" node_type="probe" view_type="group_header"/>
       <view_node expanded="true" index="83" node_type="probe" view_type="group_member"/>

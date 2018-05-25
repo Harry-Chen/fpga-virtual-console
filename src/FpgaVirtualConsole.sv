@@ -36,7 +36,7 @@ module FpgaVirtualConsole(
 
     assign debug[7:0] = scan_code;
     assign debug[15:8] = ascii_code;
-	assign debug[84:32] = vt100_debug;
+	assign debug[102:32] = vt100_debug;
 
     Probe debugProbe(
 		.probe(debug),
@@ -122,7 +122,7 @@ module FpgaVirtualConsole(
         .RxD_data(uartDataReceived) // output
     );
 
-    logic [52:0] vt100_debug;
+    logic [70:0] vt100_debug;
     Cursor_t cursor;
 
 	// VT100 parser module

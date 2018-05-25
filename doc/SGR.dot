@@ -4,8 +4,6 @@ digraph DFA {
 //	size="16, 16";  
 	node[shape=circle];  
 
-	FG_RGB[label="FG\nRGB"];
-	BG_RGB[label="BG\nRGB"];
 	FG_TB[label="FG\nTB"];
 	BG_TB[label="BG\nTB"];
 
@@ -13,14 +11,14 @@ digraph DFA {
 	START->FG[label=38];
 	START->BG[label=48];
 
-	FG->FG_RGB[label=2];
-	FG_RGB->FG_R->FG_G->START;
+	FG->FG_R[label=2];
+	FG_R->FG_G->FG_B->START;
 
 	FG->FG_TB[label=5];
 	FG_TB->START;
 
-	BG->BG_RGB[label=2];
-	BG_RGB->BG_R->BG_G->START;
+	BG->BG_R[label=2];
+	BG_R->BG_G->BG_B->START;
 
 	BG->BG_TB[label=5];
 	BG_TB->START;

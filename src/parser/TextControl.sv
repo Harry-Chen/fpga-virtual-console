@@ -30,7 +30,15 @@ assign debug = status;
 
 // attribute for input text
 wire [`TEXT_RAM_CHAR_WIDTH - 9:0] text_attribute;
-assign text_attribute = { 4'b0, 9'b0, 9'h1ff, 2'b0 };
+assign text_attribute = {
+	term.graphics.blink,
+	term.graphics.negative,
+	term.graphics.bright,
+	term.graphics.underline,
+	term.graphics.bg,
+	term.graphics.fg,
+	term.mode.charset
+};
 
 // single line edit parameters
 logic [`TEXT_RAM_CHAR_WIDTH - 1:0] data;

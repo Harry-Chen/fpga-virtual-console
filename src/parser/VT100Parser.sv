@@ -7,7 +7,7 @@ module VT100Parser(
 	input  TextRamResult_t  ramRes,
 	output TextRamRequest_t ramReq,
 	output Cursor_t         cursorInfo,
-	output [52:0]           debug
+	output [70:0]           debug
 );
 
 parameter ClkFrequency = 100000000;
@@ -21,6 +21,8 @@ CommandsType commandType;
 
 assign cursorInfo = term.cursor;
 
+assign debug[70:62] = term.graphics.fg;
+assign debug[61:53] = term.graphics.bg;
 assign debug[51:44] = term.mode.scroll_top;
 assign debug[43:36] = term.mode.scroll_bottom;
 assign debug[31:24] = commandType;
@@ -76,6 +78,15 @@ ModeControl mode_control(
 	.commandType,
 	.param,
 	.termMode(term.mode)
+);
+
+GraphicsControl graphics_control(
+	.clk,
+	.rst,
+	.commandReady,
+	.commandType,
+	.Pns(param.Pns),
+	.graphics(term.graphics)
 );
 
 endmodule
