@@ -24,7 +24,10 @@ module CursorControl(
 	output              debug
 );
 
-assign debug = scrollReady;
+parameter ClkFrequency = 100000000;
+localparam BlinkClk = ClkFrequency / `CURSOR_BLINKING_FREQ;
+
+assign debug = cursor.visible;
 
 // the origin of cursor is (origin_x, 0)
 wire [7:0] origin_x, cursor_x_max;
@@ -61,6 +64,24 @@ assign o_scrolling.reset = (
 assign o_scrolling.dir = scrolling.dir;
 assign o_scrolling.step = scrolling.step;
 assign o_scrolling.bottom = scrolling.bottom;
+
+// counter for cursor blinking status
+logic blinking_status;
+logic [31:0] blinking_cnt;
+assign cursor.visible = 
+	term.mode.cursor_blinking ? 
+	  blinking_status & term.mode.cursor_visibility :
+	  term.mode.cursor_visibility;
+always @(posedge clk)
+begin
+	if(blinking_cnt == BlinkClk)
+	begin
+		blinking_cnt <= 32'd0;
+		blinking_status <= ~blinking_status;
+	end else begin
+		blinking_cnt <= blinking_cnt + 32'd1;
+	end
+end
 
 always @(posedge clk or posedge rst)
 begin
@@ -112,6 +133,8 @@ begin
 				begin
 					o_cursor.x <= next_line;
 					o_cursor.y <= term.mode.line_feed ? 8'd0 : o_cursor.y;
+					if(is_final_line)
+						`SET_SCROLLING_UP(8'b1)
 				end
 				8'o15: // CR
 					o_cursor.y <= 8'd0;

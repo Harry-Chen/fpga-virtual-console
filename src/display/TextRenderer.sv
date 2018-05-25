@@ -11,9 +11,8 @@ module TextRenderer(
     input   TextRamResult_t  textRamResult,
     output  FontRomAddress_t fontRomAddress,
     input   FontRomData_t    fontRomData,
-    output  [15:0]           nowRendering           
-    //input [15:0] cursorPosition,
-    //input [3:0]  cursorStates
+    output  [15:0]           nowRendering,
+    input   Cursor_t         cursor
 );
 
     // debug

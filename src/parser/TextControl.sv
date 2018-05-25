@@ -52,7 +52,7 @@ logic [7:0] reset_top, reset_bottom, reset_row;
 logic [7:0] char;
 logic char_printable;
 assign char = (param.Pchar == 8'h0) ? 8'h20 : param.Pchar;
-assign char_printable = param.Pchar >= 8'h20;
+assign char_printable = char >= 8'h20;
 
 always @(posedge clk or posedge rst)
 begin
@@ -74,7 +74,7 @@ begin
 						if(char_printable)
 						begin
 							status = input_ReadRam0;
-							data = { text_attribute, param.Pchar };
+							data = { text_attribute, char };
 							row = term.cursor.x;
 							col = term.cursor.y;
 						end

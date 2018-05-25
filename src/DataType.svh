@@ -7,6 +7,7 @@
 `define TEXT_RAM_CHAR_WIDTH 32
 `define TEXT_RAM_LINE_WIDTH (`TEXT_RAM_CHAR_WIDTH * `CONSOLE_COLUMNS)
 `define TEXT_RAM_DATA_WIDTH `TEXT_RAM_LINE_WIDTH
+`define CURSOR_BLINKING_FREQ  2
 
 /*
   [K][N][B][U][  BG  ][  FG  ][ CS ][ ASCII ]
@@ -157,6 +158,7 @@ typedef struct packed {
 	logic [1:0] charset;
 	logic [7:0] scroll_top, scroll_bottom;
 	logic origin_mode, auto_wrap, replace_mode, line_feed;
+	logic cursor_blinking, cursor_visibility;
 } TermMode_t;
 
 // terminal status

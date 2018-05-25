@@ -10,6 +10,8 @@ module VT100Parser(
 	output [52:0]           debug
 );
 
+parameter ClkFrequency = 100000000;
+
 Terminal_t term;
 Param_t param;
 Scrolling_t scrolling;
@@ -38,7 +40,9 @@ CommandsParser cmd_parser(
 );
 
 // dispatch commands
-CursorControl cursor_control(
+CursorControl #(
+	.ClkFrequency(ClkFrequency)
+) cursor_control(
 	.clk,
 	.rst,
 	.commandReady,
