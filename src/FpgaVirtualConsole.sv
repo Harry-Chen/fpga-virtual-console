@@ -122,19 +122,22 @@ module FpgaVirtualConsole(
         .RxD_data(uartDataReceived) // output
     );
 
-	logic [52:0] vt100_debug;
+    logic [52:0] vt100_debug;
+    Cursor_t cursor;
 
 	// VT100 parser module
-	VT100Parser vt100Parser(
+	VT100Parser #(
+        .ClkFrequency(100_000_000)
+    ) vt100Parser(
 		.clk(clk100M),
 		.rst(rstPll),
 		.dataReady(uartReady),
 		.data(uartDataReceived),
 		.ramRes(textRamResultParser),
 		.ramReq(textRamRequestParser),
-		.debug(vt100_debug)
-		// .cursorPosition(???),
-	);
+        .debug(vt100_debug),
+        .cursorInfo(cursor)
+        );
 
 
     // Text RAM module
@@ -199,6 +202,7 @@ module FpgaVirtualConsole(
         .textRamResult(textRamResultRenderer),
         .fontRomAddress,
         .fontRomData,
+        .cursor,
         .nowRendering(debug[31:16])
     );
 

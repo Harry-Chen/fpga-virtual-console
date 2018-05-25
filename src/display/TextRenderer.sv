@@ -47,8 +47,15 @@ module TextRenderer(
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
 
 
-    assign currentCharGrid.foreground = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_FOREGROUND_OFFSET +: `CHAR_FOREGROUND_LENGTH];
-    assign currentCharGrid.background = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_BACKGROUND_OFFSET +: `CHAR_BACKGROUND_LENGTH];
+    Pixel_t foregroundColor, backgroundColor;
+    assign foregroundColor = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_FOREGROUND_OFFSET +: `CHAR_FOREGROUND_LENGTH];
+    assign backgroundColor = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_BACKGROUND_OFFSET +: `CHAR_BACKGROUND_LENGTH];
+
+    logic currentCursor;
+    assign currentCursor = line == cursor.x & column == cursor.y & cursor.visible;
+
+    assign currentCharGrid.foreground = foregroundColor;
+    assign currentCharGrid.background = backgroundColor;
     assign currentCharGrid.shape = fontRomData;
 
     logic fontReady;
@@ -61,6 +68,7 @@ module TextRenderer(
         .baseAddress(subRendererBaseAddress),
         .ramRequest,
         .ramResult,
+        .currentCursor,
         .done(subRendererDone)
     );
 
