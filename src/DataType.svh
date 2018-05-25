@@ -145,6 +145,7 @@ typedef enum logic[7:0] {
 	TBC, HTS
 } CommandsType;
 
+
 // cursor status
 typedef struct packed {
 	// cursor visiblity
@@ -154,8 +155,12 @@ typedef struct packed {
 } Cursor_t;
 
 typedef struct packed {
-	logic [8:0] fg, bg;
 	logic blink, negative, bright, underline;
+} CharEffect_t;
+
+typedef struct packed {
+	logic [8:0] fg, bg;
+	CharEffect_t effect;
 } Graphics_t;
 
 typedef struct packed {

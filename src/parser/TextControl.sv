@@ -44,10 +44,7 @@ assign debug = status;
 // attribute for input text
 wire [`TEXT_RAM_CHAR_WIDTH - 9:0] text_attribute;
 assign text_attribute = {
-	term.graphics.blink,
-	term.graphics.negative,
-	term.graphics.bright,
-	term.graphics.underline,
+	term.graphics.effect,
 	term.graphics.bg,
 	term.graphics.fg,
 	term.mode.charset
@@ -197,7 +194,7 @@ TextControlSetData text_control_set_data(
 
 always @(posedge clk)
 begin
-	case(status)
+	unique case(status)
 		Idle:  // clear write request
 		begin
 			ramReq.wren <= 1'b0;

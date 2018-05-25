@@ -4,10 +4,10 @@
 begin \
 	gs.fg        <= `DEFAULT_FG; \
 	gs.bg        <= `DEFAULT_BG; \
-	gs.underline <= 1'b0; \
-	gs.blink     <= 1'b0; \
-	gs.negative  <= 1'b0; \
-	gs.bright    <= 1'b0; \
+	gs.effect.underline <= 1'b0; \
+	gs.effect.blink     <= 1'b0; \
+	gs.effect.negative  <= 1'b0; \
+	gs.effect.bright    <= 1'b0; \
 end
 
 module GraphicsControl(
@@ -108,14 +108,14 @@ begin
 				begin
 					case(Pns)
 						8'd0: `RESET_GRAPHICS(new_graphics)
-						8'd4:  new_graphics.underline <= 1'b1;
-						8'd24: new_graphics.underline <= 1'b0;
-						8'd7:  new_graphics.negative <= 1'b1;
-						8'd27: new_graphics.negative <= 1'b0;
-						8'd1:  new_graphics.bright <= 1'b1;
-						8'd22: new_graphics.bright <= 1'b0;
-						8'd5:  new_graphics.blink <= 1'b1;
-						8'd25: new_graphics.blink <= 1'b0;
+						8'd4:  new_graphics.effect.underline <= 1'b1;
+						8'd24: new_graphics.effect.underline <= 1'b0;
+						8'd7:  new_graphics.effect.negative <= 1'b1;
+						8'd27: new_graphics.effect.negative <= 1'b0;
+						8'd1:  new_graphics.effect.bright <= 1'b1;
+						8'd22: new_graphics.effect.bright <= 1'b0;
+						8'd5:  new_graphics.effect.blink <= 1'b1;
+						8'd25: new_graphics.effect.blink <= 1'b0;
 						8'd37: new_graphics.fg <= 9'b110_110_110;
 						8'd47: new_graphics.bg <= 9'b110_110_110;
 						// foreground ( white excluded )
