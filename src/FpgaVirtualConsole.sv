@@ -43,7 +43,8 @@ module FpgaVirtualConsole(
 
     // Phase-locked loops to generate clocks of different frequencies
     logic clk25M, clk50M, clk100M, clk10M, clk20M;
-    logic rstPll;
+    logic rstPll, rstPll_n;
+	assign rstPll = ~rstPll_n;
 
     TopPll topPll(
         .areset(rst),
@@ -53,7 +54,7 @@ module FpgaVirtualConsole(
         .c2(clk100M),
         .c3(clk10M),
         .c4(clk20M),
-        .locked(~rstPll)
+        .locked(rstPll_n)
     );
      
     

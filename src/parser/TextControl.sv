@@ -8,8 +8,6 @@ typedef struct packed {
 
 	logic [`TEXT_RAM_CHAR_WIDTH - 1:0] data;
 	logic [7:0] col_start, col_end;  // including the two end points
-
-	logic [7:0] col_now;
 } LineEdit_t;
 
 module TextControl(
@@ -113,8 +111,8 @@ begin
 						status = input_ReadRam0;
 						line_edit.mode      = `MODE_REMOVELINE;  
 						line_edit.row       = term.cursor.x;
-						line_edit.col_start = term.cursor.x;
-						line_edit.col_end   = term.cursor.x + param.Pn1 - 8'd1;
+						line_edit.col_start = term.cursor.y;
+						line_edit.col_end   = term.cursor.y + param.Pn1 - 8'd1;
 					end
 					ED:
 					begin
@@ -207,7 +205,6 @@ begin
 		begin
 			ramReq.address <= line_edit.row;
 			ramReq.wren <= 1'b0;
-			line_edit.col_now <= 8'd0;
 		end
 		input_SetData1:  // latch data
 			next_line <= line_edit.mode ? next_line_move : next_line_set;
