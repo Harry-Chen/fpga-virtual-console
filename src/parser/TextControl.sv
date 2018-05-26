@@ -126,7 +126,7 @@ begin
 						// starting with the row the cursor is on.
 						status = scroll_Start;
 						scrolling.top = term.cursor.x;
-						scrolling.bottom = `CONSOLE_LINES;
+						scrolling.bottom = `CONSOLE_LINES - 1;
 						scrolling.step = param.Pn1;
 						scrolling.dir = (commandType == DL) ? 1'b0 : 1'b1;
 					end
@@ -196,7 +196,7 @@ TextControlSetData text_control_set_data(
 
 always @(posedge clk)
 begin
-	unique case(status)
+	case(status)
 		Idle:  // clear write request
 		begin
 			ramReq.wren <= 1'b0;
