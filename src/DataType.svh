@@ -1,13 +1,17 @@
-// user-defined data structured
+// user-defined data structures
 `ifndef DATATYPE_SV
 `define DATATYPE_SV
 
 // constants
+`define BAUD_RATE 115200
+`define BOARD_CLOCK_FRENQUENCY 48_000_000
+`define CURSOR_BLINKING_FREQ  2
+
 `define TEXT_RAM_ADDRESS_WIDTH 6
 `define TEXT_RAM_CHAR_WIDTH 32
 `define TEXT_RAM_LINE_WIDTH (`TEXT_RAM_CHAR_WIDTH * `CONSOLE_COLUMNS)
 `define TEXT_RAM_DATA_WIDTH `TEXT_RAM_LINE_WIDTH
-`define CURSOR_BLINKING_FREQ  2
+
 `define DEFAULT_BG 9'b000_000_000
 `define DEFAULT_FG 9'b110_110_110
 `define EMPTY_DATA { 4'b0, `DEFAULT_BG, `DEFAULT_FG, 2'b00, 8'h20 }
@@ -30,6 +34,8 @@
 `define CHAR_FOREGROUND_LENGTH 9
 `define CHAR_BACKGROUND_OFFSET (`CHAR_FOREGROUND_OFFSET + `CHAR_FOREGROUND_LENGTH)
 `define CHAR_BACKGROUND_LENGTH 9
+`define CHAR_EFFECT_OFFSET (`CHAR_BACKGROUND_OFFSET + `CHAR_BACKGROUND_LENGTH)
+`define CHAR_EFFECT_LENGTH $bits(CharEffect_t)
 
 `define FONT_ROM_ADDRESS_WIDTH 8
 `define FONT_ROM_DATA_WIDTH 96
@@ -145,6 +151,7 @@ typedef enum logic[7:0] {
 	TBC, HTS
 } CommandsType;
 
+
 // cursor status
 typedef struct packed {
 	// cursor visiblity
@@ -154,8 +161,12 @@ typedef struct packed {
 } Cursor_t;
 
 typedef struct packed {
-	logic [8:0] fg, bg;
 	logic blink, negative, bright, underline;
+} CharEffect_t;
+
+typedef struct packed {
+	logic [8:0] fg, bg;
+	CharEffect_t effect;
 } Graphics_t;
 
 typedef struct packed {

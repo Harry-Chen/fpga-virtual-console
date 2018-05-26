@@ -7,9 +7,11 @@ module FontShapeRenderer(
     input   CharGrid_t    grid,
     input   SramAddress_t baseAddress,
     input   SramResult_t  ramResult,
-    input                 currentCursor,
     output  SramRequest_t ramRequest,
-    output  logic         done
+    input   CharEffect_t  effect,
+    input                 currentCursor,
+    input                 blinkStatus,
+    output                done
     );
 
     typedef enum logic[1:0] {
@@ -33,6 +35,45 @@ module FontShapeRenderer(
     // the bit order of the font shape is inverted
     `define CURRENT_PIXEL (`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x))
 
+    logic pixelSolid;
+    assign pixelSolid = nowRenderingData.shape[`CURRENT_PIXEL] == ~currentCursor;
+
+    VgaColor_t foreground, background;
+    VgaColor_t nowColor;
+
+    always_comb begin
+        if (effect.negative) begin
+            if (effect.bright) begin
+                background = nowRenderingData.foreground.color & 9'b100_100_100;
+            end else begin
+                background = nowRenderingData.foreground.color;
+            end
+            foreground = nowRenderingData.background.color;
+        end else begin
+            if (effect.bright) begin
+                foreground = nowRenderingData.foreground.color & 9'b100_100_100;
+            end else begin
+                foreground = nowRenderingData.foreground.color;
+           end
+           background = nowRenderingData.background.color;
+        end
+
+        if (effect.underline & y == (`HEIGHT_PER_CHARACTER - 1)) begin
+            nowColor = foreground;
+        end else begin
+            if (effect.blink & !blinkStatus) begin
+                nowColor = foreground;
+            end else begin
+                nowColor = pixelSolid ? foreground : background;
+            end
+        end
+    end
+
+
+    Pixel_t nowPixel;
+    assign nowPixel.color = nowColor;
+
+
     always_ff @(posedge clk or posedge rst) begin
         if (rst) begin
             x <= 0;
@@ -42,7 +83,7 @@ module FontShapeRenderer(
             x <= nextX;
             y <= nextY;
             currentState <= nextState;
-            ramRequest.dout <= nowRenderingData.shape[`CURRENT_PIXEL] == ~currentCursor ? nowRenderingData.foreground : nowRenderingData.background;
+            ramRequest.dout <= nowPixel;
             ramRequest.address <= nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
             if (currentState == STATE_INIT) begin
                 gridData <= grid;

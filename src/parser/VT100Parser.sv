@@ -4,13 +4,12 @@ module VT100Parser(
 	input                   clk, rst,
 	input                   dataReady,
 	input  [7:0]            data,
+	input                   blinkStatus,
 	input  TextRamResult_t  ramRes,
 	output TextRamRequest_t ramReq,
 	output Cursor_t         cursorInfo,
 	output [70:0]           debug
 );
-
-parameter ClkFrequency = 100000000;
 
 Terminal_t term;
 Param_t param;
@@ -42,15 +41,14 @@ CommandsParser cmd_parser(
 );
 
 // dispatch commands
-CursorControl #(
-	.ClkFrequency(ClkFrequency)
-) cursor_control(
+CursorControl cursor_control(
 	.clk,
 	.rst,
 	.commandReady,
 	.commandType,
 	.param,
 	.term,
+	.blinkStatus,
 	.cursor(term.cursor),
 	.o_scrolling(scrolling),
 	.scrollReady,

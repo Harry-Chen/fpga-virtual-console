@@ -18,14 +18,12 @@ module CursorControl(
 	input  CommandsType commandType,
 	input  Param_t      param,
 	input  Terminal_t   term,
+	input               blinkStatus,
 	output Cursor_t     cursor,
 	output Scrolling_t  o_scrolling,
 	output              scrollReady,
 	output              debug
 );
-
-parameter ClkFrequency = 100000000;
-localparam BlinkClk = ClkFrequency / `CURSOR_BLINKING_FREQ;
 
 assign debug = cursor.visible;
 
@@ -67,22 +65,10 @@ assign o_scrolling.top    = scrolling.top;
 assign o_scrolling.bottom = scrolling.bottom;
 
 // counter for cursor blinking status
-logic blinking_status;
-logic [31:0] blinking_cnt;
 assign cursor.visible = 
 	term.mode.cursor_blinking ? 
-	  blinking_status & term.mode.cursor_visibility :
+	  blinkStatus & term.mode.cursor_visibility :
 	  term.mode.cursor_visibility;
-always @(posedge clk)
-begin
-	if(blinking_cnt == BlinkClk)
-	begin
-		blinking_cnt <= 32'd0;
-		blinking_status <= ~blinking_status;
-	end else begin
-		blinking_cnt <= blinking_cnt + 32'd1;
-	end
-end
 
 always @(posedge clk or posedge rst)
 begin

@@ -10,7 +10,7 @@
                        // and RX receives one bit per clock cycle (for fast simulations)
 
 ////////////////////////////////////////////////////////
-module async_transmitter(
+module AsyncUartTransmitter(
 	input clk,
 	input TxD_start,
 	input [7:0] TxD_data,
@@ -71,7 +71,7 @@ endmodule
 
 
 ////////////////////////////////////////////////////////
-module async_receiver(
+module AsyncUartReceiver(
 	input clk,
 	input RxD,
 	output reg RxD_data_ready = 0,
