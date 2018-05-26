@@ -44,14 +44,14 @@ module FontShapeRenderer(
     always_comb begin
         if (effect.negative) begin
             if (effect.bright) begin
-                background = nowRenderingData.foreground.color & 9'b100_100_100;
+                background = nowRenderingData.foreground.color | 9'b100_100_100;
             end else begin
                 background = nowRenderingData.foreground.color;
             end
             foreground = nowRenderingData.background.color;
         end else begin
             if (effect.bright) begin
-                foreground = nowRenderingData.foreground.color & 9'b100_100_100;
+                foreground = nowRenderingData.foreground.color | 9'b100_100_100;
             end else begin
                 foreground = nowRenderingData.foreground.color;
            end
@@ -62,7 +62,7 @@ module FontShapeRenderer(
             nowColor = foreground;
         end else begin
             if (effect.blink & !blinkStatus) begin
-                nowColor = foreground;
+                nowColor = background;
             end else begin
                 nowColor = pixelSolid ? foreground : background;
             end
