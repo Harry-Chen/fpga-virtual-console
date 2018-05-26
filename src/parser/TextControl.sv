@@ -1,13 +1,14 @@
 `include "DataType.svh"
 `define MODE_SETCHAR    1'b0
-`define MODE_REMOVELINE 1'b1
+`define MODE_MOVELINE 1'b1
 
 typedef struct packed {
-	logic mode;  // 0 - SET_CHAR, 1 - REMOVE_LINE
+	logic mode;  // 0 - SET_CHAR, 1 - MOVE_LINE
 	logic [7:0] row;  // which line to be edit
 
 	logic [`TEXT_RAM_CHAR_WIDTH - 1:0] data;
 	logic [7:0] col_start, col_end;  // including the two end points
+	logic [7:0] col_now, col_read_addr;
 } LineEdit_t;
 
 module TextControl(
@@ -27,8 +28,8 @@ enum logic[4:0] {
 	Idle, 
 	input_ReadRam0,
 	input_ReadRam1,
-	input_SetData0,
-	input_SetData1,
+	input_CycRead,
+	input_CycSet,
 	input_WriteRam,
 	scroll_Start,
 	scroll_ReadRam0,
@@ -109,7 +110,7 @@ begin
 					DCH:
 					begin
 						status = input_ReadRam0;
-						line_edit.mode      = `MODE_REMOVELINE;  
+						line_edit.mode      = `MODE_MOVELINE;  
 						line_edit.row       = term.cursor.x;
 						line_edit.col_start = term.cursor.y;
 						line_edit.col_end   = term.cursor.y + param.Pn1 - 8'd1;
@@ -148,11 +149,11 @@ begin
 				end
 			end
 			input_ReadRam1:
-				status = input_SetData0;
-			input_SetData0:
-				status = input_SetData1;
-			input_SetData1:
-				status = input_WriteRam;
+				status = line_edit.mode == `MODE_MOVELINE ? input_CycRead : input_WriteRam;
+			input_CycRead:
+				status = input_CycSet;
+			input_CycSet:
+				status = line_edit.col_now == `CONSOLE_COLUMNS - 1 ? input_WriteRam : input_CycRead;
 			input_WriteRam:
 				status = delay_scrolling ? scroll_Start : Idle;
 			scroll_Start:
@@ -185,13 +186,16 @@ begin
 end
 
 // setup write info
-logic [`TEXT_RAM_LINE_WIDTH - 1:0] next_line, next_line_set, next_line_move;
+logic [`TEXT_RAM_LINE_WIDTH - 1:0] next_line_set, next_line_move;
+logic [`TEXT_RAM_LINE_WIDTH + `TEXT_RAM_CHAR_WIDTH - 1:0] cur_line;
+logic [`TEXT_RAM_CHAR_WIDTH - 1:0] char_reg;
+logic [7:0] col_read_addr;
 
 TextControlSetData text_control_set_data(
 	.line_edit,
 	.cur_line(ramRes),
 	.next_line_set,
-	.next_line_move
+	.col_read_addr
 );
 
 always @(posedge clk)
@@ -205,14 +209,25 @@ begin
 		begin
 			ramReq.address <= line_edit.row;
 			ramReq.wren <= 1'b0;
+			line_edit.col_now <= 8'd0;
 		end
-		input_SetData1:  // latch data
-			next_line <= line_edit.mode ? next_line_move : next_line_set;
+		input_ReadRam1:
+			// for MODE_MOVELINE, latch line data
+			cur_line <= { `EMPTY_DATA, ramRes };
+		input_CycRead:
+			// for MODE_MOVELINE, latch char data
+			char_reg <= cur_line[`TEXT_RAM_CHAR_WIDTH * line_edit.col_read_addr +: `TEXT_RAM_CHAR_WIDTH];
+		input_CycSet:     // for MODE_MOVELINE, store char data
+		begin
+			line_edit.col_now  <= line_edit.col_now + 8'd1;
+			line_edit.col_read_addr <= col_read_addr;
+			next_line_move[`TEXT_RAM_CHAR_WIDTH * line_edit.col_now +: `TEXT_RAM_CHAR_WIDTH] <= char_reg;
+		end
 		input_WriteRam:  // setup write request
 		begin
 			ramReq.address <= line_edit.row;
 			ramReq.wren <= 1'b1;
-			ramReq.data <= next_line;
+			ramReq.data <= line_edit.mode == `MODE_SETCHAR ? next_line_set : next_line_move;
 		end
 		scroll_Start:
 			scrolling_row <= scrolling.dir ? scrolling.bottom : scrolling.top;
@@ -249,27 +264,25 @@ module TextControlSetData(
 	input  LineEdit_t line_edit,
 	input  [`TEXT_RAM_LINE_WIDTH - 1:0] cur_line,
 	output [`TEXT_RAM_LINE_WIDTH - 1:0] next_line_set,
-	output [`TEXT_RAM_LINE_WIDTH - 1:0] next_line_move
+	output [7:0] col_read_addr
 );
 
-logic [5:0] step;
-assign step = line_edit.col_end - line_edit.col_start + 1;
+logic [7:0] step;
+assign step = line_edit.col_end - line_edit.col_start + 8'd1;
+assign col_read_addr
+	= (line_edit.col_now < line_edit.col_start) ? line_edit.col_now
+	: (line_edit.col_now <= line_edit.col_end) ? step
+	: `CONSOLE_COLUMNS;  // this place is `EMPTY_DATA
 
 genvar i;
-
 generate
 	for(i = 0; i < `CONSOLE_COLUMNS; i = i + 1)
 	begin: next_line_set_loop
-		logic col_in, col_left;
+		logic col_in;
 		assign col_in = line_edit.col_start <= i && i <= line_edit.col_end;
-		assign col_left0 = i < line_edit.col_start;
-		assign col_left1 = i <= line_edit.col_end;
 
 		assign next_line_set[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH]
 			= col_in ? line_edit.data : cur_line[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH];
-		assign next_line_move[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH]
-			= col_left0 ? cur_line[`TEXT_RAM_CHAR_WIDTH * i +: `TEXT_RAM_CHAR_WIDTH]
-			: col_left1 ? cur_line[`TEXT_RAM_CHAR_WIDTH * (i + step) +: `TEXT_RAM_CHAR_WIDTH] : `EMPTY_DATA;
 	end
 endgenerate
 
