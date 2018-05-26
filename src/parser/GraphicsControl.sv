@@ -89,7 +89,7 @@ Color256Decoder color256_decoder(
 );
 
 // set new_graphics
-always @(posedge clk)
+always @(posedge clk, posedge rst)
 begin
 	if(rst)
 	begin
