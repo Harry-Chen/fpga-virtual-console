@@ -134,6 +134,7 @@ module FpgaVirtualConsole(
         .data(uartDataReceived),
         .ramRes(textRamResultParser),
         .ramReq(textRamRequestParser),
+		.blinkStatus,
         .debug(vt100_debug),
         .cursorInfo(cursor)
     );
