@@ -4,6 +4,7 @@
 
 // constants
 `define BAUD_RATE 115200
+//`define BAUD_RATE 500_000  // 500k
 `define BOARD_CLOCK_FRENQUENCY 48_000_000
 `define CURSOR_BLINKING_FREQ  2
 
@@ -138,7 +139,7 @@ typedef enum logic[7:0] {
 	/* Scrolling */
 	DECSTBM,
 	/* Editing */
-	ED, EL, DCH, IL, DL,
+	ED, EL, ICH, DCH, ECH, IL, DL,
 	/* Charset */
 	SCS0, SCS1, SS2, SS3,
 	/* Mode */

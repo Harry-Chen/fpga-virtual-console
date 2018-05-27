@@ -31,7 +31,7 @@ begin
 		case(commandType)
 			DECSTBM:
 			begin
-				termMode.scroll_top <= Pt;
+				termMode.scroll_top    <= Pt;
 				termMode.scroll_bottom <= `MIN(Pb, `CONSOLE_COLUMNS - 1);
 			end
 		endcase

@@ -11,7 +11,8 @@ digraph EDIT {
 
 		Input_Read0[label="Input\nRead0"];
 		Input_Read1[label="Input\nRead1"];
-		Input_Set[label="Input\nSet"];
+		Input_CycRead[label="Input\nCycRead"];
+		Input_CycSet[label="Input\nCycSet"];
 		Input_Write[label="Input\nWrite"];
 	}
 
@@ -35,14 +36,16 @@ digraph EDIT {
 		Reset_Write[label="Reset\nWrite"];
 	}
 
-	Idle->Input_Read0[label="INPUT, EL, DCH"];
+	Idle->Input_Read0[label="INPUT, EL, DCH, ICH, ECH"];
 	Idle->Scroll_Start[label="IL\nDL\nscrollReady"];
 	Idle->Reset_Start[label="ED"];
 
 	Input_Read0->Input_Read1;
-	Input_Read1->Input_Set;
-	Input_Set->Input_Set;
-	Input_Set->Input_Write;
+	Input_Read1->Input_Write[label="INPUT, EL, ECH"];
+	Input_Read1->Input_CycRead[label="ICH, DCH"];
+	Input_CycRead->Input_CycSet->Input_CycRead;
+	Input_CycSet->Input_Write;
+
 	Input_Write->Idle;
 	Input_Write->Scroll_Start[label="delay\nscrolling"];
 

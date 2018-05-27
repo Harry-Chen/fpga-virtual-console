@@ -119,15 +119,19 @@ digraph DFA {
 
 	// ESC [ Pn A
 	Pn1->CUU[label=A];  // Cursor up
+	CSI->CUU[label=A];
 
 	// ESC [ Pn B
 	Pn1->CUD[label=B];  // Cursor down
+	CSI->CUD[label=B];
 
 	// ESC [ Pn C
 	Pn1->CUF[label=C];  // Cursor forward (right)
+	CSI->CUF[label=C];
 
 	// ESC [ Pn B
 	Pn1->CUB[label=D];  // Cursor backward (left)
+	CSI->CUB[label=D];
 
 	// ESC [ Pn; Pn H 
 	Pn2->CUP[label="H,f"]; // Cursor Position
@@ -181,12 +185,20 @@ digraph DFA {
 		node[style=filled,shape=square];
         color=blue;
         label="Editing";  
-		DCH; IL; DL;
+		ECH; DCH; ICH; IL; DL;
 	}
 
+	Pn1->ICH[label="@"]; // Insert character
+	Pn1->ECH[label=X]; // Erase character
 	Pn1->DCH[label=P]; // Delete character
 	Pn1->IL[label=L];  // Insert line
 	Pn1->DL[label=M];  // Delete line
+
+	CSI->ICH[label="@"]; // Insert character
+	CSI->ECH[label=X]; // Erase character
+	CSI->DCH[label=P]; // Delete character
+	CSI->IL[label=L];  // Insert line
+	CSI->DL[label=M];  // Delete line
 
 	/* Set/Reset Mode Commands */
 	subgraph cluster5 {
@@ -217,5 +229,5 @@ digraph DFA {
 	}
 
 	Esc->HTS[label=H];
-	TBC->Pn1[label=g,dir="back"];
+	Pn1->TBC[label=g];
 }

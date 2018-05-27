@@ -9,6 +9,7 @@ typedef struct packed {
 	logic [`TEXT_RAM_CHAR_WIDTH - 1:0] data;
 	logic [7:0] col_start, col_end;  // including the two end points
 	logic [7:0] col_now, col_read_addr;
+	logic move_dir;  // 1 - right, 0 - left
 } LineEdit_t;
 
 module TextControl(
@@ -104,32 +105,41 @@ begin
 						line_edit.mode      = `MODE_SETCHAR;  
 						line_edit.data      = `EMPTY_DATA;
 						line_edit.row       = term.cursor.x;
-						line_edit.col_start = (param.Pn1 == 8'h0) ? 8'h0 : term.cursor.y;
-						line_edit.col_end   = (param.Pn1 == 8'h1) ? `CONSOLE_COLUMNS - 1 : term.cursor.y;
+						line_edit.col_start = (param.Pn1 != 8'h0) ? 8'h0 : term.cursor.y;
+						line_edit.col_end   = (param.Pn1 != 8'h1) ? `CONSOLE_COLUMNS - 1 : term.cursor.y;
 					end
-					DCH:
+					DCH, ICH:
 					begin
 						status = input_ReadRam0;
 						line_edit.mode      = `MODE_MOVELINE;  
 						line_edit.row       = term.cursor.x;
 						line_edit.col_start = term.cursor.y;
 						line_edit.col_end   = term.cursor.y + param.Pn1 - 8'd1;
+						line_edit.move_dir  = commandType == DCH ? 1'b1 : 1'b0;
+					end
+					ECH:
+					begin
+						line_edit.mode      = `MODE_SETCHAR;  
+						line_edit.data      = `EMPTY_DATA;
+						line_edit.row       = term.cursor.x;
+						line_edit.col_start = term.cursor.y;
+						line_edit.col_end   = term.cursor.y + param.Pn1 - 8'h1;
 					end
 					ED:
 					begin
 						status = reset_Start;
-						reset_top    = (param.Pn1 == 8'h0) ? 8'h0 : term.cursor.x;
-						reset_bottom = (param.Pn1 == 8'h1) ? `CONSOLE_LINES - 1 : term.cursor.x;
+						reset_top    = (param.Pn1 != 8'h0) ? 8'h0 : term.cursor.x;
+						reset_bottom = (param.Pn1 != 8'h1) ? `CONSOLE_LINES - 1 : term.cursor.x;
 					end
 					IL, DL:
 					begin
 						// deletes/inserts Pn1 lines from the buffer
 						// starting with the row the cursor is on.
 						status = scroll_Start;
-						scrolling.top = term.cursor.x;
-						scrolling.bottom = `CONSOLE_LINES - 1;
-						scrolling.step = param.Pn1;
-						scrolling.dir = (commandType == DL) ? 1'b0 : 1'b1;
+						scrolling.top    = term.cursor.x;
+						scrolling.bottom = term.mode.scroll_bottom;
+						scrolling.step   = param.Pn1;
+						scrolling.dir    = (commandType == DL) ? 1'b0 : 1'b1;
 					end
 					default:
 						status = Idle;
@@ -153,7 +163,11 @@ begin
 			input_CycRead:
 				status = input_CycSet;
 			input_CycSet:
-				status = line_edit.col_now == `CONSOLE_COLUMNS - 1 ? input_WriteRam : input_CycRead;
+			begin
+				if(line_edit.move_dir == 1'b1)  // move right
+					status = line_edit.col_now == `CONSOLE_COLUMNS - 1 ? input_WriteRam : input_CycRead;
+				else status = line_edit.col_now == 8'd0 ? input_WriteRam : input_CycRead;
+			end
 			input_WriteRam:
 				status = delay_scrolling ? scroll_Start : Idle;
 			scroll_Start:
@@ -189,13 +203,14 @@ end
 logic [`TEXT_RAM_LINE_WIDTH - 1:0] next_line_set, next_line_move;
 logic [`TEXT_RAM_LINE_WIDTH + `TEXT_RAM_CHAR_WIDTH - 1:0] cur_line;
 logic [`TEXT_RAM_CHAR_WIDTH - 1:0] char_reg;
-logic [7:0] col_read_addr;
+logic [7:0] col_read_addr_next, col_set_addr_next;
 
 TextControlSetData text_control_set_data(
 	.line_edit,
 	.cur_line(ramRes),
 	.next_line_set,
-	.col_read_addr
+	.col_read_addr_next,
+	.col_set_addr_next
 );
 
 always @(posedge clk)
@@ -209,18 +224,17 @@ begin
 		begin
 			ramReq.address <= line_edit.row;
 			ramReq.wren <= 1'b0;
-			line_edit.col_now <= 8'd0;
+			line_edit.col_now <= line_edit.move_dir ? 8'd0 : `CONSOLE_COLUMNS - 1;
 		end
 		input_ReadRam1:
-			// for MODE_MOVELINE, latch line data
 			cur_line <= { `EMPTY_DATA, ramRes };
 		input_CycRead:
 			// for MODE_MOVELINE, latch char data
 			char_reg <= cur_line[`TEXT_RAM_CHAR_WIDTH * line_edit.col_read_addr +: `TEXT_RAM_CHAR_WIDTH];
 		input_CycSet:     // for MODE_MOVELINE, store char data
 		begin
-			line_edit.col_now  <= line_edit.col_now + 8'd1;
-			line_edit.col_read_addr <= col_read_addr;
+			line_edit.col_now <= col_set_addr_next; 
+			line_edit.col_read_addr <= col_read_addr_next;
 			next_line_move[`TEXT_RAM_CHAR_WIDTH * line_edit.col_now +: `TEXT_RAM_CHAR_WIDTH] <= char_reg;
 		end
 		input_WriteRam:  // setup write request
@@ -264,15 +278,31 @@ module TextControlSetData(
 	input  LineEdit_t line_edit,
 	input  [`TEXT_RAM_LINE_WIDTH - 1:0] cur_line,
 	output [`TEXT_RAM_LINE_WIDTH - 1:0] next_line_set,
-	output [7:0] col_read_addr
+	output [7:0] col_set_addr_next, col_read_addr_next
 );
 
-logic [7:0] step;
-assign step = line_edit.col_end - line_edit.col_start + 8'd1;
-assign col_read_addr
-	= (line_edit.col_now < line_edit.col_start) ? line_edit.col_now
-	: (line_edit.col_now <= line_edit.col_end) ? step
-	: `CONSOLE_COLUMNS;  // this place is `EMPTY_DATA
+logic [7:0] step, col_next;
+assign col_set_addr_next = col_next;
+
+always_comb
+begin
+	step = line_edit.col_end - line_edit.col_start + 8'd1;
+	if(line_edit.move_dir)
+	begin
+		col_next = line_edit.col_now + 8'd1;
+		col_read_addr_next
+			= (col_next <  line_edit.col_start) ? col_next
+			: (col_next <= line_edit.col_end)   ? col_next + step
+			: `CONSOLE_COLUMNS;  // this place is `EMPTY_DATA
+	end else begin
+		// TODO: some bugs.
+		col_next = line_edit.col_now - 8'd1;
+		col_read_addr_next
+			= (col_next >  line_edit.col_end)   ? col_next - step
+			: (col_next >= line_edit.col_start) ? `EMPTY_DATA
+			: col_next;
+	end
+end
 
 genvar i;
 generate

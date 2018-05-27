@@ -42,7 +42,7 @@ assign i_cursor.x = term.cursor.x - origin_x;
 // some wires
 wire [7:0] next_line;
 wire is_final_line;
-assign next_line = `MIN(i_cursor.x + 8'd1, cursor_x_max);
+assign next_line = i_cursor.x == cursor_x_max ? cursor_x_max : `MIN(i_cursor.x + 8'd1, `CONSOLE_LINES - 1);
 assign is_final_line = (i_cursor.x == cursor_x_max);
 
 // Pn is used for single parameter commands
@@ -114,6 +114,11 @@ begin
 				if(is_final_line)
 					`SET_SCROLLING_UP(8'b1)
 			end
+			DECSTBM: // set scroll margin
+			begin
+				o_cursor.x <= 8'd0;
+				o_cursor.y <= 8'd0;
+			end
 			INPUT:
 				unique case(param.Pchar)
 				8'o12,8'o13,8'o14:  // LF, VT, FF
@@ -125,7 +130,7 @@ begin
 				end
 				8'o15: // CR
 					o_cursor.y <= 8'd0;
-				8'o10: // BS, TODO: not sure if y == 0
+				8'o10: // BS
 					o_cursor.y <= (i_cursor.y == 8'd0) ? 8'd0 : i_cursor.y - 8'd1;
 				8'o11: // HT
 					// TODO

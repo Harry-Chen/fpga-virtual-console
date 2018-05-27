@@ -194,6 +194,26 @@ begin
 						param.Pn2 <= 8'd1;
 						`SET_COMMAND(CUP)
 					end
+					8'h41: // 'A'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(CUU)
+					end
+					8'h42: // 'B'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(CUD)
+					end
+					8'h43: // 'C'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(CUF)
+					end
+					8'h44: // 'D'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(CUB)
+					end
 					8'h72:  // 'r'
 					begin
 						param.Pn1 <= 8'd1;
@@ -202,13 +222,38 @@ begin
 					end
 					8'h4a: // 'J'
 					begin
-						param.Pn1 <= 8'd1;
+						param.Pn1 <= 8'd0;
 						`SET_COMMAND(ED)
 					end
 					8'h4b: // 'K'
 					begin
-						param.Pn1 <= 8'd1;
+						param.Pn1 <= 8'd0;
 						`SET_COMMAND(EL)
+					end
+					8'h50: // 'P'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(DCH)
+					end
+					8'h40: // '@'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(ICH)
+					end
+					8'h58: // 'X'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(ECH)
+					end
+					8'h4c: // 'L'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(IL)
+					end
+					8'h4d: // 'M'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(DL)
 					end
 					8'h6d: // 'm'
 						`SET_COMMAND_BLOCK(SGR0)
@@ -244,8 +289,12 @@ begin
 						`SET_COMMAND_BLOCK(ED)
 					8'h4b: // 'K'
 						`SET_COMMAND_BLOCK(EL)
+					8'h40: // '@'
+						`SET_COMMAND_BLOCK(ICH)
 					8'h50: // 'P'
 						`SET_COMMAND_BLOCK(DCH)
+					8'h58: // 'X'
+						`SET_COMMAND_BLOCK(ECH)
 					8'h4c: // 'L'
 						`SET_COMMAND_BLOCK(IL)
 					8'h4d: // 'M'
