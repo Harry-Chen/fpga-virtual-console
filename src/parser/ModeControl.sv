@@ -1,6 +1,15 @@
 `include "DataType.svh"
 `define MIN(a, b) (((a) < (b)) ? (a) : (b))
 `define MAX(a, b) (((a) < (b)) ? (b) : (a))
+`define RESET_TERM_MODE(m) \
+begin \
+	m.origin_mode        <= 1'b0; \
+	m.auto_wrap          <= 1'b1; \
+	m.replace_mode       <= 1'b0; \
+	m.line_feed          <= 1'b1; \
+	m.cursor_blinking    <= 1'b1; \
+	m.cursor_visibility  <= 1'b1; \
+end
 
 module ModeControl(
 	input                clk, rst,
@@ -10,29 +19,67 @@ module ModeControl(
 	output TermMode_t    termMode
 );
 
-wire [7:0] Pt, Pb;
-assign Pt = (param.Pn1 == 8'd0) ? 8'd0 : param.Pn1 - 8'd1;  // top margin 
-assign Pb = (param.Pn2 == 8'd0) ? 8'd0 : param.Pn2 - 8'd1;  // bottom margin
+TermMode_t new_mode, new_mode_dec;
 
+// modeReady for store new_graphics into graphics
+logic modeReady;
+always @(posedge clk)
+begin
+	if(modeReady) begin
+		modeReady <= 1'b0;
+	end else if(commandReady) begin
+		modeReady <= (commandType == SETMODE || commandType == RESETMODE
+			|| commandType == SETDEC || commandType == RESETDEC) ? 1'b1 : 1'b0;
+	end
+end
+
+// set termMode
 always @(posedge clk, posedge rst)
 begin
 	if(rst)
 	begin
-		termMode.charset            <= 2'b0;
-		termMode.scroll_top         <= 8'b0;
-		termMode.scroll_bottom      <= `CONSOLE_LINES - 1;
-		termMode.origin_mode        <= 1'b0;
-		termMode.auto_wrap          <= 1'b1;
-		termMode.replace_mode       <= 1'b0;
-		termMode.line_feed          <= 1'b1;
-		termMode.cursor_blinking    <= 1'b1;
-		termMode.cursor_visibility  <= 1'b1;
+		`RESET_TERM_MODE(termMode)
+	end else if(modeReady) begin
+		case(commandType)
+			SETMODE:
+				termMode <= termMode | new_mode;
+			RESETMODE:
+				termMode <= termMode & ~new_mode;
+			SETDEC:
+				termMode <= termMode | new_mode_dec;
+			RESETDEC:
+				termMode <= termMode & ~new_mode_dec;
+		endcase
+	end
+end
+
+// record parameters
+always @(posedge clk, posedge rst)
+begin
+	if(rst)
+	begin
+		new_mode <= 0;
+		new_mode_dec <= 0;
 	end else if(commandReady) begin
 		case(commandType)
-			DECSTBM:
+			INIT_PN:
 			begin
-				termMode.scroll_top    <= Pt;
-				termMode.scroll_bottom <= `MIN(Pb, `CONSOLE_COLUMNS - 1);
+				new_mode <= 0;
+				new_mode_dec <= 0;
+			end
+			EMIT_PN,
+			SETMODE, RESETMODE,
+			SETDEC, RESETDEC:
+			begin
+				case(param.Pns)
+					8'd6:  new_mode_dec.origin_mode       <= 1'b1;
+					8'd7:  new_mode_dec.auto_wrap         <= 1'b1;
+					8'd12: new_mode_dec.cursor_blinking   <= 1'b1;
+					8'd25: new_mode_dec.cursor_visibility <= 1'b1;
+
+					8'd4:  new_mode.replace_mode <= 1'b1;
+					8'd20: new_mode.line_feed    <= 1'b1;
+				endcase
 			end
 		endcase
 	end

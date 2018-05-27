@@ -334,6 +334,16 @@ begin
 						param.Pns <= param.Pn1;
 						`SET_COMMAND_BLOCK(SGR)
 					end
+					8'h6c: // 'l'
+					begin
+						param.Pns <= param.Pn1;
+						`SET_COMMAND_BLOCK(RESETMODE)
+					end
+					8'h68: // 'h'
+					begin
+						param.Pns <= param.Pn1;
+						`SET_COMMAND_BLOCK(SETMODE)
+					end
 					8'h3b: // ';'
 					begin
 						param.Pns <= param.Pn1;
@@ -353,6 +363,16 @@ begin
 						param.Pns <= param.Pn2;
 						`SET_COMMAND_BLOCK(SGR)
 					end
+					8'h6c: // 'l'
+					begin
+						param.Pns <= param.Pn2;
+						`SET_COMMAND_BLOCK(RESETMODE)
+					end
+					8'h68: // 'h'
+					begin
+						param.Pns <= param.Pn2;
+						`SET_COMMAND_BLOCK(SETMODE)
+					end
 					8'h3b: // ';'
 					begin
 						param.Pns <= param.Pn2;
@@ -367,6 +387,10 @@ begin
 						`SET_COMMAND_BLOCK(EMIT_PN)
 					8'h6d: // 'm'
 						`SET_COMMAND_BLOCK(SGR)
+					8'h6c: // 'l'
+						`SET_COMMAND_BLOCK(RESETMODE)
+					8'h68: // 'h'
+						`SET_COMMAND_BLOCK(SETMODE)
 				endcase
 			QPN1:
 				case(data)
@@ -378,9 +402,9 @@ begin
 						`SET_COMMAND(EMIT_PN)
 					end
 					8'h68: // 'h'
-						`SET_COMMAND_BLOCK(SETMODE)
+						`SET_COMMAND_BLOCK(SETDEC)
 					8'h6c: // 'l'
-						`SET_COMMAND_BLOCK(RESETMODE)
+						`SET_COMMAND_BLOCK(RESETDEC)
 				endcase
 			QPNS:
 				case(data)
@@ -389,9 +413,9 @@ begin
 					8'h3b: // ';'
 						`SET_COMMAND_BLOCK(EMIT_PN)
 					8'h68: // 'h'
-						`SET_COMMAND_BLOCK(SETMODE)
+						`SET_COMMAND_BLOCK(SETDEC)
 					8'h6c: // 'l'
-						`SET_COMMAND_BLOCK(RESETMODE)
+						`SET_COMMAND_BLOCK(RESETDEC)
 				endcase
 			LBRACKET:
 				case(data)

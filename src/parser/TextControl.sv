@@ -48,7 +48,7 @@ assign text_attribute = {
 	term.graphics.effect,
 	term.graphics.bg,
 	term.graphics.fg,
-	term.mode.charset
+	term.attrib.charset
 };
 
 /* single line edit parameters */
@@ -137,7 +137,7 @@ begin
 						// starting with the row the cursor is on.
 						status = scroll_Start;
 						scrolling.top    = term.cursor.x;
-						scrolling.bottom = term.mode.scroll_bottom;
+						scrolling.bottom = term.attrib.scroll_bottom;
 						scrolling.step   = param.Pn1;
 						scrolling.dir    = (commandType == DL) ? 1'b0 : 1'b1;
 					end

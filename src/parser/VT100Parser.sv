@@ -22,8 +22,8 @@ assign cursorInfo = term.cursor;
 
 assign debug[70:62] = term.graphics.fg;
 assign debug[61:53] = term.graphics.bg;
-assign debug[51:44] = term.mode.scroll_top;
-assign debug[43:36] = term.mode.scroll_bottom;
+assign debug[51:44] = term.attrib.scroll_top;
+assign debug[43:36] = term.attrib.scroll_bottom;
 assign debug[31:24] = commandType;
 assign debug[15:8] = term.cursor.x;
 assign debug[7:0] = term.cursor.y;
@@ -76,6 +76,15 @@ ModeControl mode_control(
 	.commandType,
 	.param,
 	.termMode(term.mode)
+);
+
+AttribControl attrib_control(
+	.clk,
+	.rst,
+	.commandReady,
+	.commandType,
+	.param,
+	.termAttrib(term.attrib)
 );
 
 GraphicsControl graphics_control(

@@ -231,17 +231,32 @@ digraph DFA {
 
 
 	/* Set/Reset Mode Commands */
-	subgraph cluster5 {
+	subgraph cluster5b {
+		node[style=filled,shape=square];
+        color=blue;
+        label="Set/Reset DEC Mode";  
+		SETDEC[label="SET\nDEC"]; RESETDEC[label="RESET\nDEC"];
+	}
+
+	subgraph cluster5a {
 		node[style=filled,shape=square];
         color=blue;
         label="Set/Reset Mode";  
-		SETMODE[label="SET\nMODE"]; RESETMODE[label="RESET\nMODE"];
+		SETMODE[label="SET\nMODE"]; RSTMODE[label="RST\nMODE"];
 	}
-	QPn1->SETMODE[label=h]
-	QPn1->RESETMODE[label=l]
+	QPn1->SETDEC[label=h]
+	QPn1->RESETDEC[label=l]
 
-	SETMODE->QPns[label=h,dir="back"];
-	RESETMODE->QPns[label=l,dir="back"];
+	SETDEC->QPns[label=h,dir="back"];
+	RESETDEC->QPns[label=l,dir="back"];
+
+	Pn1->SETMODE[label="h"];
+	Pn2->SETMODE[label="h"];
+	Pns->SETMODE[label="h"];
+
+	Pn1->RSTMODE[label="l"];
+	Pn2->RSTMODE[label="l"];
+	Pns->RSTMODE[label="l"];
 
 	subgraph cluster6 {
 		node[style=filled,shape=square];

@@ -5,8 +5,8 @@
 	begin \
 		scrolling.dir <= sc_dir;  \
 		scrolling.step <= sc_step; \
-		scrolling.top <= term.mode.scroll_top; \
-		scrolling.bottom <= term.mode.scroll_bottom; \
+		scrolling.top <= term.attrib.scroll_top; \
+		scrolling.bottom <= term.attrib.scroll_bottom; \
 		scrollReady <= 1'b1; \
 	end
 `define SET_SCROLLING_UP(sc_step) `SET_SCROLLING(1'b0, sc_step)
@@ -29,8 +29,8 @@ assign debug = cursor.visible;
 
 // the origin of cursor is (origin_x, 0)
 wire [7:0] origin_x, cursor_x_max;
-assign origin_x     = term.mode.origin_mode ? term.mode.scroll_top : 8'd0;
-assign cursor_x_max = term.mode.scroll_bottom - origin_x;
+assign origin_x     = term.mode.origin_mode ? term.attrib.scroll_top : 8'd0;
+assign cursor_x_max = term.attrib.scroll_bottom - origin_x;
 
 // i_cursor and o_cursor is relative to (origin_x, 0)
 Cursor_t i_cursor, o_cursor;
@@ -57,7 +57,7 @@ assign o_scrolling.reset = (
 	commandReady &&
 	(commandType == CUP) &&
 	~term.mode.origin_mode &&
-	(Pl > term.mode.scroll_bottom)
+	(Pl > term.attrib.scroll_bottom)
 );
 assign o_scrolling.dir    = scrolling.dir;
 assign o_scrolling.step   = scrolling.step;

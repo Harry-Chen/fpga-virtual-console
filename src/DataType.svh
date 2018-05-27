@@ -146,6 +146,7 @@ typedef enum logic[7:0] {
 	SCS0, SCS1, SS2, SS3,
 	/* Mode */
 	SETMODE, RESETMODE,
+	SETDEC, RESETDEC,
 	/* Graphics */
 	SGR0, SGR,
 	/* Multi-param */
@@ -173,17 +174,21 @@ typedef struct packed {
 } Graphics_t;
 
 typedef struct packed {
-	logic [1:0] charset;
-	logic [7:0] scroll_top, scroll_bottom;
 	logic origin_mode, auto_wrap, replace_mode, line_feed;
 	logic cursor_blinking, cursor_visibility;
 } TermMode_t;
+
+typedef struct packed {
+	logic [1:0] charset;
+	logic [7:0] scroll_top, scroll_bottom;
+} TermAttrib_t;
 
 // terminal status
 typedef struct packed {
 	Cursor_t cursor;
 	Graphics_t graphics;
 	TermMode_t mode;
+	TermAttrib_t attrib;
 } Terminal_t;
 
 typedef struct packed {
