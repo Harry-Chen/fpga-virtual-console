@@ -115,9 +115,7 @@ module FpgaVirtualConsole(
     );
 
 
-	// VT100 parser module
-    logic [70:0] vt100_debug;
-    Cursor_t cursor;
+    // Global blink generator module
     logic blinkStatus;
 
     BlinkGenerator #(
@@ -126,6 +124,11 @@ module FpgaVirtualConsole(
         .clk(clk100M),
         .status(blinkStatus)
     );
+
+
+	// VT100 parser module
+    logic [70:0] vt100_debug;
+    Cursor_t cursor;
 
 	VT100Parser vt100Parser(
         .clk(clk100M),
@@ -160,64 +163,20 @@ module FpgaVirtualConsole(
     );
 
 
-    // Sram controller module
-    SramRequest_t vgaRequest, rendererRequest;
-    SramResult_t vgaResult, rendererResult;
-    logic paintDone;
-    SramAddress_t vgaBaseAddress;
-    
-    SramController sramController(
-        .clk(clk50M),
+    // Video controller module
+    DisplayController controller(
+        .clk25M,
+        .clk50M,
         .rst(rstPll),
+        .blinkStatus,
+        .cursor,
+        .textRamResult(textRamResultRenderer),
+        .textRamRequest(textRamRequestRenderer),
         .sramInterface,
         .sramData,
-        .vgaRequest,
-        .vgaResult,
-        .rendererRequest,
-        .rendererResult
+        .vga
     );
 
-
-    // Font ROM module
-    FontRomData_t fontRomData;
-    FontRomAddress_t fontRomAddress;
-
-    FontRom fontRom(
-        .aclr(rstPll),
-        .address(fontRomAddress),
-        .clock(clk50M),
-        .q(fontRomData)
-    );
-
-
-    // Renderer module
-    TextRenderer renderer(
-        .clk(clk50M),
-        .rst(rstPll),
-        .paintDone,
-        .ramRequest(rendererRequest),
-        .ramResult(rendererResult),
-        .vgaBaseAddress,
-        .textRamRequest(textRamRequestRenderer),
-        .textRamResult(textRamResultRenderer),
-        .fontRomAddress,
-        .fontRomData,
-        .cursor,
-        .blinkStatus,
-        .nowRendering(debug[31:16])
-    );
-
-
-    // VGA module
-    VgaDisplayAdapter display(
-        .clk(clk25M),
-        .rst(rstPll),
-        .baseAddress(vgaBaseAddress),
-        .ramRequest(vgaRequest),
-        .ramResult(vgaResult),
-        .vga,
-        .paintDone
-    );
 
 
 endmodule
