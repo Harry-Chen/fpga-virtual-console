@@ -108,6 +108,7 @@ digraph DFA {
         color=blue;
         label="Cursor Commands (Part A)";  
 		CUU; CUD; CUF; CUB; CUP;
+		CNL; CPL; CHA; VPA;
 	}
 
 	subgraph cluster1b {
@@ -129,9 +130,25 @@ digraph DFA {
 	Pn1->CUF[label=C];  // Cursor forward (right)
 	CSI->CUF[label=C];
 
-	// ESC [ Pn B
+	// ESC [ Pn D
 	Pn1->CUB[label=D];  // Cursor backward (left)
 	CSI->CUB[label=D];
+
+	// ESC [ Pn E
+	Pn1->CNL[label=E];  // Cursor next line
+	CSI->CNL[label=E];
+
+	// ESC [ Pn F
+	Pn1->CPL[label=F];  // Cursor previous line
+	CSI->CPL[label=F];
+
+	// ESC [ Pn G
+	Pn1->CHA[label=G];  // Cursor horizontal absolute
+	CSI->CHA[label=G];
+
+	// ESC [ Pn d
+	Pn1->VPA[label=d];  // vertical line position absolute
+	CSI->VPA[label=d];
 
 	// ESC [ Pn; Pn H 
 	Pn2->CUP[label="H,f"]; // Cursor Position
@@ -199,6 +216,19 @@ digraph DFA {
 	CSI->DCH[label=P]; // Delete character
 	CSI->IL[label=L];  // Insert line
 	CSI->DL[label=M];  // Delete line
+
+/*	ICH->Pn1[dir="back",label="@"]; // Insert character
+	ECH->Pn1[dir="back",label=X]; // Erase character
+	DCH->Pn1[dir="back",label=P]; // Delete character
+	IL->Pn1[dir="back",label=L];  // Insert line
+	DL->Pn1[dir="back",label=M]; */  // Delete line
+
+/*	ICH->CSI[dir="back",label="@"]; // Insert character
+	ECH->CSI[dir="back",label=X]; // Erase character
+	DCH->CSI[dir="back",label=P]; // Delete character
+	IL->CSI[dir="back",label=L];  // Insert line
+	DL->CSI[dir="back",label=M]; */  // Delete line 
+
 
 	/* Set/Reset Mode Commands */
 	subgraph cluster5 {

@@ -135,7 +135,9 @@ typedef enum logic[7:0] {
 	/* Character Input */
 	INPUT,
 	/* Cursor Commands */
-	CUP, CUU, CUD, CUF, CUB, IND, NEL, RI, DECSC, DECRC,
+	CUP, CUU, CUD, CUF, CUB, IND,
+	CNL, CPL, CHA, VPA,
+	NEL, RI, DECSC, DECRC,
 	/* Scrolling */
 	DECSTBM,
 	/* Editing */

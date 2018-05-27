@@ -295,11 +295,10 @@ begin
 			: (col_next <= line_edit.col_end)   ? col_next + step
 			: `CONSOLE_COLUMNS;  // this place is `EMPTY_DATA
 	end else begin
-		// TODO: some bugs.
 		col_next = line_edit.col_now - 8'd1;
 		col_read_addr_next
 			= (col_next >  line_edit.col_end)   ? col_next - step
-			: (col_next >= line_edit.col_start) ? `EMPTY_DATA
+			: (col_next >= line_edit.col_start) ? `CONSOLE_COLUMNS
 			: col_next;
 	end
 end

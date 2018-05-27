@@ -93,6 +93,20 @@ begin
 				o_cursor.x <= `MIN(i_cursor.x + Pn, cursor_x_max);
 			CUU:  // Cursor Up
 				o_cursor.x <= (i_cursor.x < Pn) ? 8'd0 : i_cursor.x - Pn;
+			CNL:
+			begin
+				o_cursor.y <= 8'd0;
+				o_cursor.x <= `MIN(i_cursor.x + Pn, cursor_x_max);
+			end
+			CPL:
+			begin
+				o_cursor.y <= 8'd0;
+				o_cursor.x <= (i_cursor.x < Pn) ? 8'd0 : i_cursor.x - Pn;
+			end
+			CHA:
+				o_cursor.y <= `MIN(Pn, `CONSOLE_COLUMNS - 1);
+			VPA:
+				o_cursor.x <= `MIN(Pn, cursor_x_max);
 			IND:  // Index
 			begin
 				o_cursor.x <= next_line;
