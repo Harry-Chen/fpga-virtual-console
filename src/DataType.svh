@@ -59,6 +59,7 @@
 
  // uart transmission
  typedef logic [`UART_DATA_WIDTH - 1:0] UartData_t;
+ typedef UartData_t Scancode_t;
 
  typedef struct packed {
 	UartData_t length;

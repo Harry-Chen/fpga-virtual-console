@@ -2,15 +2,14 @@
 module Ps2Translator(
     input                   clk,
     input                   rst,
-    input                   ps2Clk,
-    input                   ps2Data,
     input                   fifoFull,
+    input                   scancodeDone,
+    input   Scancode_t      scancode,
     output                  fifoWriteRequest,
     output  UartFifoData_t  fifoInData
     );
 
-    logic scancodeDone;
-    UartData_t scancode;
+
 
     localparam  BREAK = 8'hf0,
                 LEFT_SHIFT = 8'h12,
@@ -32,17 +31,6 @@ module Ps2Translator(
             currentState <= nextState;
         end
     end
-
-    Ps2Receiver receiver(
-        .clk,
-        .reset(rst),
-        .rx_en(1'b1),
-        .ps2d(ps2Data),
-        .ps2c(ps2Clock),
-        .rx_done_tick(scancodeDone),
-        .rx_data(scancode)
-    );
-
 
 
 

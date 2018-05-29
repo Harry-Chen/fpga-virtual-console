@@ -27,11 +27,24 @@ module KeyboardController(
 
 
     // PS2 keyboard
+    logic scancodeDone;
+    Scancode_t scancode;
+
+    Ps2Receiver receiver(
+        .clk,
+        .reset(rst),
+        .rx_en(1'b1),
+        .ps2d(ps2Data),
+        .ps2c(ps2Clk),
+        .rx_done_tick(scancodeDone),
+        .rx_data(scancode)
+    );
+
     Ps2Translator translator(
         .clk,
         .rst,
-        .ps2Clk,
-        .ps2Data,
+        .scancodeDone,
+        .scancode,
         .fifoFull,
         .fifoWriteRequest,
         .fifoInData,
@@ -40,7 +53,7 @@ module KeyboardController(
 
     // UART module
     logic         uartStartSend;
-    logic [7:0]   uartDataToSend;
+    UartData_t    uartDataToSend;
     logic         uartBusy;
 
     FifoConsumer fifoConsumer(
