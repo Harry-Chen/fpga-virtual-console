@@ -53,6 +53,9 @@
 
 `define VIDEO_BUFFER_SIZE 307200
 
+ // uart transmission
+ typedef logic [7:0] UartData_t;
+
 // vga signal
 typedef struct packed {
     logic [2:0]  red;

@@ -10,7 +10,22 @@ module KeyboardController(
 
     parameter ClkFrequency = 100_000_000;
 
+    logic fifoReadRequest, fifoWriteRequest;
+    logic fifoEmpty, fifoFull;
+    UartData_t fifoInData, fifoOutData;
     
+    UartTxFifo fifo (
+        .aclr(rst),
+        .clock(clk),
+        .data(fifoInData),
+        .rdreq(fifoReadRequest),
+        .wrreq(fifoWriteRequest),
+        .empty(fifoEmpty),
+        .full(fifoFull),
+        .q(fifoOutData)
+    );
+
+
     // keyboard test
 	logic [7:0] scan_code, ascii_code;
 	logic scan_code_ready;
@@ -35,30 +50,22 @@ module KeyboardController(
         .ascii_code
     );
 
-    logic fifoReadRequest, fifoWriteRequest;
-    logic fifoEmpty, fifoFull;
-    typedef logic [7:0] UartData_t;
-    UartData_t inData, outData;
-    
-    UartTxFifo fifo (
-        .aclr(rst),
-        .clock(clk),
-        .data(inData),
-        .rdreq(fifoReadRequest),
-        .wrreq(fifoWriteRequest),
-        .empty(fifoEmpty),
-        .full(fifoFull),
-        .q(outData)
-    );
-
-
     // UART module
     logic         uartStartSend;
     logic [7:0]   uartDataToSend;
     logic         uartBusy;
 
-    assign uartStartSend = scan_code_ready;
-    assign uartDataToSend = ascii_code;
+    FifoConsumer fifoConsumer(
+        .clk,
+        .rst,
+        .uartBusy,
+        .uartStartSend,
+        .uartDataToSend,
+        .fifoReadRequest,
+        .fifoEmpty,
+        .fifoOutData
+    );
+
 
     AsyncUartTransmitter #(
         .ClkFrequency(ClkFrequency),
