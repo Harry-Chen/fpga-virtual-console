@@ -12,7 +12,7 @@ module KeyboardController(
 
     logic fifoReadRequest, fifoWriteRequest;
     logic fifoEmpty, fifoFull;
-    UartData_t fifoInData, fifoOutData;
+    UartFifoData_t fifoInData, fifoOutData;
     
     UartTxFifo fifo (
         .aclr(rst),
@@ -26,29 +26,17 @@ module KeyboardController(
     );
 
 
-    // keyboard test
-	logic [7:0] scan_code, ascii_code;
-	logic scan_code_ready;
-	logic letter_case;
-	
-	// instantiate keyboard scan code circuit
-	Ps2StateMachine kb_unit(
+    // PS2 keyboard
+    Ps2Translator translator(
         .clk,
-        .reset(rst),
-        .ps2d(ps2Data),
-        .ps2c(ps2Clk),
-        .scan_code,
-        .scan_code_ready,
-        .letter_case_out(letter_case)
+        .rst,
+        .ps2Clk,
+        .ps2Data,
+        .fifoFull,
+        .fifoWriteRequest,
+        .fifoInData,
     );
 
-   
-    // instantiate key-to-ascii code conversion circuit
-	ScanCodeToAscii k2a_unit(
-        .letter_case,
-        .scan_code,
-        .ascii_code
-    );
 
     // UART module
     logic         uartStartSend;

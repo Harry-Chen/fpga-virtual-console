@@ -53,8 +53,24 @@
 
 `define VIDEO_BUFFER_SIZE 307200
 
+`define UART_DATA_WIDTH 8
+`define UART_FIFO_LENGTH 8
+`define UART_FIFO_WIDTH (`UART_DATA_WIDTH * `UART_FIFO_LENGTH)
+
  // uart transmission
- typedef logic [7:0] UartData_t;
+ typedef logic [`UART_DATA_WIDTH - 1:0] UartData_t;
+
+ typedef struct packed {
+	UartData_t length;
+	UartData_t char7;
+	UartData_t char6;
+	UartData_t char5;
+	UartData_t char4;
+	UartData_t char3;
+	UartData_t char2;
+	UartData_t char1;
+ } UartFifoData_t;
+
 
 // vga signal
 typedef struct packed {

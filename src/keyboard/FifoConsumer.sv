@@ -1,27 +1,37 @@
 `include "Datatype.svh"
 
 module FifoConsumer(
-    input               clk,
-    input               rst,
-    input               uartBusy,
-    input               fifoEmpty,
-    input   UartData_t  fifoOutData,
-    output              fifoReadRequest,
-    output              uartStartSend,
-    output  UartData_t  uartDataToSend
+    input                   clk,
+    input                   rst,
+    input                   uartBusy,
+    input                   fifoEmpty,
+    input   UartFifoData_t  fifoOutData,
+    output                  fifoReadRequest,
+    output                  uartStartSend,
+    output  UartData_t      uartDataToSend
     );
 
-    typedef enum logic[1:0] {
-        STATE_INIT, STATE_READ_FIFO, STATE_WAIT_UART
+
+    typedef enum logic[4:0] {
+        STATE_INIT,
+        STATE_READ_FIFO,
+        STATE_SEND_UART_[0:7],
+        STATE_WAIT_UART_[1:7]
     } FifoConsumerState_t;
+    
 
     FifoConsumerState_t currentState, nextState;
+
+    UartFifoData_t fifoData;
 
     always_ff @(posedge clk or posedge rst) begin
         if  (rst) begin
             currentState <= STATE_INIT;
         end else begin
             currentState <= nextState;
+            if (currentState == STATE_READ_FIFO) begin
+                fifoData <= fifoOutData;
+            end
         end
     end
 
@@ -39,17 +49,42 @@ module FifoConsumer(
             end
 
             STATE_READ_FIFO: begin
-                nextState = STATE_WAIT_UART;
-                uartStartSend = 1;
-                uartDataToSend = fifoOutData;
+`define JUMP_TO_STAT(x) x: nextState = STATE_SEND_UART_``x;
+                unique case (fifoOutData.length)
+                    `JUMP_TO_STAT(1)
+                    `JUMP_TO_STAT(2)
+                    `JUMP_TO_STAT(3)
+                    `JUMP_TO_STAT(4)
+                    `JUMP_TO_STAT(5)
+                    `JUMP_TO_STAT(6)
+                    `JUMP_TO_STAT(7)
+                endcase
+`undef JUMP_TO_STAT
             end
 
-            STATE_WAIT_UART: begin
-                nextState = STATE_WAIT_UART;
-                if (!uartBusy) begin
-                    nextState = STATE_INIT;
-                end
+`define STATE_UART(x, y) \
+            STATE_SEND_UART_``x: begin \
+                nextState = STATE_WAIT_UART_``x; \
+                uartStartSend = 1; \
+                uartDataToSend = fifoData.char``x; \
+            end \
+                \
+            STATE_WAIT_UART_``x: begin \
+                nextState = STATE_WAIT_UART_``x; \
+                if (!uartBusy) begin \
+                    nextState = STATE_SEND_UART_``y; \
+                end \
             end
+
+            `STATE_UART(7, 6)
+            `STATE_UART(6, 5)
+            `STATE_UART(5, 4)
+            `STATE_UART(4, 3)
+            `STATE_UART(3, 2)
+            `STATE_UART(2, 1)
+            `STATE_UART(1, 0)
+
+`undef STATE_UART
 
             default: nextState = STATE_INIT;
 
