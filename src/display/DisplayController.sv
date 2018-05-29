@@ -55,7 +55,7 @@ module DisplayController (
         .fontRomAddress,
         .fontRomData,
         .cursor,
-        .blinkStatus,
+        .blinkStatus
     );
 
 

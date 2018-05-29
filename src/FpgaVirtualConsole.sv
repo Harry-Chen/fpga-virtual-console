@@ -26,8 +26,6 @@ module FpgaVirtualConsole(
     // debug probe
     logic [127:0] debug;
 
-    assign debug[7:0] = scan_code;
-    assign debug[15:8] = ascii_code;
 	assign debug[102:32] = vt100_debug;
 
     Probe debugProbe(
@@ -56,51 +54,21 @@ module FpgaVirtualConsole(
         .c4(clk20M),
         .locked(rstPll_n)
     );
-     
-    
-	// keyboard test
-	logic [7:0] scan_code, ascii_code;
-	logic scan_code_ready;
-	logic letter_case;
-	
-	// instantiate keyboard scan code circuit
-	Ps2StateMachine kb_unit(
+
+
+    // Keyboard to uart
+    KeyboardController #(
+        .ClkFrequency(100_000_000)
+    ) keyboardController(
         .clk(clk100M),
-        .reset(rstPll),
-        .ps2d(ps2Data),
-        .ps2c(ps2Clk),
-        .scan_code,
-        .scan_code_ready,
-        .letter_case_out(letter_case)
+        .rst(rstPll),
+        .ps2Clk,
+        .ps2Data,
+        .uartTx
     );
 					
-	// instantiate key-to-ascii code conversion circuit
-	ScanCodeToAscii k2a_unit(
-        .letter_case,
-        .scan_code,
-        .ascii_code
-    );
 
-
-    // UART module
-    logic         uartStartSend;
-    logic [7:0]   uartDataToSend;
-    logic         uartBusy;
-
-    assign uartStartSend = scan_code_ready;
-    assign uartDataToSend = ascii_code;
-
-    AsyncUartTransmitter #(
-        .ClkFrequency(100_000_000),
-        .Baud(`BAUD_RATE)
-    ) uartTransmitter(
-        .clk(clk100M),
-        .TxD_start(uartStartSend),
-		.TxD_data(uartDataToSend),
-        .TxD(uartTx),
-        .TxD_busy(uartBusy)
-    );
-
+    // UART Receiver
     logic         uartReady;
     logic [7:0]   uartDataReceived;
 
