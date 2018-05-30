@@ -42,5 +42,5 @@
 
 [The TTY demystified](http://www.linusakesson.net/programming/tty/index.php)
 
-[Current Session - Session Buddy](chrome-extension://edacconmaakjimmfgnblocblbcdcpbko/main.html)
+[Console Virtual Terminal Sequences](https://docs.microsoft.com/en-us/windows/console/console-virtual-terminal-sequences)
 
