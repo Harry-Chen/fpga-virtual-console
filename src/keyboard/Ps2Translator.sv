@@ -73,7 +73,8 @@ module Ps2Translator(
 
                     else begin
                         outputEnable = 1;
-                        // TODO: Normal Key 
+                        nextState = STATE_NORMAL;
+                        // Normal Key 
                     end
                 end
             end
@@ -92,7 +93,7 @@ module Ps2Translator(
                         nextState = STATE_NORMAL;
                         special = 1;
                         outputEnable = 1;
-                        // TODO: Special Key
+                        // Special Key
                     end
                 end
             end
@@ -114,7 +115,7 @@ module Ps2Translator(
                     else begin
                         outputEnable = 1;
                         shift = 1;
-                        // TODO: Shift + Normal Key 
+                        // Shift + Normal Key 
                     end
                 end
             end
@@ -159,7 +160,7 @@ module Ps2Translator(
                     else begin
                         outputEnable = 1;
                         ctrl = 1;
-                        // TODO: Ctrl + Normal Key
+                        // Ctrl + Normal Key
                     end
                 end
             end 
@@ -182,7 +183,8 @@ module Ps2Translator(
                     outputEnable = 1;
                     ctrl = 1;
                     special = 1;
-                    // TODO: Ctrl + Special Key
+                    // Ctrl + Special Key
+                    // TODO: not working at the moment
                 end
             end
 
