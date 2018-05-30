@@ -59,10 +59,10 @@ module ScancodeDecoder(
 
             else begin
                 unique case (scancode)
-                    8'h48: content = 48'h1B_5B_31_3B_35_41; // Up arrow    -> `[1;5A
-                    8'h50: content = 48'h1B_5B_31_3B_35_42; // Down arrow  -> `[1;5B
-                    8'h4B: content = 48'h1B_5B_31_3B_35_43; // Right arrow -> `[1;5C
-                    8'h4D: content = 48'h1B_5B_31_3B_35_44; // Left arrow  -> `[1;5D
+                    8'h75: content = 48'h1B_5B_31_3B_35_41; // Up arrow    -> `[1;5A
+                    8'h72: content = 48'h1B_5B_31_3B_35_42; // Down arrow  -> `[1;5B
+                    8'h74: content = 48'h1B_5B_31_3B_35_43; // Right arrow -> `[1;5C
+                    8'h6B: content = 48'h1B_5B_31_3B_35_44; // Left arrow  -> `[1;5D
                     default: valid = 0;
                 endcase
             end
@@ -205,16 +205,16 @@ module ScancodeDecoder(
 
             else begin
                 unique case(scancode)
-                    8'h52: content = 32'h1B_5B_32_7E; // Insert -> `[2~
-                    8'h53: content = 32'h1B_5B_33_7E; // Delete -> `[3~
-                    8'h49: content = 32'h1B_5B_35_7E; // Page Up -> `[5~
-                    8'h51: content = 32'h1B_5B_36_7E; // Page Down -> `[6~
-                    8'h48: content = 24'h1B_5B_41; // Up Arrow -> `[A
-                    8'h50: content = 24'h1B_5B_42; // Down Arrow -> `[B
-                    8'h4D: content = 24'h1B_5B_43; // Right Arrow -> `[C
-                    8'h4B: content = 24'h1B_5B_44; // Left Arrow -> `[D
-                    8'h47: content = 24'h1B_5B_48; // Home -> `[H
-                    8'h4F: content = 24'h1B_5B_46; // End -> `[F
+                    8'h70: content = 32'h1B_5B_32_7E; // Insert -> `[2~
+                    8'h71: content = 32'h1B_5B_33_7E; // Delete -> `[3~
+                    8'h7D: content = 32'h1B_5B_35_7E; // Page Up -> `[5~
+                    8'h7A: content = 32'h1B_5B_36_7E; // Page Down -> `[6~
+                    8'h75: content = 24'h1B_5B_41; // Up Arrow -> `[A
+                    8'h72: content = 24'h1B_5B_42; // Down Arrow -> `[B
+                    8'h74: content = 24'h1B_5B_43; // Right Arrow -> `[C
+                    8'h6B: content = 24'h1B_5B_44; // Left Arrow -> `[D
+                    8'h6C: content = 24'h1B_5B_48; // Home -> `[H
+                    8'h69: content = 24'h1B_5B_46; // End -> `[F
                     default: valid = 0;
                 endcase
             end
@@ -267,10 +267,10 @@ module ScancodeDecoder(
 
             else begin
                 unique case (scancode)
-                    8'h48,  // Up arrow    -> `[1;5A
-                    8'h50,  // Down arrow  -> `[1;5B
-                    8'h4B,  // Right arrow -> `[1;5C
-                    8'h4D:  // Left arrow  -> `[1;5D
+                    8'h75,  // Up arrow    -> `[1;5A
+                    8'h72,  // Down arrow  -> `[1;5B
+                    8'h74,  // Right arrow -> `[1;5C
+                    8'h6B:  // Left arrow  -> `[1;5D
                     length = 6;
                 endcase
             end
@@ -417,18 +417,18 @@ module ScancodeDecoder(
 
             else begin
                 unique case(scancode)
-                    8'h52, // Insert -> `[2~
-                    8'h53, // Delete -> `[3~
-                    8'h49, // Page Up -> `[5~
-                    8'h51: // Page Down -> `[6~
+                    8'h70, // Insert -> `[2~
+                    8'h71, // Delete -> `[3~
+                    8'h7D, // Page Up -> `[5~
+                    8'h7A: // Page Down -> `[6~
                     length = 4;
 
-                    8'h48, // Up Arrow -> `[A
-                    8'h50, // Down Arrow -> `[B
-                    8'h4D, // Right Arrow -> `[C
-                    8'h4B, // Left Arrow -> `[D
-                    8'h47, // Home -> `[H
-                    8'h4F: // End -> `[F
+                    8'h75, // Up Arrow -> `[A
+                    8'h72, // Down Arrow -> `[B
+                    8'h74, // Right Arrow -> `[C
+                    8'h6B, // Left Arrow -> `[D
+                    8'h6C, // Home -> `[H
+                    8'h69: // End -> `[F
                     length = 3;
 
                 endcase
