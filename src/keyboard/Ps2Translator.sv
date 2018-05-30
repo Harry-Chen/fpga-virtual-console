@@ -132,14 +132,16 @@ module Ps2Translator(
         
             
             STATE_SPECIAL_SHIFT: begin
-                if (scancode == BREAK) begin
-                    nextState = STATE_BREAK_SHIFT;
-                end else begin
-                    nextState = STATE_SHIFT;
-                    shift = 1;
-                    special = 1;
-                    // TODO: we do not handle Shift + Special Keys
-                    // outputEnable = 1;
+                if(scancodeDone) begin
+                    if (scancode == BREAK) begin
+                        nextState = STATE_BREAK_SHIFT;
+                    end else begin
+                        nextState = STATE_SHIFT;
+                        shift = 1;
+                        special = 1;
+                        // TODO: we do not handle Shift + Special Keys
+                        // outputEnable = 1;
+                    end
                 end
             end
            
@@ -176,15 +178,17 @@ module Ps2Translator(
             end
             
             STATE_SPECIAL_CTRL: begin
-                if (scancode == BREAK) begin
-                    nextState = STATE_BREAK_CTRL;
-                end else begin
-                    nextState = STATE_CTRL;
-                    outputEnable = 1;
-                    ctrl = 1;
-                    special = 1;
-                    // Ctrl + Special Key
-                    // TODO: not working at the moment
+                if (scancodeDone) begin
+                    if (scancode == BREAK) begin
+                        nextState = STATE_BREAK_CTRL;
+                    end else begin
+                        nextState = STATE_CTRL;
+                        outputEnable = 1;
+                        ctrl = 1;
+                        special = 1;
+                        // Ctrl + Special Key
+                        // TODO: not working at the moment
+                    end
                 end
             end
 
