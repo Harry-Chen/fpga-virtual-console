@@ -203,6 +203,7 @@ set_global_assignment -name PARTITION_NETLIST_TYPE SOURCE -section_id Top
 set_global_assignment -name PARTITION_FITTER_PRESERVATION_LEVEL PLACEMENT_AND_ROUTING -section_id Top
 set_global_assignment -name PARTITION_COLOR 16764057 -section_id Top
 
+set_global_assignment -name SYSTEMVERILOG_FILE keyboard/ScancodeDecoder.sv
 set_global_assignment -name SYSTEMVERILOG_FILE keyboard/Ps2Translator.sv
 set_global_assignment -name SYSTEMVERILOG_FILE keyboard/FifoConsumer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE keyboard/KeyboardController.sv
@@ -229,8 +230,6 @@ set_global_assignment -name SYSTEMVERILOG_FILE display/VgaDisplayAdapter.sv
 set_global_assignment -name SYSTEMVERILOG_FILE display/TextRenderer.sv
 set_global_assignment -name SYSTEMVERILOG_FILE FpgaVirtualConsole.sv
 set_global_assignment -name SYSTEMVERILOG_FILE utility/LedDecoder.sv
-set_global_assignment -name VERILOG_FILE keyboard/ScanCodeToAscii.v
-set_global_assignment -name VERILOG_FILE keyboard/Ps2StateMachine.v
 set_global_assignment -name VERILOG_FILE keyboard/Ps2Receiver.v
 set_global_assignment -name VERILOG_FILE utility/AsyncUartTransceiver.v
 set_global_assignment -name SIGNALTAP_FILE debug/stp.stp
