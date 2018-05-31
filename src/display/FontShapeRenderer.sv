@@ -15,7 +15,7 @@ module FontShapeRenderer(
     );
 
     typedef enum logic[1:0] {
-        STATE_INIT, STATE_WAIT_WRITE, STATE_LOAD_PIXEL, STATE_DONE
+        STATE_INIT, STATE_RENDER_ODD_PIXEL, STATE_WAIT_WRITE, STATE_DONE
     } FontShapeRendererState_t;
 
     FontShapeRendererState_t currentState, nextState;
@@ -44,18 +44,18 @@ module FontShapeRenderer(
     always_comb begin
         if (effect.negative) begin
             if (effect.bright) begin
-                background = nowRenderingData.foreground.color | 9'b100_100_100;
+                background = nowRenderingData.foreground | 9'b100_100_100;
             end else begin
-                background = nowRenderingData.foreground.color;
+                background = nowRenderingData.foreground;
             end
-            foreground = nowRenderingData.background.color;
+            foreground = nowRenderingData.background;
         end else begin
             if (effect.bright) begin
-                foreground = nowRenderingData.foreground.color | 9'b100_100_100;
+                foreground = nowRenderingData.foreground | 9'b100_100_100;
             end else begin
-                foreground = nowRenderingData.foreground.color;
+                foreground = nowRenderingData.foreground;
            end
-           background = nowRenderingData.background.color;
+           background = nowRenderingData.background;
         end
 
         if (effect.underline & y == (`HEIGHT_PER_CHARACTER - 1)) begin
@@ -69,9 +69,18 @@ module FontShapeRenderer(
         end
     end
 
+    Pixel_t pixel;
 
-    Pixel_t nowPixel;
-    assign nowPixel.color = nowColor;
+    always_ff @(posedge clk) begin
+        if (currentState == STATE_RENDER_ODD_PIXEL) begin
+            pixel.pixelOdd <= nowColor;
+        end
+    end
+
+    assign pixel.pixelEven = nowColor;
+
+    assign ramRequest.dout = pixel;
+    assign ramRequest.address = nowBaseAddress + (y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x) >> 1;
 
 
     always_ff @(posedge clk or posedge rst) begin
@@ -83,8 +92,6 @@ module FontShapeRenderer(
             x <= nextX;
             y <= nextY;
             currentState <= nextState;
-            ramRequest.dout <= nowPixel;
-            ramRequest.address <= nowBaseAddress + y * `CONSOLE_COLUMNS * `WIDTH_PER_CHARACTER + x;
             if (currentState == STATE_INIT) begin
                 gridData <= grid;
                 baseAddressData <= baseAddress;
@@ -103,6 +110,12 @@ module FontShapeRenderer(
             STATE_INIT: begin
                 nextX = 0;
                 nextY = 0;
+                nextState = STATE_RENDER_ODD_PIXEL;
+            end
+
+            STATE_RENDER_ODD_PIXEL: begin
+                nextX = x + 1;
+                nextY = y;
                 nextState = STATE_WAIT_WRITE;
             end
 
@@ -111,7 +124,7 @@ module FontShapeRenderer(
                 ramRequest.we_n = 0;
                 nextState = STATE_WAIT_WRITE;
                 if (ramResult.done) begin
-                    nextState = STATE_LOAD_PIXEL;
+                    nextState = STATE_RENDER_ODD_PIXEL;
                     if (x == `WIDTH_PER_CHARACTER - 1) begin
                         nextX = 0;
                         if (y == `HEIGHT_PER_CHARACTER - 1) begin
@@ -127,9 +140,6 @@ module FontShapeRenderer(
                 end
             end
 
-            STATE_LOAD_PIXEL: begin
-                nextState = STATE_WAIT_WRITE;
-            end
 
             STATE_DONE: begin
                 if (fontReady) nextState = STATE_INIT;

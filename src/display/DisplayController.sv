@@ -61,7 +61,7 @@ module DisplayController (
 
     // VGA module
     VgaDisplayAdapter display(
-        .clk(clk25M),
+        .clk(clk50M),
         .rst,
         .baseAddress(vgaBaseAddress),
         .ramRequest(vgaRequest),

@@ -1,81 +1,126 @@
 `include "DataType.svh"
 
 module VgaDisplayAdapter(
-    input  clk,       
-    input  rst,
-    input  SramAddress_t baseAddress,
-    input  SramResult_t  ramResult,
-    output SramRequest_t ramRequest,
-    output VgaSignal_t   vga,
-    output paintDone
+    input                 clk,       
+    input                 rst,
+    input  SramAddress_t  baseAddress,
+    input  SramResult_t   ramResult,
+    output SramRequest_t  ramRequest,
+    output VgaSignal_t    vga,
+    output                paintDone
     );
 
-    localparam H_ACTIVE = 640;
-    localparam H_FRONT_PORCH = 16;
-    localparam H_SYNC_PULSE = 96;
-    localparam H_BACK_PORCH = 48;
-    localparam V_ACTIVE = 480;
-    localparam V_FRONT_PORCH = 10;
-    localparam V_SYNC_PULSE = 2;
-    localparam V_BACK_PORCH = 33;
+    localparam H_ACTIVE = 800;
+    localparam H_FRONT_PORCH = 56;
+    localparam H_SYNC_PULSE = 120;
+    localparam H_BACK_PORCH = 64;
+    localparam V_ACTIVE = 600;
+    localparam V_FRONT_PORCH = 37;
+    localparam V_SYNC_PULSE = 6;
+    localparam V_BACK_PORCH = 23;
 
     localparam H_ALL = H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE + H_BACK_PORCH;
     localparam V_ALL = V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE + V_BACK_PORCH;
 
-    logic [9:0] nextX, hCounter;
-    logic [8:0] nextY, vCounter;
+    logic [10:0] nextX, hCounter;
+    logic [9:0] nextY, vCounter;
 
-    logic outputEnable, nextEnable;
+    logic loadMemory;
 
     assign ramRequest.den = 0;
     assign ramRequest.we_n = 1;
 	 
     assign vga.outClock = clk;
 
+    assign ramRequest.oe_n = ~loadMemory;
+    assign ramRequest.address = baseAddress + (nextY * H_ACTIVE + nextX) >> 1;
+
+    Pixel_t pixel, pixelData;
+
+    assign pixel = (~ramRequest.oe_n) ? ramResult : pixelData;
+
+    VgaColor_t color;
+
+    assign color = (hCounter[0] == 0) ? pixel.pixelOdd : pixel.pixelEven;
+
+    typedef enum logic[2:0] {
+      STATE_INIT, STATE_OUTPUT_ODD, STATE_OUTPUT_EVEN, STATE_WAIT
+    } VgaState_t;
+
+    VgaState_t currentState, nextState;
+
     always_comb begin
-      if (hCounter == H_ALL - 1) begin
-        nextX = 0;
-        if (vCounter == V_ALL - 1) nextY = 0;
-        else nextY = vCounter + 1;
+      if (currentState != STATE_INIT) begin
+        if (hCounter == H_ALL - 1) begin
+          nextX = 0;
+          if (vCounter == V_ALL - 1) nextY = 0;
+          else nextY = vCounter + 1;
+        end else begin
+          nextX = hCounter + 1;
+          nextY = vCounter;
+        end
       end else begin
-        nextX = hCounter + 1;
-        nextY = vCounter;
+        nextX = 0;
+        nextY = 0;
       end
     end
 
-    Pixel_t pixel;
-    assign vga.color = pixel.color;
+    always_comb begin
+      nextState = currentState;
+      loadMemory = 0;
+
+      unique case (currentState)
+        STATE_INIT: begin
+          nextState = STATE_OUTPUT_ODD;
+          loadMemory = 1;
+        end
+
+        STATE_OUTPUT_ODD: begin
+          nextState = STATE_OUTPUT_EVEN;
+        end
+
+        STATE_OUTPUT_EVEN: begin
+          if (hCounter < H_ACTIVE - 1) begin
+            loadMemory = 1;
+            nextState = STATE_OUTPUT_ODD;
+          end else begin
+            nextState = STATE_WAIT;
+          end
+        end
+
+        STATE_WAIT: begin
+          if (hCounter == H_ALL - 1) begin
+            nextState = STATE_OUTPUT_ODD;
+            loadMemory = 1;
+          end
+        end
+      endcase
+    end
 
     always_ff @(posedge clk or posedge rst) begin
       if (rst) begin
         hCounter <= 0;
         vCounter <= 0;
-        pixel <= 0;
-        outputEnable <= 0;
-        nextEnable <= 0;
+        currentState <= STATE_INIT;
       end else begin
+        currentState <= nextState;
         hCounter <= nextX;
         vCounter <= nextY;
 
-        outputEnable <= (hCounter < H_ACTIVE) & (vCounter < V_ACTIVE);
-        nextEnable <= (nextX < H_ACTIVE) & (nextY < V_ACTIVE);
-
-        ramRequest.oe_n <= ~nextEnable;
-        ramRequest.address <= baseAddress + nextY * H_ACTIVE + nextX - 1;
+        if (~ramRequest.oe_n) begin
+          pixelData <= ramResult;
+        end
 
         vga.hSync <= ~((hCounter >= H_ACTIVE + H_FRONT_PORCH) & (hCounter < H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE));
         vga.vSync <= ~((vCounter >= V_ACTIVE + V_FRONT_PORCH) & (vCounter < V_ACTIVE + V_FRONT_PORCH + V_SYNC_PULSE));
-        vga.de <= outputEnable;
         paintDone <= nextY >= V_ACTIVE;
 
-        if (nextEnable) begin
-          if (ramResult.done) begin
-            pixel <= Pixel_t'(ramResult.din);
-          end else begin
-            pixel <= pixel;
-          end
+        if ((hCounter < H_ACTIVE) && (vCounter < V_ACTIVE)) begin
+          vga.color <= color;
+          vga.de <= 1;
         end else begin
-          pixel <= 0;
+          vga.color <= 0;
+          vga.de <= 0;
         end
       end
     end

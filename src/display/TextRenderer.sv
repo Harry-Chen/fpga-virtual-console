@@ -46,7 +46,7 @@ module TextRenderer(
     assign currentLine = currentState == STATE_READ_TEXT ? textRamResult : lineData;
 
 
-    Pixel_t foregroundColor, backgroundColor;
+    VgaColor_t foregroundColor, backgroundColor;
     assign foregroundColor = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_FOREGROUND_OFFSET +: `CHAR_FOREGROUND_LENGTH];
     assign backgroundColor = currentLine[`TEXT_RAM_CHAR_WIDTH * column + `CHAR_BACKGROUND_OFFSET +: `CHAR_BACKGROUND_LENGTH];
 

@@ -56,12 +56,12 @@ module TextRam (
 	input	[5:0]  address_b;
 	input	  clock_a;
 	input	  clock_b;
-	input	[2559:0]  data_a;
-	input	[2559:0]  data_b;
+	input	[3199:0]  data_a;
+	input	[3199:0]  data_b;
 	input	  wren_a;
 	input	  wren_b;
-	output	[2559:0]  q_a;
-	output	[2559:0]  q_b;
+	output	[3199:0]  q_a;
+	output	[3199:0]  q_b;
 `ifndef ALTERA_RESERVED_QIS
 // synopsys translate_off
 `endif
@@ -74,10 +74,10 @@ module TextRam (
 // synopsys translate_on
 `endif
 
-	wire [2559:0] sub_wire0;
-	wire [2559:0] sub_wire1;
-	wire [2559:0] q_a = sub_wire0[2559:0];
-	wire [2559:0] q_b = sub_wire1[2559:0];
+	wire [3199:0] sub_wire0;
+	wire [3199:0] sub_wire1;
+	wire [3199:0] q_a = sub_wire0[3199:0];
+	wire [3199:0] q_b = sub_wire1[3199:0];
 
 	altsyncram	altsyncram_component (
 				.aclr0 (aclr_a),
@@ -110,11 +110,11 @@ module TextRam (
 		altsyncram_component.clock_enable_output_a = "BYPASS",
 		altsyncram_component.clock_enable_output_b = "BYPASS",
 		altsyncram_component.indata_reg_b = "CLOCK1",
-		altsyncram_component.init_file = "TextRamLogo.mif",
+		altsyncram_component.init_file = "TextRamLogoBig.mif",
 		altsyncram_component.intended_device_family = "Cyclone IV E",
 		altsyncram_component.lpm_type = "altsyncram",
-		altsyncram_component.numwords_a = 40,
-		altsyncram_component.numwords_b = 40,
+		altsyncram_component.numwords_a = 50,
+		altsyncram_component.numwords_b = 50,
 		altsyncram_component.operation_mode = "BIDIR_DUAL_PORT",
 		altsyncram_component.outdata_aclr_a = "CLEAR0",
 		altsyncram_component.outdata_aclr_b = "CLEAR1",
@@ -125,8 +125,8 @@ module TextRam (
 		altsyncram_component.read_during_write_mode_port_b = "NEW_DATA_NO_NBE_READ",
 		altsyncram_component.widthad_a = 6,
 		altsyncram_component.widthad_b = 6,
-		altsyncram_component.width_a = 2560,
-		altsyncram_component.width_b = 2560,
+		altsyncram_component.width_a = 3200,
+		altsyncram_component.width_b = 3200,
 		altsyncram_component.width_byteena_a = 1,
 		altsyncram_component.width_byteena_b = 1,
 		altsyncram_component.wrcontrol_wraddress_reg_b = "CLOCK1";
@@ -167,9 +167,9 @@ endmodule
 // Retrieval info: PRIVATE: JTAG_ENABLED NUMERIC "0"
 // Retrieval info: PRIVATE: JTAG_ID STRING "NONE"
 // Retrieval info: PRIVATE: MAXIMUM_DEPTH NUMERIC "0"
-// Retrieval info: PRIVATE: MEMSIZE NUMERIC "102400"
+// Retrieval info: PRIVATE: MEMSIZE NUMERIC "160000"
 // Retrieval info: PRIVATE: MEM_IN_BITS NUMERIC "1"
-// Retrieval info: PRIVATE: MIFfilename STRING "TextRamLogo.mif"
+// Retrieval info: PRIVATE: MIFfilename STRING "TextRamLogoBig.mif"
 // Retrieval info: PRIVATE: OPERATION_MODE NUMERIC "3"
 // Retrieval info: PRIVATE: OUTDATA_ACLR_B NUMERIC "1"
 // Retrieval info: PRIVATE: OUTDATA_REG_B NUMERIC "0"
@@ -187,10 +187,10 @@ endmodule
 // Retrieval info: PRIVATE: USE_DIFF_CLKEN NUMERIC "0"
 // Retrieval info: PRIVATE: UseDPRAM NUMERIC "1"
 // Retrieval info: PRIVATE: VarWidth NUMERIC "0"
-// Retrieval info: PRIVATE: WIDTH_READ_A NUMERIC "2560"
-// Retrieval info: PRIVATE: WIDTH_READ_B NUMERIC "2560"
-// Retrieval info: PRIVATE: WIDTH_WRITE_A NUMERIC "2560"
-// Retrieval info: PRIVATE: WIDTH_WRITE_B NUMERIC "2560"
+// Retrieval info: PRIVATE: WIDTH_READ_A NUMERIC "3200"
+// Retrieval info: PRIVATE: WIDTH_READ_B NUMERIC "3200"
+// Retrieval info: PRIVATE: WIDTH_WRITE_A NUMERIC "3200"
+// Retrieval info: PRIVATE: WIDTH_WRITE_B NUMERIC "3200"
 // Retrieval info: PRIVATE: WRADDR_ACLR_B NUMERIC "0"
 // Retrieval info: PRIVATE: WRADDR_REG_B NUMERIC "1"
 // Retrieval info: PRIVATE: WRCTRL_ACLR_B NUMERIC "0"
@@ -203,11 +203,11 @@ endmodule
 // Retrieval info: CONSTANT: CLOCK_ENABLE_OUTPUT_A STRING "BYPASS"
 // Retrieval info: CONSTANT: CLOCK_ENABLE_OUTPUT_B STRING "BYPASS"
 // Retrieval info: CONSTANT: INDATA_REG_B STRING "CLOCK1"
-// Retrieval info: CONSTANT: INIT_FILE STRING "TextRamLogo.mif"
+// Retrieval info: CONSTANT: INIT_FILE STRING "TextRamLogoBig.mif"
 // Retrieval info: CONSTANT: INTENDED_DEVICE_FAMILY STRING "Cyclone IV E"
 // Retrieval info: CONSTANT: LPM_TYPE STRING "altsyncram"
-// Retrieval info: CONSTANT: NUMWORDS_A NUMERIC "40"
-// Retrieval info: CONSTANT: NUMWORDS_B NUMERIC "40"
+// Retrieval info: CONSTANT: NUMWORDS_A NUMERIC "50"
+// Retrieval info: CONSTANT: NUMWORDS_B NUMERIC "50"
 // Retrieval info: CONSTANT: OPERATION_MODE STRING "BIDIR_DUAL_PORT"
 // Retrieval info: CONSTANT: OUTDATA_ACLR_A STRING "CLEAR0"
 // Retrieval info: CONSTANT: OUTDATA_ACLR_B STRING "CLEAR1"
@@ -218,8 +218,8 @@ endmodule
 // Retrieval info: CONSTANT: READ_DURING_WRITE_MODE_PORT_B STRING "NEW_DATA_NO_NBE_READ"
 // Retrieval info: CONSTANT: WIDTHAD_A NUMERIC "6"
 // Retrieval info: CONSTANT: WIDTHAD_B NUMERIC "6"
-// Retrieval info: CONSTANT: WIDTH_A NUMERIC "2560"
-// Retrieval info: CONSTANT: WIDTH_B NUMERIC "2560"
+// Retrieval info: CONSTANT: WIDTH_A NUMERIC "3200"
+// Retrieval info: CONSTANT: WIDTH_B NUMERIC "3200"
 // Retrieval info: CONSTANT: WIDTH_BYTEENA_A NUMERIC "1"
 // Retrieval info: CONSTANT: WIDTH_BYTEENA_B NUMERIC "1"
 // Retrieval info: CONSTANT: WRCONTROL_WRADDRESS_REG_B STRING "CLOCK1"
@@ -229,10 +229,10 @@ endmodule
 // Retrieval info: USED_PORT: address_b 0 0 6 0 INPUT NODEFVAL "address_b[5..0]"
 // Retrieval info: USED_PORT: clock_a 0 0 0 0 INPUT VCC "clock_a"
 // Retrieval info: USED_PORT: clock_b 0 0 0 0 INPUT NODEFVAL "clock_b"
-// Retrieval info: USED_PORT: data_a 0 0 2560 0 INPUT NODEFVAL "data_a[2559..0]"
-// Retrieval info: USED_PORT: data_b 0 0 2560 0 INPUT NODEFVAL "data_b[2559..0]"
-// Retrieval info: USED_PORT: q_a 0 0 2560 0 OUTPUT NODEFVAL "q_a[2559..0]"
-// Retrieval info: USED_PORT: q_b 0 0 2560 0 OUTPUT NODEFVAL "q_b[2559..0]"
+// Retrieval info: USED_PORT: data_a 0 0 3200 0 INPUT NODEFVAL "data_a[3199..0]"
+// Retrieval info: USED_PORT: data_b 0 0 3200 0 INPUT NODEFVAL "data_b[3199..0]"
+// Retrieval info: USED_PORT: q_a 0 0 3200 0 OUTPUT NODEFVAL "q_a[3199..0]"
+// Retrieval info: USED_PORT: q_b 0 0 3200 0 OUTPUT NODEFVAL "q_b[3199..0]"
 // Retrieval info: USED_PORT: wren_a 0 0 0 0 INPUT GND "wren_a"
 // Retrieval info: USED_PORT: wren_b 0 0 0 0 INPUT GND "wren_b"
 // Retrieval info: CONNECT: @aclr0 0 0 0 0 aclr_a 0 0 0 0
@@ -241,12 +241,12 @@ endmodule
 // Retrieval info: CONNECT: @address_b 0 0 6 0 address_b 0 0 6 0
 // Retrieval info: CONNECT: @clock0 0 0 0 0 clock_a 0 0 0 0
 // Retrieval info: CONNECT: @clock1 0 0 0 0 clock_b 0 0 0 0
-// Retrieval info: CONNECT: @data_a 0 0 2560 0 data_a 0 0 2560 0
-// Retrieval info: CONNECT: @data_b 0 0 2560 0 data_b 0 0 2560 0
+// Retrieval info: CONNECT: @data_a 0 0 3200 0 data_a 0 0 3200 0
+// Retrieval info: CONNECT: @data_b 0 0 3200 0 data_b 0 0 3200 0
 // Retrieval info: CONNECT: @wren_a 0 0 0 0 wren_a 0 0 0 0
 // Retrieval info: CONNECT: @wren_b 0 0 0 0 wren_b 0 0 0 0
-// Retrieval info: CONNECT: q_a 0 0 2560 0 @q_a 0 0 2560 0
-// Retrieval info: CONNECT: q_b 0 0 2560 0 @q_b 0 0 2560 0
+// Retrieval info: CONNECT: q_a 0 0 3200 0 @q_a 0 0 3200 0
+// Retrieval info: CONNECT: q_b 0 0 3200 0 @q_b 0 0 3200 0
 // Retrieval info: GEN_FILE: TYPE_NORMAL TextRam.v TRUE
 // Retrieval info: GEN_FILE: TYPE_NORMAL TextRam.inc FALSE
 // Retrieval info: GEN_FILE: TYPE_NORMAL TextRam.cmp FALSE

@@ -45,13 +45,13 @@
 `define SRAM_DATA_WIDTH 32
 
 `define COLOR_NUMBERS_BITS 3
-`define CONSOLE_LINES 40
-`define CONSOLE_COLUMNS 80
+`define CONSOLE_LINES 50
+`define CONSOLE_COLUMNS 100
 `define HEIGHT_PER_CHARACTER 12
 `define WIDTH_PER_CHARACTER 8
 `define PIXEL_PER_CHARACTER `HEIGHT_PER_CHARACTER * `WIDTH_PER_CHARACTER
 
-`define VIDEO_BUFFER_SIZE 307200
+`define VIDEO_BUFFER_SIZE (800 * 600)
 
 `define UART_DATA_WIDTH 8
 `define UART_FIFO_LENGTH 8
@@ -134,14 +134,15 @@ typedef struct packed {
 
 // char on screen
 typedef struct packed {
-    logic [$bits(SramData_t) - $bits(VgaColor_t) - 1:0] placeholder;
-    VgaColor_t color;
+	logic [$bits(SramData_t) - 2 * $bits(VgaColor_t) - 1:0] placeholder;
+	VgaColor_t pixelOdd;
+    VgaColor_t pixelEven;
 } Pixel_t;
 
 typedef struct packed {
     logic   [`PIXEL_PER_CHARACTER - 1:0]shape;
-    Pixel_t foreground;
-    Pixel_t background;
+    VgaColor_t foreground;
+    VgaColor_t background;
 } CharGrid_t;
 
 
