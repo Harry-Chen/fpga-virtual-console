@@ -1,0 +1,119 @@
+digraph Architecture {
+    rankdir=LR;
+
+    graph[compound=true];
+
+    subgraph cluster_pll{
+        color=red;
+        label="Clocks";
+        TopPll[shape=square,style=filled];
+        TopPll->"100M";
+        TopPll->"50M";
+        "48M"->TopPll;
+    }
+
+
+    subgraph cluster_IOPorts{
+        color=cyan;
+        label="IO Ports";
+        node[shape=ellipse];
+        "PS/2";
+        UART;
+        VGA;
+        SRAM;
+        LED;
+    }
+
+    subgraph cluster_keyboard{
+        label="KeyboardController";
+        node[style=filled, shape=box];
+        color=blue;
+
+        Ps2Receiver->Ps2Translator[label="Scancode"];
+        Ps2Translator->ScancodeDecoder[label="Scancode"];
+        ScancodeDecoder->Ps2Translator[label="ASCII Sequence"];
+        ScancodeDecoder[shape=cylinder];
+
+        UartTxFifo[shape=cds, color=chartreuse];
+
+        Ps2Translator->UartTxFifo[label="ASCII Sequence"];
+        UartTxFifo->FifoConsumer[label="ASCII Sequence"];
+        FifoConsumer->AsyncUartTransmitter[label="8-bit ASCII"];
+
+    }
+
+
+    subgraph cluster_video{
+        label="VideoController";
+        node[style=filled, shape=box];
+        color=blue;
+
+        TextRam[shape=cylinder];
+
+        subgraph cluster_display{
+            label="DisplayController";
+
+            SramController->VgaDisplayAdapter[dir=both,label="Read Request/Result"];
+
+            SramController->TextRenderer[dir=both,label="Write Request/Result"];
+            
+            FontRom[shape=cylinder];
+            TextRenderer->FontRom[label="ASCII"];
+            FontRom->TextRenderer[label="Font Shape"];
+
+            TextRenderer->FontShapeRenderer[label="Font Shape"];
+            FontShapeRenderer->TextRenderer[label="SRAM Write Request"];
+            
+        }
+
+
+        subgraph cluster_parser{
+            label="VT100Parser"
+
+            CommandsParser->CursorControl[label="Command"];
+            CommandsParser->TextControl[label="Command"];
+            CommandsParser->ModelControl[label="Command"];
+            CommandsParser->AttribControl[label="Command"];
+            CommandsParser->GraphicsControl[label="Command"];
+
+            CursorControl->TextControl[label="Terminal Status"];
+            ModelControl->TextControl[label="Terminal Status"];
+            AttribControl->TextControl[label="Terminal Status"];
+            GraphicsControl->TextControl[label="Terminal Status"];
+
+            Color256Decoder[shape=cylinder];
+            GraphicsControl->Color256Decoder[label="Encoded Color"];
+            Color256Decoder->GraphicsControl[label="Decoded Color"];
+
+            TextControl->LED[label="Debug Info"];
+        }
+
+
+        CursorControl->TextRenderer[label="Cursor Info"];
+        CursorControl->TextControl[label="Scrolling"];
+
+        AsyncUartReceiver->CommandsParser[label="ASCII"];
+
+        BlinkGenerator->TextRenderer[label="Blink Status"];
+        BlinkGenerator->CursorControl[label="Blink Status"]
+
+        TextRenderer->TextRam[label="Read Request"];
+        TextRam->TextRenderer[label="Line Content"];
+
+        TextControl->TextRam[label="Write Request"];
+
+    }   
+
+
+    "100M"->Ps2Translator[lhead=cluster_keyboard,style=dashed];
+    "50M"->SramController[lhead=cluster_display,style=dashed];
+    "100M"->CommandsParser[lhead=cluster_parser,style=dashed];
+
+    "PS/2"->Ps2Receiver[label="Clock & Data"];
+    AsyncUartTransmitter->UART[label="Data to PC"];
+    UART->AsyncUartReceiver[label="Data from PC"];
+    VgaDisplayAdapter->VGA[label="VGA Signal"];
+    SramController->SRAM[label="Address"];
+    SramController->SRAM[dir=both,label="Data"]; 
+
+}
