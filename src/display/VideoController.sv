@@ -2,6 +2,7 @@
 module VideoController(
     input                               clk100M,
     input                               clk50M,
+    input                               rst,
     input                               uartRx,
     output  VgaSignal_t                 vga,
     // sram read/write
@@ -44,7 +45,7 @@ module VideoController(
 
 	VT100Parser vt100Parser(
         .clk(clk100M),
-        .rst(rstPll),
+        .rst,
         .dataReady(uartReady),
         .data(uartDataReceived),
         .ramRes(textRamResultParser),
@@ -60,8 +61,8 @@ module VideoController(
     TextRamResult_t textRamResultParser, textRamResultRenderer;
 
     TextRam textRam(
-        .aclr_a(rstPll),
-        .aclr_b(rstPll),
+        .aclr_a(rst),
+        .aclr_b(rst),
         .address_a(textRamRequestParser.address),
         .address_b(textRamRequestRenderer.address),
         .clock_a(clk100M),
@@ -78,7 +79,7 @@ module VideoController(
     // Video controller module
     DisplayController controller(
         .clk(clk50M),
-        .rst(rstPll),
+        .rst,
         .blinkStatus,
         .cursor,
         .textRamResult(textRamResultRenderer),
