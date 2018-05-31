@@ -54,9 +54,9 @@ module VgaDisplayAdapter(
         if (hCounter == H_ALL - 1) begin
           nextX = 0;
           if (vCounter == V_ALL - 1) nextY = 0;
-          else nextY = vCounter + 1;
+          else nextY = vCounter + 1'b1;
         end else begin
-          nextX = hCounter + 1;
+          nextX = hCounter + 1'b1;
           nextY = vCounter;
         end
       end else begin

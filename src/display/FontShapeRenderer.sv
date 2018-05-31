@@ -114,7 +114,7 @@ module FontShapeRenderer(
             end
 
             STATE_RENDER_ODD_PIXEL: begin
-                nextX = x + 1;
+                nextX = x + 1'b1;
                 nextY = y;
                 nextState = STATE_WAIT_WRITE;
             end
@@ -131,10 +131,10 @@ module FontShapeRenderer(
                             nextState = STATE_DONE;
                             nextY = 0;
                         end else begin
-                            nextY = y + 1;
+                            nextY = y + 1'b1;
                         end
                     end else begin
-                        nextX = x + 1;
+                        nextX = x + 1'b1;
                         nextY = y;
                     end
                 end

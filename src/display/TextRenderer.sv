@@ -128,12 +128,12 @@ module TextRenderer(
                             nextLine = 0;
                             nextState = STATE_DONE;
                         end else begin
-                            nextLine = line + 1;
+                            nextLine = line + 1'b1;
                             textRamRequest.address = nextLine;
                             nextState = STATE_READ_TEXT;
                         end
                     end else begin
-                        nextColumn = column + 1;
+                        nextColumn = column + 1'b1;
                         nextLine = line;
                         fontRomAddress = currentLine[`TEXT_RAM_CHAR_WIDTH * nextColumn +: 8];
                         fontReady = 1;
