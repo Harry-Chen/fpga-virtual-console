@@ -1,6 +1,7 @@
 `include "DataType.svh"
 `define MODE_SETCHAR    1'b0
 `define MODE_MOVELINE 1'b1
+`define MIN(a, b) (((a) < (b)) ? (a) : (b))
 
 typedef struct packed {
 	logic mode;  // 0 - SET_CHAR, 1 - MOVE_LINE
@@ -10,6 +11,10 @@ typedef struct packed {
 	logic [7:0] col_start, col_end;  // including the two end points
 	logic [7:0] col_now, col_read_addr;
 	logic move_dir;  // 1 - right, 0 - left
+
+	// for REP command
+	logic rep_mode;
+	logic [7:0] row_end, col_final;
 } LineEdit_t;
 
 module TextControl(
@@ -22,6 +27,7 @@ module TextControl(
 	input                   scrollReady,
 	input  TextRamResult_t  ramRes,
 	output TextRamRequest_t ramReq,
+	output [31:0]           prevData,
 	output [4:0]            debug
 );
 
@@ -74,6 +80,18 @@ assign char_printable = char >= 8'h20;
 
 always @(posedge clk or posedge rst)
 begin
+	if(rst) 
+	begin
+		prevData <= 32'd0;
+	end else if(commandReady) begin
+		if(commandType == INPUT && char_printable)
+			prevData <= { text_attribute, char };
+		else prevData <= 32'd0;
+	end
+end
+
+always @(posedge clk or posedge rst)
+begin
 	if(rst)
 	begin
 		status = Idle;
@@ -93,16 +111,31 @@ begin
 						begin
 							status = input_ReadRam0;
 							line_edit.mode      = `MODE_SETCHAR;  
+							line_edit.rep_mode  = 1'b0;  
 							line_edit.data      = { text_attribute, char };
 							line_edit.row       = term.cursor.x;
 							line_edit.col_start = term.cursor.y;
 							line_edit.col_end   = term.cursor.y;
 						end
 					end
+					REP:
+					if(term.prev_data != 32'd0)
+					begin
+						status = input_ReadRam0;
+						line_edit.mode      = `MODE_SETCHAR;  
+						line_edit.rep_mode  = term.mode.auto_wrap;  
+						line_edit.data      = term.prev_data;
+						line_edit.row       = term.cursor.x;
+						line_edit.col_start = term.cursor.y;
+						line_edit.col_end   = `MIN(term.cursor.y + param.Pn1 - 8'd1, `CONSOLE_COLUMNS - 1);
+						line_edit.row_end   = term.cursor.x + (term.cursor.y + param.Pn1) / `CONSOLE_COLUMNS;
+						line_edit.col_final = (term.cursor.y + param.Pn1 - 8'd1) % `CONSOLE_COLUMNS;
+					end
 					EL:
 					begin
 						status = input_ReadRam0;
 						line_edit.mode      = `MODE_SETCHAR;  
+						line_edit.rep_mode  = 1'b0;
 						line_edit.data      = `EMPTY_DATA;
 						line_edit.row       = term.cursor.x;
 						line_edit.col_start = (param.Pn1 != 8'h0) ? 8'h0 : term.cursor.y;
@@ -112,6 +145,7 @@ begin
 					begin
 						status = input_ReadRam0;
 						line_edit.mode      = `MODE_MOVELINE;  
+						line_edit.rep_mode  = 1'b0;
 						line_edit.row       = term.cursor.x;
 						line_edit.col_start = term.cursor.y;
 						line_edit.col_end   = term.cursor.y + param.Pn1 - 8'd1;
@@ -120,6 +154,7 @@ begin
 					ECH:
 					begin
 						line_edit.mode      = `MODE_SETCHAR;  
+						line_edit.rep_mode  = 1'b0;
 						line_edit.data      = `EMPTY_DATA;
 						line_edit.row       = term.cursor.x;
 						line_edit.col_start = term.cursor.y;
@@ -132,6 +167,7 @@ begin
 						reset_bottom = (param.Pn1 != 8'h1) ? `CONSOLE_LINES - 1 : term.cursor.x;
 					end
 					IL, DL:
+					if(scrolling.top <= term.cursor.x && term.cursor.x <= scrolling.bottom)
 					begin
 						// deletes/inserts Pn1 lines from the buffer
 						// starting with the row the cursor is on.
@@ -140,6 +176,14 @@ begin
 						scrolling.bottom = term.attrib.scroll_bottom;
 						scrolling.step   = param.Pn1;
 						scrolling.dir    = (commandType == DL) ? 1'b0 : 1'b1;
+					end
+					SU, SD: // Scroll up/down Ps lines
+					begin
+						status = scroll_Start;
+						scrolling.top    = term.attrib.scroll_top;
+						scrolling.bottom = term.attrib.scroll_bottom;
+						scrolling.step   = param.Pn1;
+						scrolling.dir    = (commandType == SU) ? 1'b0 : 1'b1;
 					end
 					default:
 						status = Idle;
@@ -169,7 +213,15 @@ begin
 				else status = line_edit.col_now == 8'd0 ? input_WriteRam : input_CycRead;
 			end
 			input_WriteRam:
-				status = delay_scrolling ? scroll_Start : Idle;
+				if(line_edit.rep_mode && line_edit.row < line_edit.row_end)
+				begin
+					status = input_ReadRam0;
+					line_edit.row       = line_edit.row + 8'd1;
+					line_edit.col_start = 8'd0;
+					line_edit.col_end   = (line_edit.row + 8'd1 == line_edit.row_end) ? line_edit.col_final : `CONSOLE_COLUMNS - 1;
+				end else begin
+					status = delay_scrolling ? scroll_Start : Idle;
+				end
 			scroll_Start:
 				status = scroll_ReadRam0;
 			scroll_ReadRam0:

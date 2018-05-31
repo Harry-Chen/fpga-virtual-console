@@ -92,7 +92,10 @@ begin
 			CUD:  // Cursor Down
 				o_cursor.x <= `MIN(i_cursor.x + Pn, cursor_x_max);
 			CUU:  // Cursor Up
-				o_cursor.x <= (i_cursor.x < Pn) ? 8'd0 : i_cursor.x - Pn;
+				if(term.cursor.x < term.attrib.scroll_top + Pn)
+					o_cursor.x <= term.attrib.scroll_top - origin_x;
+				else
+					o_cursor.x <= i_cursor.x - Pn;
 			CNL:
 			begin
 				o_cursor.y <= 8'd0;
@@ -113,10 +116,12 @@ begin
 				if(is_final_line)
 					`SET_SCROLLING_UP(8'b1)
 			end
+			IL, DL: // TODO: Not Sure
+				o_cursor.y <= 8'd0;
 			RI:  // Reverse Index
-				if(i_cursor.x == 8'd0)
+				if(term.cursor.x == term.attrib.scroll_top)  // absolute position needed
 				begin
-					o_cursor.x <= 8'd0;
+					o_cursor.x <= term.attrib.scroll_top - origin_x;
 					`SET_SCROLLING_DOWN(8'd1)
 				end else begin
 					o_cursor.x <= i_cursor.x - 8'd1;
@@ -133,6 +138,17 @@ begin
 				o_cursor.x <= 8'd0;
 				o_cursor.y <= 8'd0;
 			end
+			REP:
+				if(term.prev_data)
+				begin
+					if(term.mode.auto_wrap)
+					begin
+						o_cursor.y <= (i_cursor.y + param.Pn1) % `CONSOLE_COLUMNS;
+						o_cursor.x <= o_cursor.x + (i_cursor.y + param.Pn1) / `CONSOLE_COLUMNS;
+					end else begin
+						o_cursor.y <= `MIN(i_cursor.y + param.Pn1, `CONSOLE_COLUMNS - 1);
+					end
+				end
 			INPUT:
 				unique case(param.Pchar)
 				8'o12,8'o13,8'o14:  // LF, VT, FF

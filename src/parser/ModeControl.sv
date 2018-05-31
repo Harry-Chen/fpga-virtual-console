@@ -5,7 +5,7 @@
 begin \
 	m.origin_mode        <= 1'b0; \
 	m.auto_wrap          <= 1'b1; \
-	m.replace_mode       <= 1'b0; \
+	m.insert_mode        <= 1'b0; \
 	m.line_feed          <= 1'b1; \
 	m.cursor_blinking    <= 1'b1; \
 	m.cursor_visibility  <= 1'b1; \
@@ -77,8 +77,8 @@ begin
 					8'd12: new_mode_dec.cursor_blinking   <= 1'b1;
 					8'd25: new_mode_dec.cursor_visibility <= 1'b1;
 
-					8'd4:  new_mode.replace_mode <= 1'b1;
-					8'd20: new_mode.line_feed    <= 1'b1;
+					8'd4:  new_mode.insert_mode <= 1'b1;
+					8'd20: new_mode.line_feed   <= 1'b1;
 				endcase
 			end
 		endcase

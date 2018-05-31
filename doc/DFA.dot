@@ -176,12 +176,18 @@ digraph DFA {
 		node[style=filled,shape=square];
         color=blue;
         label="Scrolling";  
-		DECSTBM;
+		DECSTBM; SU; SD;
 	}
 
 	// ESC [ Pn; Pn r
 	Pn2->DECSTBM[label=r]; // Set top and bottom margins
 	CSI->DECSTBM[label=r];
+
+	CSI->SU[label=S];
+	Pn1->SU[label=S];
+
+	CSI->SD[label=T];
+	Pn1->SD[label=T];
 
 	/* Erasing */
 	subgraph cluster4 {
@@ -202,7 +208,7 @@ digraph DFA {
 		node[style=filled,shape=square];
         color=blue;
         label="Editing";  
-		ECH; DCH; ICH; IL; DL;
+		ECH; DCH; ICH; IL; DL; REP;
 	}
 
 	Pn1->ICH[label="@"]; // Insert character
@@ -210,6 +216,7 @@ digraph DFA {
 	Pn1->DCH[label=P]; // Delete character
 	Pn1->IL[label=L];  // Insert line
 	Pn1->DL[label=M];  // Delete line
+	Pn1->REP[label=b];  // Delete line
 
 	CSI->ICH[label="@"]; // Insert character
 	CSI->ECH[label=X]; // Erase character

@@ -1,4 +1,4 @@
-`include "Datatype.svh"
+`include "DataType.svh"
 
 module FifoConsumer(
     input                   clk,

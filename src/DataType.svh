@@ -4,7 +4,7 @@
 
 // constants
 `define BAUD_RATE 115200
-//`define BAUD_RATE 500_000  // 500k
+//`define BAUD_RATE 1_000_000  // 1M
 `define BOARD_CLOCK_FRENQUENCY 48_000_000
 `define CURSOR_BLINKING_FREQ  2
 
@@ -160,9 +160,9 @@ typedef enum logic[7:0] {
 	CNL, CPL, CHA, VPA,
 	NEL, RI, DECSC, DECRC,
 	/* Scrolling */
-	DECSTBM,
+	DECSTBM, SU, SD,
 	/* Editing */
-	ED, EL, ICH, DCH, ECH, IL, DL,
+	ED, EL, ICH, DCH, ECH, IL, DL, REP,
 	/* Charset */
 	SCS0, SCS1, SS2, SS3,
 	/* Mode */
@@ -195,7 +195,7 @@ typedef struct packed {
 } Graphics_t;
 
 typedef struct packed {
-	logic origin_mode, auto_wrap, replace_mode, line_feed;
+	logic origin_mode, auto_wrap, insert_mode, line_feed;
 	logic cursor_blinking, cursor_visibility;
 } TermMode_t;
 
@@ -210,6 +210,7 @@ typedef struct packed {
 	Graphics_t graphics;
 	TermMode_t mode;
 	TermAttrib_t attrib;
+	logic [31:0] prev_data;
 } Terminal_t;
 
 typedef struct packed {

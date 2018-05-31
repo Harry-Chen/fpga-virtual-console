@@ -66,6 +66,7 @@ TextControl text_control(
 	.i_scrolling(scrolling),
 	.ramRes,
 	.ramReq,
+	.prevData(term.prev_data),
 	.debug(debug[35:32])
 );
 

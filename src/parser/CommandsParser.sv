@@ -55,6 +55,8 @@ begin
 						status = LBRACKET;
 					8'h29: // '('
 						status = RBRACKET;
+					8'h20: // space
+						status = ESC;
 					8'h23, 8'h2a, 8'h2b: // '#', '*', '+'
 						status = TRAP;
 					default: status = START;
@@ -255,6 +257,16 @@ begin
 						param.Pn1 <= 8'd1;
 						`SET_COMMAND_BLOCK(DCH)
 					end
+					8'h53: // 'S'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(SU)
+					end
+					8'h54: // 'T'
+					begin
+						param.Pn1 <= 8'd1;
+						`SET_COMMAND_BLOCK(SD)
+					end
 					8'h40: // '@'
 					begin
 						param.Pn1 <= 8'd1;
@@ -319,12 +331,18 @@ begin
 						`SET_COMMAND_BLOCK(ICH)
 					8'h50: // 'P'
 						`SET_COMMAND_BLOCK(DCH)
+					8'h53: // 'S'
+						`SET_COMMAND_BLOCK(SU)
+					8'h54: // 'T'
+						`SET_COMMAND_BLOCK(SD)
 					8'h58: // 'X'
 						`SET_COMMAND_BLOCK(ECH)
 					8'h4c: // 'L'
 						`SET_COMMAND_BLOCK(IL)
 					8'h4d: // 'M'
 						`SET_COMMAND_BLOCK(DL)
+					8'h62: // 'b'
+						`SET_COMMAND_BLOCK(REP)
 					8'h64: // 'd'
 						`SET_COMMAND_BLOCK(VPA)
 					8'h67: // 'g'
@@ -402,9 +420,15 @@ begin
 						`SET_COMMAND(EMIT_PN)
 					end
 					8'h68: // 'h'
+					begin
+						param.Pns <= param.Pn1;
 						`SET_COMMAND_BLOCK(SETDEC)
+					end
 					8'h6c: // 'l'
+					begin
+						param.Pns <= param.Pn1;
 						`SET_COMMAND_BLOCK(RESETDEC)
+					end
 				endcase
 			QPNS:
 				case(data)
