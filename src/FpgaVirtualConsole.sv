@@ -68,7 +68,7 @@ module FpgaVirtualConsole(
     VideoController VideoController(
         .clk100M,
         .clk50M,
-        .rst(rstPll)
+        .rst(rstPll),
         .uartRx,
         .vga,
         .sramInterface,
