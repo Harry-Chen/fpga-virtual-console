@@ -12,13 +12,8 @@ module TextRenderer(
     output  FontRomAddress_t    fontRomAddress,
     input   FontRomData_t       fontRomData,
     input   Cursor_t            cursor,
-    input                       blinkStatus,
-    // debug
-    output  [15:0]              nowRendering               
+    input                       blinkStatus        
 );
-
-    // debug
-    assign nowRendering = currentLine[16 * nextColumn +: 16];
 
 
     typedef enum logic[2:0]{

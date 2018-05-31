@@ -1,7 +1,7 @@
 `include "DataType.svh"
 
 module SramController (
-    input                   clk, // need 25 MHz clock
+    input                   clk, // need 50 MHz clock
     input                   rst,
     // directly connect to sram
     output  SramInterface_t sramInterface,

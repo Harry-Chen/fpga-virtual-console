@@ -46,7 +46,7 @@ create_clock -name {clk} -period 20.833 -waveform { 0.000 10.417 } [get_ports {c
 #**************************************************************
 
 derive_pll_clocks
-set out_clk50 "topPll|altpll_component|auto_generated|pll1|clk[1]"
+set out_clk50 "topPll|altpll_component|auto_generated|pll1|clk[0]"
 
 
 #**************************************************************
