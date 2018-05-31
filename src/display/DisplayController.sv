@@ -1,7 +1,6 @@
 `include "DataType.svh"
 module DisplayController (
-    input                               clk25M,
-    input                               clk50M,
+    input                               clk,
     input                               rst,
     input                               blinkStatus,
     input   Cursor_t                    cursor,
@@ -19,7 +18,7 @@ module DisplayController (
     SramAddress_t vgaBaseAddress;
 
     SramController sramController(
-        .clk(clk50M),
+        .clk,
         .rst,
         .sramInterface,
         .sramData,
@@ -37,14 +36,14 @@ module DisplayController (
     FontRom fontRom(
         .aclr(rst),
         .address(fontRomAddress),
-        .clock(clk50M),
+        .clock(clk),
         .q(fontRomData)
     );
 
 
     // Renderer module
     TextRenderer renderer(
-        .clk(clk50M),
+        .clk,
         .rst(rst),
         .paintDone,
         .ramRequest(rendererRequest),
@@ -61,7 +60,7 @@ module DisplayController (
 
     // VGA module
     VgaDisplayAdapter display(
-        .clk(clk50M),
+        .clk,
         .rst,
         .baseAddress(vgaBaseAddress),
         .ramRequest(vgaRequest),

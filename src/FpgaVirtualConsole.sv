@@ -133,8 +133,7 @@ module FpgaVirtualConsole(
 
     // Video controller module
     DisplayController controller(
-        .clk25M,
-        .clk50M,
+        .clk(clk50M),
         .rst(rstPll),
         .blinkStatus,
         .cursor,

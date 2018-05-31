@@ -10,6 +10,7 @@ module VgaDisplayAdapter(
     output                paintDone
     );
 
+    // 800*600@72Hz, Pixel@50MHz
     localparam H_ACTIVE = 800;
     localparam H_FRONT_PORCH = 56;
     localparam H_SYNC_PULSE = 120;
@@ -25,22 +26,21 @@ module VgaDisplayAdapter(
     logic [10:0] nextX, hCounter;
     logic [9:0] nextY, vCounter;
 
-    logic loadMemory;
 
     assign ramRequest.den = 0;
     assign ramRequest.we_n = 1;
 	 
     assign vga.outClock = clk;
 
+    logic loadMemory;
+
     assign ramRequest.oe_n = ~loadMemory;
     assign ramRequest.address = baseAddress + (nextY * H_ACTIVE + nextX) >> 1;
 
     Pixel_t pixel, pixelData;
-
-    assign pixel = (~ramRequest.oe_n) ? ramResult : pixelData;
+    assign pixel = (currentState == STATE_OUTPUT_ODD) ? ramResult.din : pixelData;
 
     VgaColor_t color;
-
     assign color = (hCounter[0] == 0) ? pixel.pixelOdd : pixel.pixelEven;
 
     typedef enum logic[2:0] {
@@ -107,8 +107,8 @@ module VgaDisplayAdapter(
         hCounter <= nextX;
         vCounter <= nextY;
 
-        if (~ramRequest.oe_n) begin
-          pixelData <= ramResult;
+        if (currentState == STATE_OUTPUT_ODD) begin
+          pixelData <= ramResult.din;
         end
 
         vga.hSync <= ~((hCounter >= H_ACTIVE + H_FRONT_PORCH) & (hCounter < H_ACTIVE + H_FRONT_PORCH + H_SYNC_PULSE));
