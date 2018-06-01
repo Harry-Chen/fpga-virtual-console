@@ -69,8 +69,8 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \caption{命令解析状态图，圆形节点为状态，方形为命令。}
 \end{figure}
 
-\subsubsection{光标控制模块}
-\subsubsection{字符控制模块}
+\subsubsection{光标控制模块 \texttt{CursorControl}}
+\subsubsection{字符控制模块 \texttt{TextControl}}
 \begin{figure}[htbp]
 \centerline{
 \includegraphics[width=0.95\paperwidth]{text_control.pdf}
@@ -78,7 +78,7 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \label{fig:text_control}
 \caption{字符控制模块状态图。}
 \end{figure}
-\subsubsection{图形控制模块}
+\subsubsection{图形控制模块 \texttt{GraphicsControl}}
 该模块主要负责处理字符的颜色和特效（下划线、闪烁、反色和增亮）。对应的命令为SGR，其参数个数不定，且共分为3种类别
 \begin{enumerate}
 	\item 仅用一个参数表示的属性，这部分对应于VT220的标准。
@@ -96,7 +96,7 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \label{fig:graphics_control}
 \caption{图形控制模块状态图。}
 \end{figure}
-\subsubsection{属性控制模块}
+\subsubsection{属性控制模块 \texttt{AttribControl}}
 该模块是对滚动区域、字符集等属性设置命令的处理，较为简单，仅仅在得到命令后直接更新即可。
-\subsubsection{模式控制模块}
+\subsubsection{模式控制模块 \texttt{ModeControl}}
 该模块和图形控制模块同样是一个对应于多参数命令的模块，但是各个属性均可只用一个参数表示，在记录完毕所需要更新的模式后，在更新命令到来时直接更新即可。
