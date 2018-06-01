@@ -177,14 +177,17 @@ begin
 					// TODO
 					o_cursor.y <= i_cursor.y; //placeholder
 				default:
-					if(i_cursor.y + 8'd1 < 8'(`CONSOLE_COLUMNS))
+					if(param.Pchar == 8'h0 || param.Pchar >= 8'h20)
 					begin
-						o_cursor.y <= i_cursor.y + 8'd1;
-					end else if(term.mode.auto_wrap) begin
-						o_cursor.x <= next_line;
-						o_cursor.y <= 8'd0;
-						if(is_final_line)
-							`SET_SCROLLING_UP(8'b1)
+						if(i_cursor.y + 8'd1 < 8'(`CONSOLE_COLUMNS))
+						begin
+							o_cursor.y <= i_cursor.y + 8'd1;
+						end else if(term.mode.auto_wrap) begin
+							o_cursor.x <= next_line;
+							o_cursor.y <= 8'd0;
+							if(is_final_line)
+								`SET_SCROLLING_UP(8'b1)
+						end
 					end
 				endcase
 			default:
