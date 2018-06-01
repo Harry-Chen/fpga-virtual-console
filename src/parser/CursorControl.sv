@@ -117,9 +117,9 @@ begin
 				o_cursor.x <= (i_cursor.x < Pn) ? 8'd0 : i_cursor.x - Pn;
 			end
 			CHA:
-				o_cursor.y <= `MIN(Pn, 8'(`CONSOLE_COLUMNS - 1));
+				o_cursor.y <= `MIN(Pl, 8'(`CONSOLE_COLUMNS - 1));
 			VPA:
-				o_cursor.x <= `MIN(Pn, cursor_x_max);
+				o_cursor.x <= `MIN(Pl, cursor_x_max);
 			IND:  // Index
 			begin
 				o_cursor.x <= next_line;
