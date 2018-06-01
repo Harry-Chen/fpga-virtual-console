@@ -71,6 +71,8 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 
 \subsubsection{光标控制模块 \texttt{CursorControl}}
 \subsubsection{字符控制模块 \texttt{TextControl}}
+该模块负责TextRAM的读写，用于施加编辑命令产生的改变。控制整个模块功能的状态机如图\ref{fig:text_control}所示。
+
 \begin{figure}[htbp]
 \centerline{
 \includegraphics[width=0.95\paperwidth]{text_control.pdf}
@@ -78,6 +80,43 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \label{fig:text_control}
 \caption{字符控制模块状态图。}
 \end{figure}
+
+该模块对TextRAM的操作主要由三种基本操作组成：
+
+\textbf{行内编辑. }主要负责对一行内的信息进行编辑，一共分为三种编辑方法，
+\begin{enumerate}
+	\item 将指定行某个区间的所有字符设置成特定字符（记为A类命令）。
+	\item 将指定区间的字符删除，右侧字符左移并且在空白处填充空字符（记为B类命令）。
+	\item 在指定区间插入空字符，原有字符右移，若超出屏幕则丢弃（记为B类命令）。
+\end{enumerate}
+
+其状态主要为InputRead0、InputRead1、InputCycStart、InputCycRead、InputCycSet、InputWrite组成，它们的意义分别为
+
+\begin{itemize}
+	\item \textit{InputRead0.} 发送读请求，读取所需要编辑的行。
+	\item \textit{InputRead1.} 等待数据到达。如果是A类命令，则直接用一个组合逻辑进行计算输出值，并且跳转到InputWrite；如果是B类命令，由于组合逻辑过于复杂，跳转到InputCycStart通过时序逻辑来完成。
+	\item \textit{InputCycStart.} 将当前行的数据锁存，并且初始化后续需要的变量（当前所编辑的列，当前所需要读取的列）。
+	\item \textit{InputCycRead.} 从锁存的行数据中读取当前所需要读取的列对应的字符，并存储。
+	\item \textit{InputCycWrite.} 将存储的字符写入当前所编辑的列。并且更新当前列和所需要读取的列。
+	\item \textit{InputWrite.} 将编辑完成的行写入。
+\end{itemize}
+
+\textbf{屏幕滚动. }主要负责将某区域上移/下移指定行数。
+
+该部分主要由ScrollStart、ScrollRead0、ScrollRead1和ScrollWrite组成，它们的意义分别为
+
+\begin{itemize}
+	\item \textit{ScrollStart.} 设置起始的行。
+	\item \textit{ScrollRead0.} 将读请求发送给TextRAM。
+	\item \textit{ScrollRead1.} 等待数据到达。
+	\item \textit{ScrollWrite.} 将数据写入对应行。
+\end{itemize}
+
+\textbf{多行清空. }主要负责将某区域填充为空字符。
+
+该部分主要由ResetStart和ResetWrite两个状态控制。其中ResetStart负责设置起始的行，而后ResetWrite不断往下，每次向RAM中写入一个空行直到所需要清除的区域结束为止回到Idle状态。
+
+该模块所处理的所有命令均可以通过这三种基本操作的组合构成，分别是[TODO]
 \subsubsection{图形控制模块 \texttt{GraphicsControl}}
 该模块主要负责处理字符的颜色和特效（下划线、闪烁、反色和增亮）。对应的命令为SGR，其参数个数不定，且共分为3种类别
 \begin{enumerate}
