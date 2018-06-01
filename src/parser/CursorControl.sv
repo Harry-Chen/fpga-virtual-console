@@ -126,8 +126,9 @@ begin
 				if(is_final_line)
 					`SET_SCROLLING_UP(8'b1)
 			end
-			IL, DL: // TODO: Not Sure
-				o_cursor.y <= 8'd0;
+			IL, DL:
+				if(term.attrib.scroll_top <= term.cursor.x && term.cursor.x <= term.attrib.scroll_bottom)
+					o_cursor.y <= 8'd0;
 			RI:  // Reverse Index
 				if(term.cursor.x == term.attrib.scroll_top)  // absolute position needed
 				begin

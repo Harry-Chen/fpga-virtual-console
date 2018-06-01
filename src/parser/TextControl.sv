@@ -35,6 +35,7 @@ enum logic[4:0] {
 	Idle, 
 	input_ReadRam0,
 	input_ReadRam1,
+	input_CycStart,
 	input_CycRead,
 	input_CycSet,
 	input_WriteRam,
@@ -188,7 +189,7 @@ begin
 						reset_bottom = (param.Pn1 != 8'h1) ? 8'(`CONSOLE_LINES - 1) : term.cursor.x - 8'd1;
 					end
 					IL, DL:
-					if(scrolling.top <= term.cursor.x && term.cursor.x <= scrolling.bottom)
+					if(term.attrib.scroll_top <= term.cursor.x && term.cursor.x <= term.attrib.scroll_bottom)
 					begin
 						// deletes/inserts Pn1 lines from the buffer
 						// starting with the row the cursor is on.
@@ -224,7 +225,9 @@ begin
 				end
 			end
 			input_ReadRam1:
-				status = line_edit.mode == `MODE_MOVELINE ? input_CycRead : input_WriteRam;
+				status = line_edit.mode == `MODE_MOVELINE ? input_CycStart : input_WriteRam;
+			input_CycStart:
+				status = input_CycRead;
 			input_CycRead:
 				status = input_CycSet;
 			input_CycSet:
@@ -304,7 +307,7 @@ begin
 			ramReq.wren <= 1'b0;
 			line_edit.col_now <= line_edit.move_dir ? 8'hff : 8'(`CONSOLE_COLUMNS);
 		end
-		input_ReadRam1:
+		input_CycStart:
 		begin
 			cur_line <= { `EMPTY_DATA, ramRes };
 			line_edit.col_now <= col_set_addr_next; 
@@ -373,8 +376,8 @@ begin
 	begin
 		col_next = line_edit.col_now + 8'd1;
 		col_read_addr_next
-			= (col_next <  line_edit.col_start) ? col_next
-			: (col_next <= line_edit.col_end)   ? col_next + step
+			= (col_next <  line_edit.col_start)       ? col_next
+			: (col_next + step < 8'(`CONSOLE_COLUMNS)) ? col_next + step
 			: 8'(`CONSOLE_COLUMNS);  // this place is `EMPTY_DATA
 	end else begin
 		col_next = line_edit.col_now - 8'd1;
