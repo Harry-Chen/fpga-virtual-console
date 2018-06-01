@@ -2,6 +2,7 @@ digraph DFA {
 //	edge[fontname="FangSong"];  
 //	node[peripheries=2, fontname="FangSong"];  
 //	size="16, 16";  
+	rankdir=LR;
 	node[shape=circle];  
 
 	FG_TB[label="FG\nTB"];
