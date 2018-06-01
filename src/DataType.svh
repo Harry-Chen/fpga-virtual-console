@@ -3,8 +3,8 @@
 `define DATATYPE_SV
 
 // constants
-`define BAUD_RATE 115200
-//`define BAUD_RATE 1_000_000  // 1M
+//`define BAUD_RATE 115200
+`define BAUD_RATE 1_000_000  // 1M
 `define BOARD_CLOCK_FRENQUENCY 48_000_000
 `define CURSOR_BLINKING_FREQ  2
 

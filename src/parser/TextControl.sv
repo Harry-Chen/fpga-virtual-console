@@ -69,6 +69,9 @@ logic [7:0] scrolling_row;
 // CONSOLE_COLUMN - 1), and requiring scrolling and input
 logic delay_scrolling;
 
+// used for ID, DL, reset after input
+logic delay_reset;
+
 /* reset parameters */
 logic [7:0] reset_top, reset_bottom, reset_row;
 
@@ -78,15 +81,24 @@ logic char_printable;
 assign char = (param.Pchar == 8'h0) ? 8'h20 : param.Pchar;
 assign char_printable = char >= 8'h20;
 
+// for repeat command
+logic [7:0] divmod_Q, divmod_R;
+DivideMod #(
+	.Mod(`CONSOLE_COLUMNS)
+) divmod(
+	.X(term.cursor.y + param.Pn1 - 8'd1),
+	.Q(divmod_Q),
+	.R(divmod_R)
+);
+
 always @(posedge clk or posedge rst)
 begin
 	if(rst) 
 	begin
 		prevData <= 32'd0;
 	end else if(commandReady) begin
-		if(commandType == INPUT && char_printable)
-			prevData <= { text_attribute, char };
-		else prevData <= 32'd0;
+		if(commandType == INPUT)
+			prevData <= char_printable ? { text_attribute, char } : 32'd0;
 	end
 end
 
@@ -127,9 +139,9 @@ begin
 						line_edit.data      = term.prev_data;
 						line_edit.row       = term.cursor.x;
 						line_edit.col_start = term.cursor.y;
-						line_edit.col_end   = `MIN(term.cursor.y + param.Pn1 - 8'd1, `CONSOLE_COLUMNS - 1);
-						line_edit.row_end   = term.cursor.x + (term.cursor.y + param.Pn1) / `CONSOLE_COLUMNS;
-						line_edit.col_final = (term.cursor.y + param.Pn1 - 8'd1) % `CONSOLE_COLUMNS;
+						line_edit.col_end   = `MIN(term.cursor.y + param.Pn1 - 8'd1, 8'(`CONSOLE_COLUMNS - 1));
+						line_edit.row_end   = term.cursor.x + divmod_Q;
+						line_edit.col_final = divmod_R;
 					end
 					EL:
 					begin
@@ -139,7 +151,7 @@ begin
 						line_edit.data      = `EMPTY_DATA;
 						line_edit.row       = term.cursor.x;
 						line_edit.col_start = (param.Pn1 != 8'h0) ? 8'h0 : term.cursor.y;
-						line_edit.col_end   = (param.Pn1 != 8'h1) ? `CONSOLE_COLUMNS - 1 : term.cursor.y;
+						line_edit.col_end   = (param.Pn1 != 8'h1) ? 8'(`CONSOLE_COLUMNS - 1) : term.cursor.y;
 					end
 					DCH, ICH:
 					begin
@@ -153,6 +165,7 @@ begin
 					end
 					ECH:
 					begin
+						status = input_ReadRam0;
 						line_edit.mode      = `MODE_SETCHAR;  
 						line_edit.rep_mode  = 1'b0;
 						line_edit.data      = `EMPTY_DATA;
@@ -162,9 +175,17 @@ begin
 					end
 					ED:
 					begin
-						status = reset_Start;
-						reset_top    = (param.Pn1 != 8'h0) ? 8'h0 : term.cursor.x;
-						reset_bottom = (param.Pn1 != 8'h1) ? `CONSOLE_LINES - 1 : term.cursor.x;
+						status = input_ReadRam0;
+						line_edit.mode      = `MODE_SETCHAR;  
+						line_edit.rep_mode  = 1'b0;
+						line_edit.data      = `EMPTY_DATA;
+						line_edit.row       = term.cursor.x;
+						line_edit.col_start = (param.Pn1 != 8'h0) ? 8'h0 : term.cursor.y;
+						line_edit.col_end   = (param.Pn1 != 8'h1) ? 8'(`CONSOLE_COLUMNS - 1) : term.cursor.y;
+
+						delay_reset  = 1'd1;
+						reset_top    = (param.Pn1 != 8'h0) ? 8'h0 : term.cursor.x + 8'd1;
+						reset_bottom = (param.Pn1 != 8'h1) ? 8'(`CONSOLE_LINES - 1) : term.cursor.x - 8'd1;
 					end
 					IL, DL:
 					if(scrolling.top <= term.cursor.x && term.cursor.x <= scrolling.bottom)
@@ -209,7 +230,7 @@ begin
 			input_CycSet:
 			begin
 				if(line_edit.move_dir == 1'b1)  // move right
-					status = line_edit.col_now == `CONSOLE_COLUMNS - 1 ? input_WriteRam : input_CycRead;
+					status = line_edit.col_now == 8'(`CONSOLE_COLUMNS - 1) ? input_WriteRam : input_CycRead;
 				else status = line_edit.col_now == 8'd0 ? input_WriteRam : input_CycRead;
 			end
 			input_WriteRam:
@@ -218,9 +239,14 @@ begin
 					status = input_ReadRam0;
 					line_edit.row       = line_edit.row + 8'd1;
 					line_edit.col_start = 8'd0;
-					line_edit.col_end   = (line_edit.row + 8'd1 == line_edit.row_end) ? line_edit.col_final : `CONSOLE_COLUMNS - 1;
+					line_edit.col_end   = (line_edit.row == line_edit.row_end) ? line_edit.col_final : 8'(`CONSOLE_COLUMNS - 1);
 				end else begin
-					status = delay_scrolling ? scroll_Start : Idle;
+					if(delay_scrolling)
+						status = scroll_Start;
+					else if(delay_reset)
+						status = reset_Start;
+					else status = Idle;
+					delay_reset = 1'b0;
 				end
 			scroll_Start:
 				status = scroll_ReadRam0;
@@ -242,7 +268,7 @@ begin
 					status = scroll_ReadRam0;
 				end
 			reset_Start:
-				status = reset_WriteRam;
+				status = (reset_top <= reset_bottom) ? reset_WriteRam : Idle;
 			reset_WriteRam:
 				status = (reset_row >= reset_bottom) ? Idle : reset_WriteRam;
 			default:
@@ -276,10 +302,14 @@ begin
 		begin
 			ramReq.address <= line_edit.row;
 			ramReq.wren <= 1'b0;
-			line_edit.col_now <= line_edit.move_dir ? 8'd0 : `CONSOLE_COLUMNS - 1;
+			line_edit.col_now <= line_edit.move_dir ? 8'hff : 8'(`CONSOLE_COLUMNS);
 		end
 		input_ReadRam1:
+		begin
 			cur_line <= { `EMPTY_DATA, ramRes };
+			line_edit.col_now <= col_set_addr_next; 
+			line_edit.col_read_addr <= col_read_addr_next;
+		end
 		input_CycRead:
 			// for MODE_MOVELINE, latch char data
 			char_reg <= cur_line[`TEXT_RAM_CHAR_WIDTH * line_edit.col_read_addr +: `TEXT_RAM_CHAR_WIDTH];
@@ -345,12 +375,12 @@ begin
 		col_read_addr_next
 			= (col_next <  line_edit.col_start) ? col_next
 			: (col_next <= line_edit.col_end)   ? col_next + step
-			: `CONSOLE_COLUMNS;  // this place is `EMPTY_DATA
+			: 8'(`CONSOLE_COLUMNS);  // this place is `EMPTY_DATA
 	end else begin
 		col_next = line_edit.col_now - 8'd1;
 		col_read_addr_next
 			= (col_next >  line_edit.col_end)   ? col_next - step
-			: (col_next >= line_edit.col_start) ? `CONSOLE_COLUMNS
+			: (col_next >= line_edit.col_start) ? 8'(`CONSOLE_COLUMNS)
 			: col_next;
 	end
 end

@@ -42,7 +42,7 @@ assign i_cursor.x = term.cursor.x - origin_x;
 // some wires
 wire [7:0] next_line;
 wire is_final_line;
-assign next_line = i_cursor.x == cursor_x_max ? cursor_x_max : `MIN(i_cursor.x + 8'd1, `CONSOLE_LINES - 1);
+assign next_line = i_cursor.x == cursor_x_max ? cursor_x_max : `MIN(i_cursor.x + 8'd1, 8'(`CONSOLE_LINES - 1));
 assign is_final_line = (i_cursor.x == cursor_x_max);
 
 // Pn is used for single parameter commands
@@ -64,6 +64,16 @@ assign o_scrolling.step   = scrolling.step;
 assign o_scrolling.top    = scrolling.top;
 assign o_scrolling.bottom = scrolling.bottom;
 
+// for repeat command
+logic [7:0] divmod_Q, divmod_R;
+DivideMod #(
+	.Mod(`CONSOLE_COLUMNS)
+) divmod(
+	.X(term.cursor.y + param.Pn1),
+	.Q(divmod_Q),
+	.R(divmod_R)
+);
+
 // counter for cursor blinking status
 assign cursor.visible = 
 	term.mode.cursor_blinking ? 
@@ -82,11 +92,11 @@ begin
 		unique case(commandType)
 			CUP:  // Cursor Position
 			begin
-				o_cursor.x <= `MIN(Pl, term.mode.origin_mode ? cursor_x_max : `CONSOLE_LINES - 1);
-				o_cursor.y <= `MIN(Pc, `CONSOLE_COLUMNS - 1);
+				o_cursor.x <= `MIN(Pl, term.mode.origin_mode ? cursor_x_max : 8'(`CONSOLE_LINES - 1));
+				o_cursor.y <= `MIN(Pc, 8'(`CONSOLE_COLUMNS - 1));
 			end
 			CUF:  // Cursor Forward 
-				o_cursor.y <= `MIN(i_cursor.y + Pn, `CONSOLE_COLUMNS - 1);
+				o_cursor.y <= `MIN(i_cursor.y + Pn, 8'(`CONSOLE_COLUMNS - 1));
 			CUB:  // Cursor Backward
 				o_cursor.y <= (i_cursor.y < Pn) ? 8'd0 : i_cursor.y - Pn;
 			CUD:  // Cursor Down
@@ -107,7 +117,7 @@ begin
 				o_cursor.x <= (i_cursor.x < Pn) ? 8'd0 : i_cursor.x - Pn;
 			end
 			CHA:
-				o_cursor.y <= `MIN(Pn, `CONSOLE_COLUMNS - 1);
+				o_cursor.y <= `MIN(Pn, 8'(`CONSOLE_COLUMNS - 1));
 			VPA:
 				o_cursor.x <= `MIN(Pn, cursor_x_max);
 			IND:  // Index
@@ -143,10 +153,10 @@ begin
 				begin
 					if(term.mode.auto_wrap)
 					begin
-						o_cursor.y <= (i_cursor.y + param.Pn1) % `CONSOLE_COLUMNS;
-						o_cursor.x <= o_cursor.x + (i_cursor.y + param.Pn1) / `CONSOLE_COLUMNS;
+						o_cursor.y <= divmod_R;
+						o_cursor.x <= i_cursor.x + divmod_Q;
 					end else begin
-						o_cursor.y <= `MIN(i_cursor.y + param.Pn1, `CONSOLE_COLUMNS - 1);
+						o_cursor.y <= `MIN(i_cursor.y + param.Pn1, 8'(`CONSOLE_COLUMNS - 1));
 					end
 				end
 			INPUT:
@@ -166,7 +176,7 @@ begin
 					// TODO
 					o_cursor.y <= i_cursor.y; //placeholder
 				default:
-					if(i_cursor.y + 8'd1 < `CONSOLE_COLUMNS)
+					if(i_cursor.y + 8'd1 < 8'(`CONSOLE_COLUMNS))
 					begin
 						o_cursor.y <= i_cursor.y + 8'd1;
 					end else if(term.mode.auto_wrap) begin
