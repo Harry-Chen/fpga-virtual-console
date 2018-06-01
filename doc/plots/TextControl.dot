@@ -4,50 +4,53 @@ digraph EDIT {
 
 	Idle;
 
-	subgraph cluster_1
-	{
-		color=blue;
-        label="Line Edit";  
+//	subgraph cluster_1
+//{
+//	color=blue;
+ //      label="Line Edit";  
 
 		Input_Read0[label="Input\nRead0"];
 		Input_Read1[label="Input\nRead1"];
+		Input_CycStart[label="Input\nCyStart"];
 		Input_CycRead[label="Input\nCycRead"];
 		Input_CycSet[label="Input\nCycSet"];
 		Input_Write[label="Input\nWrite"];
-	}
+//}
 
-	subgraph cluster_2
-	{
-        label="Scrolling";  
-		color=blue;
+//subgraph cluster_2
+//{
+ //      label="Scrolling";  
+//	color=blue;
 
 		Scroll_Start[label="Scroll\nStart"];
 		Scroll_Read0[label="Scroll\nRead0"];
 		Scroll_Read1[label="Scroll\nRead1"];
 		Scroll_Write[label="Scroll\nWrite"];
-	}
+//}
 
-	subgraph cluster_3
-	{
-		color=blue;
-		label="Clear Line"
+//subgraph cluster_3
+//{
+//	color=blue;
+//	label="Clear Line"
 
 		Reset_Start[label="Reset\nStart"];
 		Reset_Write[label="Reset\nWrite"];
-	}
+//}
 
-	Idle->Input_Read0[label="INPUT, EL, DCH, ICH, ECH"];
-	Idle->Scroll_Start[label="IL\nDL\nscrollReady"];
-	Idle->Reset_Start[label="ED"];
+	Idle->Input_Read0[label="INPUT, EL, REP\nDCH, ICH, ECH"];
+	Idle->Scroll_Start[label="IL, DL, SU, SD, scrollReady"];
+	Idle->Input_Read0[label="ED (delay_reset)"];
 
 	Input_Read0->Input_Read1;
-	Input_Read1->Input_Write[label="INPUT, EL, ECH"];
-	Input_Read1->Input_CycRead[label="ICH, DCH"];
-	Input_CycRead->Input_CycSet->Input_CycRead;
+	Input_Read1->Input_Write[label="INPUT, EL, ECH, REP"];
+	Input_Read1->Input_CycStart[label="ICH, DCH"];
+	Input_CycStart->Input_CycRead->Input_CycSet->Input_CycRead;
 	Input_CycSet->Input_Write;
 
 	Input_Write->Idle;
+	Input_Write->Input_Read0[label="REP"];
 	Input_Write->Scroll_Start[label="delay\nscrolling"];
+	Input_Write->Reset_Start[label="delay reset"];
 
 	Scroll_Start->Scroll_Read0;
 	Scroll_Read0->Scroll_Read1;
