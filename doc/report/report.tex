@@ -1,4 +1,4 @@
-\documentclass{ctexart}
+\documentclass[fontset=fandol]{ctexart}
 
 \usepackage{graphicx}
 \usepackage{geometry}
@@ -7,13 +7,15 @@
 \usepackage{pdfpages}
 \usepackage{longtable}
 \usepackage[bottom]{footmisc}
+\usepackage{amsmath}
+\usepackage{bytefield}
 \usepackage{url}
 
 
 \newcommand{\artauthor}{陈晟祺；周聿浩}
 \newcommand{\arttitle}{FPGA Virtual Console 设计报告}
-\newcommand{\artsubject}{基于硬件的 VT220 兼容终端}
-\newcommand{\artkeywords}{FPGA；虚拟控制台；Virtual Console}
+\newcommand{\artsubject}{纯硬件实现的 VT220 兼容终端}
+\newcommand{\artkeywords}{FPGA；虚拟终端；Virtual Console}
 
 
 \hypersetup{pdfauthor=\artauthor,
@@ -50,32 +52,18 @@
 
 \section{项目概述}
 
+\input{introduction}
+
 \section{架构设计}
 
-\begin{figure}[htbp]
-\centerline{
-\includegraphics[width=0.95\paperwidth]{architecture_design_visio.pdf}
-}
-\label{fig:design_architecture}
-\caption{项目设计架构}
-\end{figure}
-
-\begin{figure}[htbp]
-\centerline{
-\includegraphics[width=\paperwidth]{architecture_final_dot.pdf}
-}
-\label{fig:final_architecture}
-\caption{项目最终架构}
-\end{figure}
+\input{architecture}
 
 \section{模块实现}
 
-\subsection{键盘部分}
-
-\subsection{图形部分}
-
-\input{vt100_parser.tex}
+\input{implementation}
 
 \section{其他说明}
+
+\input{misc}
 
 \end{document}

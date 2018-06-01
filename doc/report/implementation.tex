@@ -1,0 +1,28 @@
+\subsection[键盘控制器]{键盘控制器 \texttt{KeyboardController}}
+
+\subsection[图形控制器]{图形控制器 \texttt{VideoController}}
+
+图形控制器的主要功能是接收并解析PC发送的指令数据，对屏幕显示的内容进行相应的更改。其中又分为五个模块，其中\texttt{AsyncUartReceiver}处理串口的接收，\texttt{VT100Parser}解析这些信息，并将当前屏幕上应该显示的内容存储到片内RAM例化成的\texttt{TextRam}部件中。\texttt{DisplayController}从RAM中读取文本信息，转化为图像数据存储在显存中，并转换为VGA信号输出。还有一个\texttt{BlinkGenerator}模块用来产生一个统一的光标闪烁信号供各模块使用。各个模块的详细说明见下面各节。
+
+\subsubsection{RAM存储格式}
+
+为了让\texttt{VT100Parser}的输出能够正确被\texttt{DisplayController}识别并渲染，我们设计了一套存储格式。RAM的深度是50，对应终端的50行；位宽是 $100\times 32 \text{bit} = 3200 \text{bit}$，即每一个字符32比特；每条数据中靠前的字符在较低位。具体的数据格式定义可见表\ref{tab:ram_bytefield}。
+
+\begin{table}[htbp]
+\centering
+    \caption{RAM中每个字符的存储格式}
+    \label{tab:ram_bytefield}
+    \vspace{1em}
+    \begin{bytefield}[endianness=big,boxformatting={\centering\tt}]{32}
+        \bitheader{0,8,10,19,28,29,30,31} \\
+        \bitbox{1}{K} & \bitbox{1}{N} & \bitbox{1}{B} & \bitbox{1}{U} &
+        \bitbox{9}{BG Color} & \bitbox{9}{FG Color} & \bitbox{2}{CS} &
+        \bitbox{8}{ASCII}
+    \end{bytefield}
+\end{table}
+
+其中K、N、B、U是字符特效标记，分别表示闪烁、反色、变亮、下划线；\texttt{BG Color}与\texttt{FG Color}分别是当前字符块的背景和前景色，和VGA信号的格式一致，依次为3比特的RGB值；\texttt{CS}表示当前字符集（Charset），这是由于\texttt{VT220}规范支持切换字符集，使用特殊字符进行表格绘制等操作，我们目前没有使用这个字段；最后的\texttt{ASCII}字段存储了当前字符的编码。
+
+\input{vt100_parser}
+
+\input{display_controller}
