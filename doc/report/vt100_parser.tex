@@ -1,7 +1,9 @@
-\subsubsection{终端命令解析 \texttt{VT100Parser}}
+\subsection{终端命令解析 \texttt{VT100Parser}}
 
 对于终端的命令，我们支持VT220标准\footnote{https://vt100.net/docs/vt220-rm/}下几乎所有的会影响显示结果的命令，以及XTerm\footnote{http://invisible-island.net/xterm/ctlseqs/ctlseqs.html}下常用的光标控制以及字符编辑命令，可以支持解析绝大多数程序的输出。目前所支持的命令见表\ref{tab:supported-commands}。
 
+
+\subsubsection{命令解析模块 \texttt{CommandsParser}}
 命令的解析是通过如图\ref{fig:command_parser}所示的状态机来进行实现，主要在CommandsParser模块中。在解析完成一条命令后会产生一个commandsReady信号，并且附带额外的命令参数等信息以供后续模块执行对应操作。
 
 大部分命令的参数个数以及格式均是固定的，解析较为简单。有两类特殊的命令，其参数个数不定，它们分别是控制显示字符的颜色等信息的命令，以及设置/清除终端某些状态的命令。这两类命令的参数均为零或多个由分号分隔的数字构成，参数的个数任意。
@@ -68,6 +70,8 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \caption{命令解析状态图，圆形节点为状态，方形为命令。}
 \label{fig:command_parser}
 \end{figure}
+
+本模块中还初始化了下列的子模块。
 
 \subsubsection{光标控制模块 \texttt{CursorControl}}
 \subsubsection{字符控制模块 \texttt{TextControl}}
