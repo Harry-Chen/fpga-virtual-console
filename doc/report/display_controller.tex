@@ -1,2 +1,41 @@
 \subsubsection[显示控制器]{显示控制器 \texttt{DisplayController}}
+
 显示控制器的主要功能由两个模块实现：\texttt{TextRenderer}负责读取RAM中存储的文本，渲染为像素数据并存储在SRAM的显存中；\texttt{VgaDisplayAdapter}负责产生VGA信号，从SRAM显存中读取像素数据并输出。各部分的详细实现如下。
+
+\paragraph[SRAM控制器]{SRAM控制器\texttt{SramController}}
+由于分辨率较高
+
+\begin{table}[htbp]
+\centering
+    \caption{SRAM中每条数据的存储结构}
+    \label{tab:sram_bytefield}
+    \vspace{1em}
+    \begin{bytefield}[endianness=big,boxformatting={\centering\tt}]{32}
+        \bitheader{0,9,18,31} \\
+        \bitbox{14}{Empty} & \bitbox{9}{Even Pixel} &
+        \bitbox{9}{Odd Pixel}
+    \end{bytefield}
+\end{table}
+
+
+\paragraph[字符渲染器]{文本渲染器\texttt{TextRenderer}}
+文本渲染器是一个状态机，工作如下：
+\begin{enumerate}
+  \item 从RAM中读取下一行文本（可循环）
+  \item 如果未到行末，读取下一个字符，并从\texttt{FontRom}中读取相应字形；否则跳回1
+  \item 将字形、属性（如颜色、特效等）和当前字符第一个像素在显存中的地址传递给内部的子模块\texttt{FontShapeRenderer}，指示开始渲染
+  \item \texttt{FontShapeRenderer}渲染完成后，跳回到2
+\end{enumerate}
+
+其中\texttt{FontRom}是一个存储了ASCII中256个字符对应的形状的ROM，每个字符宽8像素，高12像素，地址即为自身的ASCII编码。\texttt{FontShapeRenderer}是用于渲染一个字的子模块，也是一个状态机，工作如下：
+\begin{enumerate}
+  \item 等待父渲染器的开始信号，并接受传递的信息
+  \item 如果没有到最后一个像素，读取下一个像素，否则报告完成并回到1
+  \item 锁存上一个像素的颜色数据，确定下一个像素的颜色，计算这两个像素在显存中的具体地址，向SRAM控制器发出写请求
+  \item 如果控制器报告写请求完成，跳到2，否则等待
+\end{enumerate}
+
+
+\paragraph[VGA控制器]{VGA控制器\texttt{VgaDisplayAdapter}}
+
+
