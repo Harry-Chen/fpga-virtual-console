@@ -63,19 +63,22 @@ SCS1 & ESC ) A/B/0/1/2 &设置字符集 \\ \hline \hline
 
 SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \end{longtable}
+
+\begin{landscape}
 \begin{figure}[htbp]
 \centerline{
-\includegraphics[width=0.95\paperwidth]{command_parser.pdf}
+\includegraphics[height=0.95\textheight]{command_parser.pdf}
 }
 \caption{命令解析状态图，圆形节点为状态，方形为命令。}
 \label{fig:command_parser}
 \end{figure}
+\end{landscape}
 
 本模块中还初始化了下列的子模块。
 
 \subsubsection{光标控制模块 \texttt{CursorControl}}
 \subsubsection{字符控制模块 \texttt{TextControl}}
-该模块负责TextRAM的读写，用于施加编辑命令产生的改变。控制整个模块功能的状态机如图\ref{fig:text_control}所示。
+该模块负责TextRam的读写，用于施加编辑命令产生的改变。控制整个模块功能的状态机如图\ref{fig:text_control}所示。
 
 \begin{figure}[htbp]
 \centerline{
@@ -113,7 +116,7 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 
 \begin{itemize}
 	\item \textit{ScrollStart.} 设置起始的行。
-	\item \textit{ScrollRead0.} 将读请求发送给TextRAM。
+	\item \textit{ScrollRead0.} 将读请求发送给TextRam。
 	\item \textit{ScrollRead1.} 等待数据到达。
 	\item \textit{ScrollWrite.} 将数据写入对应行。
 \end{itemize}
@@ -137,7 +140,7 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 	对应的状态机见图\ref{fig:graphics_control}，具体操作见``命令解析''中多参数命令的处理方法。
 \begin{figure}[htbp]
 \centerline{
-\includegraphics[width=0.7\paperwidth]{graphics_control.pdf}
+\includegraphics[width=\linewidth]{graphics_control.pdf}
 }
 \caption{图形控制模块状态图}
 \label{fig:graphics_control}

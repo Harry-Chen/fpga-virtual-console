@@ -1,9 +1,12 @@
 \subsection{显示控制器 \texttt{DisplayController}}
 
-显示控制器的主要功能由两个模块实现：\texttt{TextRenderer}负责读取RAM中存储的文本，渲染为像素数据并存储在SRAM的显存中；\texttt{VgaDisplayAdapter}负责产生VGA信号，从SRAM显存中读取像素数据并输出。各部分的详细实现如下。
+显示控制器的主要功能由三个模块实现：\texttt{SramController}负责控制SRAM的读写，\texttt{TextRenderer}负责读取RAM中存储的文本，渲染为像素数据并存储在SRAM的显存中；\texttt{VgaDisplayAdapter}负责产生VGA信号，从SRAM显存中读取像素数据并输出。各部分的详细实现如下。
 
-\subsubsection{SRAM控制器\texttt{SramController}}
-由于分辨率较高
+\subsubsection{SRAM控制器 \texttt{SramController}}
+我们使用片外的SRAM作为显存，并且采用了双缓冲机制，即使用两块显存A与B，当渲染器向A写入时，显示模块从B进行读取，当二者均完成后进行交换，如此循环。这样保证了渲染和输出过程都有一致性，不会产生画面撕裂、闪烁等异常现象。
+由于使用的SRAM读写速度均在20ns左右，因此SRAM控制器最高时钟频率为50MHz，这就导致了读/写实际的时钟频率只有25MHz。
+而由于我们采用的VGA时序要求的像素频率为50MHz，因此我们必须至少在一次读写中操作相邻的两个像素，才能保证输出图像是正常的。
+因此，我们设计了表\ref{tab:sram_bytefield}中所示的SRAM存储结构。对于屏幕上同一行上相邻的$(x,y)$与$(x,y+1)$两个像素，它们相对于当前显存基址的偏移都是$\frac{x+y}{2}$。
 
 \begin{table}[htbp]
 \centering
@@ -17,9 +20,16 @@
     \end{bytefield}
 \end{table}
 
+由于VGA模块的读取请求和渲染器的写入请求并非总是间隔进行（如VGA消隐区时不进行读取，渲染器读取文本数据时不进行写入），因此简单的Round-Robin算法不能满足我们的需要。
+而又因为渲染模块是由状态机驱动，可以任意进行等待；VGA模块的读取请求如果失败，就会出现渲染问题。
+为此，我们为SRAM控制器设计了优先机制，即其在每次时钟沿时优先处理VGA模块的读取请求，如果没有，再处理渲染模块的写入请求。
+测试证明，这样的机制能够充分利用每一个时钟周期，没有浪费，也保证了渲染与显示模块的正常工作。
 
-\subsubsection{文本渲染器\texttt{TextRenderer}}
-文本渲染器是一个状态机，工作如下：
+需要特别注意的是，正如往年同学在实验报告中指出的，我们原本使用的实验板的SRAM请求都经过了控制FPGA的转发，读写延时都比预期要长。我们实测，这样会导致控制器无法运行在50MHz的频率下。
+为了减少不必要的麻烦（如重写烧写控制FPGA，或者在SRAM一条记录中存储更多像素），我们更换了另一块FPGA直接连接到SRAM的实验板，避免了这一问题的发生。
+
+\subsubsection{文本渲染模块 \texttt{TextRenderer}}
+文本渲染模块的实现是一个状态机，工作如下：
 \begin{enumerate}
   \item 从RAM中读取下一行文本（可循环）
   \item 如果未到行末，读取下一个字符，并从\texttt{FontRom}中读取相应字形；否则跳回1
@@ -30,12 +40,36 @@
 其中\texttt{FontRom}是一个存储了ASCII中256个字符对应的形状的ROM，每个字符宽8像素，高12像素，地址即为自身的ASCII编码。\texttt{FontShapeRenderer}是用于渲染一个字的子模块，也是一个状态机，工作如下：
 \begin{enumerate}
   \item 等待父渲染器的开始信号，并接受传递的信息
-  \item 如果没有到最后一个像素，读取下一个像素，否则报告完成并回到1
-  \item 锁存上一个像素的颜色数据，确定下一个像素的颜色，计算这两个像素在显存中的具体地址，向SRAM控制器发出写请求
+  \item 如果未到最后一个像素，计算下一个像素的颜色并锁存数据；否则报告完成并回到1
+  \item 计算下一个像素的颜色，计算这两个像素在显存中的具体地址，时钟沿末向SRAM控制器发出写请求
   \item 如果控制器报告写请求完成，跳到2，否则等待
 \end{enumerate}
 
 
-\subsubsection{VGA控制器\texttt{VgaDisplayAdapter}}
+\subsubsection{VGA显示模块 \texttt{VgaDisplayAdapter}}
+VGA控制器负责产生VGA图形信号（我们使用的实验板上实际是HDMI接口，不过我们需要给出的信号格式是一致的）。为了使我们的终端实用性更强，我们实现了800*600输出分辨率，也即50行*100列，每一个单元格一个字符。
+为了配合现有的SRAM等模块工作，结合 \url{http://tinyvga.com/vga-timing} 给出的VGA时序规范，我们选取了72Hz刷新率，使得输出的像素频率刚好为50MHz，具体的时序可见表\ref{tab:vga_timing}。
 
+\begin{table}[htbp]
+\centering
+\caption{800*600@72Hz的VGA信号时序规范}
+\label{tab:vga_timing}
+\begin{tabular}{@{}|c|c|c||c|c|c|@{}}
+  \hline
+  \textbf{Scanline part}                       & \textbf{Pixels} & \textbf{Time ($\mu$s)} & \textbf{Frame part} & \textbf{Lines} & \textbf{Time (ms)} \\ \hline
+  Visible area                                 & 800             & 16                     & Visible area        & 600            & 12.48              \\ 
+  Front porch                                  & 56              & 1.12                   & Front porch         & 37             & 0.7696             \\ 
+  Sync pulse                                   & 120             & 2.4                    & Sync pulse          & 6              & 0.1248             \\ 
+  Back porch                                   & 64              & 1.28                   & Back porch          & 23             & 0.4784             \\ \hline
+  Whole line                                   & 1040            & 20.8                   & Whole frame         & 666            & 13.8528            \\ \hline
+\end{tabular}
+\end{table}
 
+由于需要预读取像素数据，VGA控制器也被设计为一个状态机。VGA的时序信号发生模块是独立于状态机工作的，保证信号严格遵守规范输出。状态机的工作如下：
+\begin{enumerate}
+  \item 重置时序发生模块，时钟沿末发送对最早两个像素的读取请求
+  \item 锁存得到的两个像素数据，时钟沿末输出奇数像素
+  \item 时钟沿末输出偶数像素，如果下一个像素依旧在图像区域，则计算出需要读取的内存地址并在时钟沿末发送读取请求，跳转到2；否则跳转到4
+  \item 不断等待，直到下一个像素回到图像区域，计算出需要读取的内存地址并发送读取请求，跳转到2
+\end{enumerate}
+  
