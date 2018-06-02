@@ -1,4 +1,4 @@
-\subsubsection[终端命令解析]{终端命令解析 \texttt{VT100Parser}}
+\subsubsection{终端命令解析 \texttt{VT100Parser}}
 
 对于终端的命令，我们支持VT220标准\footnote{https://vt100.net/docs/vt220-rm/}下几乎所有的会影响显示结果的命令，以及XTerm\footnote{http://invisible-island.net/xterm/ctlseqs/ctlseqs.html}下常用的光标控制以及字符编辑命令，可以支持解析绝大多数程序的输出。目前所支持的命令见表\ref{tab:supported-commands}。
 
@@ -65,8 +65,8 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \centerline{
 \includegraphics[width=0.95\paperwidth]{command_parser.pdf}
 }
-\label{fig:command_parser}
 \caption{命令解析状态图，圆形节点为状态，方形为命令。}
+\label{fig:command_parser}
 \end{figure}
 
 \subsubsection{光标控制模块 \texttt{CursorControl}}
@@ -77,13 +77,14 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \centerline{
 \includegraphics[width=0.95\paperwidth]{text_control.pdf}
 }
-\label{fig:text_control}
 \caption{字符控制模块状态图。}
+\label{fig:text_control}
 \end{figure}
 
 该模块对TextRAM的操作主要由三种基本操作组成：
 
-\textbf{行内编辑. }主要负责对一行内的信息进行编辑，一共分为三种编辑方法，
+\paragraph{行内编辑}
+主要负责对一行内的信息进行编辑，一共分为三种编辑方法，
 \begin{enumerate}
 	\item 将指定行某个区间的所有字符设置成特定字符（记为A类命令）。
 	\item 将指定区间的字符删除，右侧字符左移并且在空白处填充空字符（记为B类命令）。
@@ -101,7 +102,8 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 	\item \textit{InputWrite.} 将编辑完成的行写入。
 \end{itemize}
 
-\textbf{屏幕滚动. }主要负责将某区域上移/下移指定行数。
+\paragraph{屏幕滚动}
+主要负责将某区域上移/下移指定行数。
 
 该部分主要由ScrollStart、ScrollRead0、ScrollRead1和ScrollWrite组成，它们的意义分别为
 
@@ -112,7 +114,8 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 	\item \textit{ScrollWrite.} 将数据写入对应行。
 \end{itemize}
 
-\textbf{多行清空. }主要负责将某区域填充为空字符。
+\paragraph{多行清空}
+主要负责将某区域填充为空字符。
 
 该部分主要由ResetStart和ResetWrite两个状态控制。其中ResetStart负责设置起始的行，而后ResetWrite不断往下，每次向RAM中写入一个空行直到所需要清除的区域结束为止回到Idle状态。
 
@@ -132,8 +135,8 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \centerline{
 \includegraphics[width=0.7\paperwidth]{graphics_control.pdf}
 }
+\caption{图形控制模块状态图}
 \label{fig:graphics_control}
-\caption{图形控制模块状态图。}
 \end{figure}
 \subsubsection{属性控制模块 \texttt{AttribControl}}
 该模块是对滚动区域、字符集等属性设置命令的处理，较为简单，仅仅在得到命令后直接更新即可。

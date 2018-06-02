@@ -1,6 +1,6 @@
-\subsection[键盘控制器]{键盘控制器 \texttt{KeyboardController}}
+\subsection{键盘控制器 \texttt{KeyboardController}}
 
-\subsection[图形控制器]{图形控制器 \texttt{VideoController}}
+\subsection{图形控制器 \texttt{VideoController}}
 
 图形控制器的主要功能是接收并解析PC发送的指令数据，对屏幕显示的内容进行相应的更改。其中又分为五个模块，其中\texttt{AsyncUartReceiver}处理串口的接收，\texttt{VT100Parser}解析这些信息，并将当前屏幕上应该显示的内容存储到片内RAM例化成的\texttt{TextRam}部件中。\texttt{DisplayController}从RAM中读取文本信息，转化为图像数据存储在显存中，并转换为VGA信号输出。还有一个\texttt{BlinkGenerator}模块用来产生一个统一的光标闪烁信号供各模块使用。各个模块的详细说明见下面各节。
 
@@ -25,4 +25,4 @@
 
 \input{vt100_parser}
 
-\input{display_controller}
+\input{display_controller} 
