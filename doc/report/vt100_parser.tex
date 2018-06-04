@@ -1,3 +1,6 @@
+ % !TEX root = report.tex
+ % !TEX program = xelatex
+ 
 \subsection{终端命令解析 \texttt{VT100Parser}}
 
 对于终端的命令，我们支持VT220标准\footnote{https://vt100.net/docs/vt220-rm/}下几乎所有的会影响显示结果的命令，以及XTerm\footnote{http://invisible-island.net/xterm/ctlseqs/ctlseqs.html}下常用的光标控制以及字符编辑命令，可以支持解析绝大多数程序的输出。目前所支持的命令见表\ref{tab:supported-commands}。

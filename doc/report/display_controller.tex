@@ -1,3 +1,6 @@
+ % !TEX root = report.tex
+ % !TEX program = xelatex
+
 \subsection{显示控制器 \texttt{DisplayController}}
 
 显示控制器的主要功能由三个模块实现：\texttt{SramController}负责控制SRAM的读写，\texttt{TextRenderer}负责读取RAM中存储的文本，渲染为像素数据并存储在SRAM的显存中；\texttt{VgaDisplayAdapter}负责产生VGA信号，从SRAM显存中读取像素数据并输出。各部分的详细实现如下。
