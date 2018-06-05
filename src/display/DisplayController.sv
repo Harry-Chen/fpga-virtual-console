@@ -41,6 +41,17 @@ module DisplayController (
     );
 
 
+    // synchronize signals from other clock domain
+    logic blinkStatusReg1, blinkStatusReg2;
+    Cursor_t cursorReg1, cursorReg2;
+
+    always_ff @(posedge clk) begin
+        cursorReg1 <= cursor;
+        cursorReg2 <= cursorReg1;
+        blinkStatusReg1 <= blinkStatus;
+        blinkStatusReg2 <= blinkStatusReg1;
+    end
+
     // Renderer module
     TextRenderer renderer(
         .clk,
@@ -53,8 +64,8 @@ module DisplayController (
         .textRamResult,
         .fontRomAddress,
         .fontRomData,
-        .cursor,
-        .blinkStatus
+        .cursor(cursorReg2),
+        .blinkStatus(blinkStatusReg2)
     );
 
 
