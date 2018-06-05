@@ -118,6 +118,8 @@ begin
 						8'd25: new_graphics.effect.blink <= 1'b0;
 						8'd37: new_graphics.fg <= 9'b110_110_110;
 						8'd47: new_graphics.bg <= 9'b110_110_110;
+						8'd39: new_graphics.fg <= 9'b110_110_110;
+						8'd49: new_graphics.bg <= 9'b000_000_000;
 						// foreground ( white excluded )
 						8'd30, 8'd31, 8'd32, 8'd33, 8'd34, 8'd35, 8'd36:
 						begin
