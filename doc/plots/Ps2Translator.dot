@@ -1,0 +1,46 @@
+digraph DFA {   
+
+	//rankdir=LR;
+	node[shape=circle];  
+
+    NORMAL[shape=doublecircle];
+    BREAK_NORMAL[label="BREAK\nNORMAL"];
+    SPECIAL_NORMAL[label="SPECIAL\nNORMAL", shape=doublecircle];
+    SHIFT[shape=doublecircle];
+    BREAK_SHIFT[label="BREAK\nSHIFT"];
+    SPECIAL_SHIFT[label="SPECIAL\nSHIFT", shape=doublecircle];
+    CTRL[shape=doublecircle];
+    BREAK_CTRL[label="BREAK\nCTRL"];
+    SPECIAL_CTRL[label="SPECIAL\nCTRL", shape=doublecircle];
+
+    NORMAL->BREAK_NORMAL[label="F0h"];
+    NORMAL->NORMAL[label="OUTPUT"];
+    NORMAL->SPECIAL_NORMAL[label="E0h"];
+
+    SPECIAL_NORMAL->BREAK_NORMAL[label="F0h"];
+    SPECIAL_NORMAL->NORMAL[label="OUTPUT"];
+
+    NORMAL->SHIFT[label="12h/59h"];
+    SHIFT->SHIFT[label="12h/59h"];
+    SHIFT->SPECIAL_SHIFT[label="E0h"];
+    SHIFT->BREAK_SHIFT[label="F0h"];
+    SHIFT->SHIFT[label="OUTPUT"];
+
+    BREAK_SHIFT->NORMAL[label="12h/59h"];
+    BREAK_SHIFT->SHIFT[label="others"];
+
+    SPECIAL_SHIFT->BREAK_SHIFT[label="F0h"];
+    SPECIAL_SHIFT->SHIFT[label="OUTPUT"];
+
+    NORMAL->CTRL[label="14h"];
+    CTRL->CTRL[label="14h"];
+    CTRL->SPECIAL_CTRL[label="E0h"];
+    CTRL->BREAK_CTRL[label="F0h"];
+    CTRL->CTRL[label="OUTPUT"];
+
+    SPECIAL_CTRL->CTRL[label="OUTPUT"];
+    SPECIAL_CTRL->BREAK_CTRL[label="F0h"];
+
+    BREAK_CTRL->NORMAL[label="14h"];
+    BREAK_CTRL->CTRL[label="others"];
+}
