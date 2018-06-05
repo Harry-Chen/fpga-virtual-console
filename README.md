@@ -10,8 +10,17 @@ The project is developed under Quartus Prime Lite 18.0, we do not provide any wa
 2. Connect the keyboard and monitor.
 3. Connect the FPGA board with PC via a USB-UART cable.
 4. Start a serial tty on PC, such as: `systemctl start serial-getty@ttyUSB0.service`.
-5. Login, and run `stty cols 100 rows 50` to set display area
+5. Login, and run `stty cols 100 rows 50` to set display area. Alternatively, you can run `demo/set_vt220.sh` or `demo/set_xterm.sh` to setup necessary environment for VT220 or XTerm-256color mode, respectively.
 6. Enjoy it!
+
+## Demostration
+
+There are some fancy commands. For example,
+
+1. Run `demo/asciicam.sh` to display colored video captured from your camera.
+2. Run `demo/video.sh [video_path]` to play video from `video_path`.
+3. Run `bb` to show an ASCII-art demo.
+4. Run `cacafire` to show the colored fire.
 
 ## Notice
 
