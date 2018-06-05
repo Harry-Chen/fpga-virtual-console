@@ -4,21 +4,6 @@
  键盘控制器模块负责接收PS/2接口传来的数据，并将按键最终转换为\texttt{VT220}规范中指定的指令序列从串口发送给PC。
  本模块主要由下列的子模块构成。
 
- \subsection{FIFO数据格式}
- \begin{table}[htbp]
-    \centering
-        \caption{FIFO中每条数据的格式}
-        \label{tab:fifo_bytefield}
-        \vspace{1em}
-        \begin{bytefield}[bitwidth=0.5em,endianness=big,boxformatting={\centering\tt}]{64}
-            \bitheader{0,8,16,24,32,40,48,56,64} \\
-            \bitbox{8}{Length} & \bitbox{8}{Char 7} &
-            \bitbox{8}{Char 6} & \bitbox{8}{Char 5} &
-            \bitbox{8}{Char 4} & \bitbox{8}{Char 3} &
-            \bitbox{8}{Char 2} & \bitbox{8}{Char 1} &
-        \end{bytefield}
-    \end{table}
-
  \subsection{PS2接收模块 \texttt{Ps2Receiver}}
 
  本模块采样由PS/2接口发送来的键盘时钟与数据信号，在每次正确收到一个扫描码（8位二进制）后发出指示。
@@ -89,3 +74,35 @@
 所有双圆圈标记的状态为可能产生输出的状态。
 
 此模块可以正确地处理重复按键、多个按键等常见情况。当得到的按键或组合没有在\texttt{VT220}规范中时，本模块不会产生任何输出。
+
+\subsection{FIFO数据格式}
+PS2转换模块与串口发送模块之间通过一个FIFO进行数据缓冲。由于每个Escape Sequence序列的长度不会超过56字节，FIFO的位宽定为64比特，其中存储的数据格式如表\ref{tab:fifo_bytefield}所示。
+
+\begin{table}[htbp]
+   \centering
+       \caption{FIFO中每条数据的格式}
+       \label{tab:fifo_bytefield}
+       \vspace{1em}
+       \begin{bytefield}[bitwidth=0.5em,endianness=big,boxformatting={\centering\tt}]{64}
+           \bitheader{0,8,16,24,32,40,48,56,64} \\
+           \bitbox{8}{Length} & \bitbox{8}{Char 7} &
+           \bitbox{8}{Char 6} & \bitbox{8}{Char 5} &
+           \bitbox{8}{Char 4} & \bitbox{8}{Char 3} &
+           \bitbox{8}{Char 2} & \bitbox{8}{Char 1} &
+       \end{bytefield}
+   \end{table}
+
+\subsection{FIFO处理模块 \texttt{FifoConsumer}}
+此模块的功能比较比较简单，由于串口的发送比较慢，故使用该模块配合FIFO进行缓冲。
+此模块包含一个状态机，设计思路如下：
+
+\begin{enumerate}
+    \item 等待，直到FIFO不为空
+    \item 从FIFO中读取一条数据（格式如表\ref{tab:fifo_bytefield}），根据长度跳到第一个待发送字符之前
+    \item 读取一个字符，向串口送出，等待直到串口发送完成
+    \item 如果还有字符没有发送完成，跳到3，否则跳到1
+\end{enumerate}
+
+事实上，由于要发送的数据总长度较短，我们直接使用状态名而不是一个变量来记录当前剩余的字符数量，根据\texttt{Length}属性跳转到相应状态。
+这样实现的好处是节省了不必要的时钟周期，减少了逻辑单元的复杂度，但是导致状态数量增长到31个。
+由于这些状态都可分为几个大类（读取、等待、跳转），代码比较类似，借助于\texttt{SystemVerilog}的\texttt{define}关键词与宏展开，实现一个这样一个看似复杂的状态机是很简洁的。

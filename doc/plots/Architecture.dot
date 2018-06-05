@@ -80,10 +80,12 @@ digraph Architecture {
             ModelControl->TextControl[label="Terminal Status"];
             AttribControl->TextControl[label="Terminal Status"];
             GraphicsControl->TextControl[label="Terminal Status"];
+            CursorControl->TabControl[label="Command"];
 
             Color256Decoder[shape=cylinder];
             GraphicsControl->Color256Decoder[label="Encoded Color"];
             Color256Decoder->GraphicsControl[label="Decoded Color"];
+            TabControl->CursorControl[label="Tab Position"];
 
             TextControl->LED[label="Debug Info"];
         }
