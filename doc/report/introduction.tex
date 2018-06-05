@@ -22,6 +22,18 @@ Console，中文名为控制台，是一种计算机的物理设备。它只具�
 
 本项目可以与运行任何现代操作系统的PC配合，运行日常所用的命令行模式的软件，也可以用来连接网络设备等进行配置、调试工作。
 
+本项目全部采用\texttt{SystemVerilog}进行编写。它带来了多个方便的新特性，如：
+\begin{description}
+  \item[\texttt{logic}类型] 整合了 \texttt{wire} 和 \texttt{reg} 类型，自动推导几类寄存器模型，减少无谓的区分。
+  \item[\texttt{always\_comb, always\_latch, always\_ff}块] 可明确指定需要的逻辑类型（纯组合逻辑、锁存器、触发器），防止出现非预期电路和行为。
+  \item[\texttt{struct}类型] 与C语言类似，可将一组值/信号进行单独赋值、统一绑定与传递。
+  \item[\texttt{enum}类型] 与C语言类似，可以给常量赋名称，并有作用域限制，在状态机的设计中减少了出错的可能。
+  \item[\texttt{typedef}关键字] 与C语言类似，可以给复杂的变量类型赋予别名，更直观好记。
+  \item[\texttt{define}与\texttt{generate}关键字] 可以方便地在预处理阶段批量生成代码，以及在综合阶段批量生成元件，适合大量小元器件并行使用的场合。
+\end{description}
+
+进一步地，\texttt{SystemVerilog}在电路的测试验证中具有 \texttt{VHDL} 与 \texttt{Verilog}不可比拟的灵活性、便捷性。我们强烈建议各位学习这门先进的硬件描述语言，也建议老师在今后的教学中考虑采纳它，与现代VLSI设计接轨。
+
 另外，本项目还有以下的突出特性：
 \begin{description}
     \item[高分辨率] 我们实现了800*600@72Hz的VGA信号输出，一屏幕能容纳100列*50行=5000个文字，相比标准要求的80列*25行=2000字提升了$250\%$。
