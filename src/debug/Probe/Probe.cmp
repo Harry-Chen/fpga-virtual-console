@@ -1,7 +1,0 @@
-	component Probe is
-		port (
-			probe  : in  std_logic_vector(127 downto 0) := (others => 'X'); -- probe
-			source : out std_logic_vector(15 downto 0)                      -- source
-		);
-	end component Probe;
-
