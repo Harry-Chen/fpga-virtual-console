@@ -5,7 +5,6 @@
 
 对于终端的命令，我们支持VT220标准\footnote{\url{https://vt100.net/docs/vt220-rm/}}下几乎所有的会影响显示结果的命令，以及XTerm\footnote{\url{http://invisible-island.net/xterm/ctlseqs/ctlseqs.html}}下常用的光标控制以及字符编辑命令，可以支持解析绝大多数程序的输出。目前所支持的命令见表\ref{tab:supported-commands}。
 
-
 \subsubsection{命令解析模块 \texttt{CommandsParser}}
 命令的解析是通过如图\ref{fig:command_parser}所示的状态机来进行实现，主要在CommandsParser模块中。在解析完成一条命令后会产生一个commandsReady信号，并且附带额外的命令参数等信息以供后续模块执行对应操作。
 
@@ -69,16 +68,6 @@ SCS1 & ESC ) A/B/0/1/2 &设置字符集 \\ \hline \hline
 
 SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 \end{longtable}
-
-\begin{landscape}
-\begin{figure}[htbp]
-\centerline{
-\includegraphics[height=0.95\textheight]{command_parser.pdf}
-}
-\caption{命令解析状态图，圆形节点为状态，方形为命令。}
-\label{fig:command_parser}
-\end{figure}
-\end{landscape}
 
 本模块中还初始化了下列的子模块。
 
@@ -167,3 +156,13 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 该模块是对滚动区域、字符集等属性设置命令的处理，较为简单，仅仅在得到命令后直接更新即可。
 \subsubsection{模式控制模块 \texttt{ModeControl}}
 该模块和图形控制模块同样是一个对应于多参数命令的模块，但是各个属性均可只用一个参数表示，在记录完毕所需要更新的模式后，在更新命令到来时直接更新即可。
+
+\begin{landscape}
+	\begin{figure}[htbp]
+	\centerline{
+	\includegraphics[height=0.95\textheight]{command_parser.pdf}
+	}
+	\caption{命令解析状态图，圆形节点为状态，方形为命令。}
+	\label{fig:command_parser}
+	\end{figure}
+\end{landscape}
