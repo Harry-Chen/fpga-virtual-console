@@ -36,7 +36,7 @@ module FontShapeRenderer(
     `define CURRENT_PIXEL (`PIXEL_PER_CHARACTER - 1 - (y * `WIDTH_PER_CHARACTER + x))
 
     logic pixelSolid;
-    assign pixelSolid = nowRenderingData.shape[`CURRENT_PIXEL] == ~currentCursor;
+    assign pixelSolid = nowRenderingData.shape[`CURRENT_PIXEL] == 1;
 
     VgaColor_t foreground, background;
     VgaColor_t nowColor;
@@ -56,6 +56,11 @@ module FontShapeRenderer(
                 foreground = nowRenderingData.foreground;
            end
            background = nowRenderingData.background;
+        end
+
+        if (currentCursor) begin
+            background = ~background;
+            foreground = ~foreground;
         end
 
         if (effect.underline & y == (`HEIGHT_PER_CHARACTER - 1)) begin
