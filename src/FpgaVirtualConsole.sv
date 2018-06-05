@@ -20,7 +20,14 @@ module FpgaVirtualConsole(
     output reg [15:0]                  led
     );
 
-    
+    // synchronize reset signal
+    logic reset, preReset;
+
+    always_ff @(posedge clk) begin
+        preReset <= rst;
+        reset <= preReset;
+    end
+
 
     // debug probe
     logic [127:0] debug;
@@ -44,7 +51,7 @@ module FpgaVirtualConsole(
 	assign rstPll = ~rstPll_n;
 
     TopPll topPll(
-        .areset(rst),
+        .areset(reset),
         .inclk0(clk),
         .c0(clk50M),
         .c1(clk100M),
