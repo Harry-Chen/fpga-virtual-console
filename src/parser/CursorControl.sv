@@ -80,6 +80,20 @@ assign cursor.visible =
 	  blinkStatus & term.mode.cursor_visibility :
 	  term.mode.cursor_visibility;
 
+// tab control
+logic tabReady;
+logic [7:0] tab_pos;
+TabControl tab_control(
+	.clk,
+	.rst,
+	.commandReady,
+	.commandType,
+	.param,
+	.term,
+	.tabPos(tab_pos),
+	.tabReady
+);
+
 always @(posedge clk or posedge rst)
 begin
 	if(rst)
@@ -88,6 +102,8 @@ begin
 		o_cursor.y <= 8'd0;
 	end else if(scrollReady) begin
 		scrollReady <= 1'b0;
+	end else if(tabReady) begin
+		o_cursor.y <= tab_pos;
 	end else if(commandReady) begin
 		unique case(commandType)
 			CUP:  // Cursor Position
@@ -173,9 +189,6 @@ begin
 					o_cursor.y <= 8'd0;
 				8'o10: // BS
 					o_cursor.y <= (i_cursor.y == 8'd0) ? 8'd0 : i_cursor.y - 8'd1;
-				8'o11: // HT
-					// TODO
-					o_cursor.y <= i_cursor.y; //placeholder
 				default:
 					if(param.Pchar == 8'h0 || param.Pchar >= 8'h20)
 					begin
