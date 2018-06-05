@@ -1,11 +1,10 @@
 `include "DataType.svh"
 
 module KeyboardController(
-    input   clk,
-    input   rst,
-    input   ps2Clk,
-    input   ps2Data,
-    output  uartTx
+    input               clk,
+    input               rst,
+    input   Ps2Signal_t ps2,
+    output              uartTx
     );
 
     parameter ClkFrequency = 100_000_000;
@@ -34,8 +33,8 @@ module KeyboardController(
         .clk,
         .reset(rst),
         .rx_en(1'b1),
-        .ps2d(ps2Data),
-        .ps2c(ps2Clk),
+        .ps2d(ps2.data),
+        .ps2c(ps2.clk),
         .rx_done_tick(scancodeDone),
         .rx_data(scancode)
     );
@@ -47,7 +46,7 @@ module KeyboardController(
         .scancode,
         .fifoFull,
         .fifoWriteRequest,
-        .fifoInData,
+        .fifoInData
     );
 
 

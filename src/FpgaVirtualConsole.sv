@@ -5,8 +5,7 @@ module FpgaVirtualConsole(
     input                              rst,
     input  [4:0]                       buttons,
     // PS/2 receiver
-    input                              ps2Clk,
-    input                              ps2Data,
+    input  Ps2Signal_t                 ps2,
     // uart transceiver
     input                              uartRx,
     output reg                         uartTx,
@@ -34,7 +33,7 @@ module FpgaVirtualConsole(
     );
     
 
-    // segments test
+    // segments to show state
     LedDecoder decoder_1(.hex(vt100_debug[19:16]), .segments(segment1));
     LedDecoder decoder_2(.hex(vt100_debug[23:20]), .segments(segment2));
 
@@ -59,12 +58,12 @@ module FpgaVirtualConsole(
     ) keyboardController(
         .clk(clk100M),
         .rst(rstPll),
-        .ps2Clk,
-        .ps2Data,
+        .ps2,
         .uartTx
     );
-					
-
+        
+    
+    // uart to screen
     VideoController VideoController(
         .clk100M,
         .clk50M,
