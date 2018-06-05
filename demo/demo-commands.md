@@ -1,0 +1,22 @@
+# Setup
+
+For VT220 mode, run `./set_vt220.sh`.
+
+For Xterm mode, run `./set_xterm.sh`.
+
+# VT220 Mode
+
+* `aafire`
+* `bb`
+* `./bad_apple.sh`
+
+# XTerm Mode
+
+* `cacafire`
+* `cacaview [images_path]`
+* `./asciicam.sh`
+* `./video.sh [video_path]`
+* `./emacs`, then input `ESC+x` and `tetris`.
+* `cmatrix`
+* `ninvaders`: Ncurses based space invaders clone.
+* `nsnake `: Customizable Snake game with ncurses for the terminal.
