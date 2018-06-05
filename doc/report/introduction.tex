@@ -1,2 +1,54 @@
  % !TEX root = report.tex
  % !TEX program = xelatex
+
+\subsection{项目背景}
+Console，中文名为控制台，是一种计算机的物理设备。它只具有基本的I/O功能，而不具有计算能力。
+在计算机刚诞生时，控制台是与计算机独立的。它一般具有键盘与屏幕，将用户输入传送给计算机，将计算机的输出回显给用户。
+
+随着计算机的发展，越来越少的计算机采取这种分离的设计，操作系统都会内置虚拟控制台（Virtual Console），通过软件即可模拟出控制台的功能。
+实现这类技术的软件被称为终端模拟器（Terminal Emulator），如Linux下的\texttt{xterm}, \texttt{gnome-terminal}, \texttt{Konsole}, \texttt{screen}，Windows下的\texttt{cmd.exe}、超级终端等工具都属于终端模拟器。
+另外，借助于称为“虚拟终端”（Virtual Terminal）的技术，也不再有一台计算机只能由一个用户使用的限制。
+
+\subsection{功能与特性}
+
+本项目实现的是一个真正的\textbf{物理}终端！它可以通过串口与计算机连接，通过PS/2接口连接键盘，HDMI接口连接显示器。
+之后，在PC上透过串口运行\texttt{getty}等终端管理软件启动一个Shell，就可以像使用任何一个熟悉的终端模拟器一样使用它。
+
+为了正确地交换数据，终端与PC通信遵循不同的规范，它们规定了两端互相发送数据的格式。
+从PC到终端，有字符编码、光标控制、字符颜色、插入模式等信息；从PC到终端，每一个（或者一组）按键都对应着不同的一串字符串。
+我们完整地实现了被接受最为广泛的\texttt{VT220}标准\footnote{介绍可见 \url{https://en.wikipedia.org/wiki/VT220}，以及下面给出的技术文档}，它在 Linux、macOS 等操作系统中都有完善的支持。
+鉴于\texttt{VT220}的显示只是单色模式，为了更好的效果，我们还实现了\texttt{xterm-256color}\footnote{介绍可见 \url{https://en.wikipedia.org/wiki/Xterm}}模式下的大部分影响显示效果的指令，尤其是增加了对颜色的支持。
+我们实现了标准中的所有颜色模式与字符特效，遗憾的是受到实验板的限制，最终的输出会被化归为512色。
+
+本项目可以与运行任何现代操作系统的PC配合，运行日常所用的命令行模式的软件，也可以用来连接网络设备等进行配置、调试工作。
+
+另外，本项目还有以下的突出特性：
+\begin{description}
+    \item[高分辨率] 我们实现了800*600@72Hz的VGA信号输出，一屏幕能容纳100列*50行=5000个文字，相比标准要求的80列*25行=2000字提升了$250\%$。
+    \item[高速度] 通过对时序的精心优化，我们的解析与渲染模块都做到了全流水线运行，最高能运行在 120 MHz 的频率下。
+    因此，我们能以3M的波特率与计算机串口进行通信，从而能够以25FPS流畅播放电影（由播放器渲染为动态彩色文字输出）。
+    \item[高稳定性] 我们充分发掘SRAM潜力，在渲染与显示器输出中采用了双缓冲机制，解决了屏幕撕裂、像素微小抖动等常见问题。
+    \item[高模块化] 我们在整个工程中，坚持高内聚低耦合的思想，将每个重要功能都抽取为独立的模块，减少代码冗余，也增强了可扩展性。同时VGA、显存、键盘等模块通用性强，可用在今后的其他项目中。
+\end{description}
+
+
+\subsection{项目分工}
+\begin{minipage}[t]{0.45\textwidth}
+陈晟祺：
+\begin{itemize}
+    \item 项目总体架构
+    \item 键盘控制模块（PS2、译码）
+    \item 显示控制模块（VGA、SRAM）
+\end{itemize}
+\end{minipage}
+\begin{minipage}[t]{0.45\textwidth}
+周聿浩：
+\begin{itemize}
+    \item 终端命令解析与处理
+    \item 项目综合调试
+    \item 展示Demo设计
+\end{itemize}
+\end{minipage}
+
+\vspace{1em}
+注：各模块的详细功能与设计可见下面各节，两人的工作量基本是均衡的。

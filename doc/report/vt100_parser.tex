@@ -9,6 +9,8 @@
 
 \begin{table}
 	\centering
+	\caption{终端内部状态表}
+	\label{tab:inner-status}
 	\begin{tabular}{|l|l|} \hline
 		\texttt{cursor.x} & 光标的X坐标 \\ \hline
 		\texttt{cursor.y} & 光标的Y坐标 \\ \hline
@@ -26,8 +28,6 @@
 		\texttt{attrib.charset} & 字符集 \\ \hline
 		\texttt{prev\_data} & 上一个输入的字符 \\ \hline
 	\end{tabular}
-	\caption{终端内部状态表}
-	\label{tab:inner-status}
 \end{table}
 
 \subsubsection{命令解析模块 \texttt{CommandsParser}}
@@ -195,6 +195,18 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 对于REP命令，其功能要求是插入指定字符，这可以跨越多行。这类操作会使用``行内编辑''，但同时设置一个\texttt{rep\_mode}标记，同时设置必要的插入到何处的参数。之后``行内编辑''一行结束后检查是否到跨行插入的最后一行，如果不是则继续跳转到``行内编辑''初始处。
 
 对于不同的命令，分别初始化不同的组合操作参数进行处理。
+
+\begin{landscape}
+	\begin{figure}[htbp]
+	\centerline{
+	\includegraphics[height=0.95\textheight]{command_parser.pdf}
+	}
+	\caption{命令解析状态图，圆形节点为状态，方形为命令。}
+	\label{fig:command_parser}
+	\end{figure}
+\end{landscape}
+
+
 \subsubsection{图形控制模块 \texttt{GraphicsControl}}
 该模块主要负责处理字符的颜色和特效（下划线、闪烁、反色和增亮）。对应的命令为SGR，其参数个数不定，且共分为3种类别
 \begin{enumerate}
@@ -217,13 +229,3 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 该模块是对滚动区域、字符集等属性设置命令的处理，较为简单，仅仅在得到命令后直接更新即可。
 \subsubsection{模式控制模块 \texttt{ModeControl}}
 该模块和图形控制模块同样是一个对应于多参数命令的模块，但是各个属性均可只用一个参数表示，在记录完毕所需要更新的模式后，在更新命令到来时直接更新即可。
-
-\begin{landscape}
-	\begin{figure}[htbp]
-	\centerline{
-	\includegraphics[height=0.95\textheight]{command_parser.pdf}
-	}
-	\caption{命令解析状态图，圆形节点为状态，方形为命令。}
-	\label{fig:command_parser}
-	\end{figure}
-\end{landscape}
