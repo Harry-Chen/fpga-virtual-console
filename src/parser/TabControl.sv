@@ -35,7 +35,7 @@ always @(posedge clk, posedge rst)
 begin
 	if(rst)
 	begin
-		tab_stop <= {(`CONSOLE_COLUMNS / 4){4'b0001}};
+		tab_stop <= {(`CONSOLE_COLUMNS / 8){8'b0000_0001}};
 	end else if(commandReady) begin
 		case(commandType)
 			HTS:

@@ -3,7 +3,7 @@
  
 \subsection{终端命令解析 \texttt{VT100Parser}}
 
-对于终端的命令，我们支持VT220标准\footnote{https://vt100.net/docs/vt220-rm/}下几乎所有的会影响显示结果的命令，以及XTerm\footnote{http://invisible-island.net/xterm/ctlseqs/ctlseqs.html}下常用的光标控制以及字符编辑命令，可以支持解析绝大多数程序的输出。目前所支持的命令见表\ref{tab:supported-commands}。
+对于终端的命令，我们支持VT220标准\footnote{\url{https://vt100.net/docs/vt220-rm/}}下几乎所有的会影响显示结果的命令，以及XTerm\footnote{\url{http://invisible-island.net/xterm/ctlseqs/ctlseqs.html}}下常用的光标控制以及字符编辑命令，可以支持解析绝大多数程序的输出。目前所支持的命令见表\ref{tab:supported-commands}。
 
 
 \subsubsection{命令解析模块 \texttt{CommandsParser}}
@@ -44,6 +44,9 @@ ECH & ESC [ Pn X &清除部分字符 \\ \hline
 DCH & ESC [ Pn P &删除部分字符 \\ \hline
 ICH & ESC [ Pn @ &插入空白字符 \\ \hline \hline
 
+HTS & ESC H & 设置TabStop \\ \hline
+TBC & ESC [ Pn g & 清除TabStop \\ \hline \hline
+
 SETDEC & ESC [? Ps\footnote{Ps表示由分号分隔的个数不定的数值参数列} h & 设置DEC模式 \\ \hline
 RESETDEC & ESC [? Ps l & 清除DEC模式 \\ \hline
 SETMODE &ESC [ Ps h & 设置模式 \\ \hline
@@ -80,6 +83,7 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 本模块中还初始化了下列的子模块。
 
 \subsubsection{光标控制模块 \texttt{CursorControl}}
+\subsubsection{制表符控制模块 \texttt{TabControl}}
 \subsubsection{字符控制模块 \texttt{TextControl}}
 该模块负责TextRam的读写，用于施加编辑命令产生的改变。控制整个模块功能的状态机如图\ref{fig:text_control}所示。
 
@@ -129,7 +133,18 @@ SGR & ESC [ Ps m &设置颜色等字符信息 \\ \hline
 
 该部分主要由ResetStart和ResetWrite两个状态控制。其中ResetStart负责设置起始的行，而后ResetWrite不断往下，每次向RAM中写入一个空行直到所需要清除的区域结束为止回到Idle状态。
 
-该模块所处理的所有命令均可以通过这三种基本操作的组合构成，分别是[TODO]
+该模块所处理的所有命令均可以通过这三种基本操作的组合构成，组合的操作基本有
+
+\paragraph{滚屏}
+在``屏幕滚动''结束后跳转到``多行清空''，将因为滚动产生的空位设置为空字符。
+
+\paragraph{插入编辑}
+当光标位于行末且处于插入编辑模式，在输入一个字符后会输入一个字符，并且产生一个新行。此种类型优先进行``行内编辑''，并且设置一个\texttt{delay\_scrolling}标记，在行内编辑结束后跳转到``滚屏''。
+
+\paragraph{混合删除}
+对于ED命令，会删除光标至屏幕末尾所有的字符，这分为两个步骤。首先是``行内编辑''清除光标所在行的字符，并且设置\texttt{delay\_reset}标记，在行内编辑结束后跳转到``多行清空''再清除剩余的内容。
+\paragraph{跨行插入}
+对于REP命令，其功能要求是插入指定字符，这可以跨越多行。这类操作会使用``行内编辑''，但同时设置一个\texttt{rep\_mode}标记，同时设置必要的插入到何处的参数。之后``行内编辑''一行结束后检查是否到跨行插入的最后一行，如果不是则继续跳转到``行内编辑''初始处。
 \subsubsection{图形控制模块 \texttt{GraphicsControl}}
 该模块主要负责处理字符的颜色和特效（下划线、闪烁、反色和增亮）。对应的命令为SGR，其参数个数不定，且共分为3种类别
 \begin{enumerate}

@@ -6,7 +6,7 @@ begin \
 	m.origin_mode        <= 1'b0; \
 	m.auto_wrap          <= 1'b1; \
 	m.insert_mode        <= 1'b0; \
-	m.line_feed          <= 1'b1; \
+	m.line_feed          <= 1'b0; \
 	m.cursor_blinking    <= 1'b1; \
 	m.cursor_visibility  <= 1'b1; \
 end
