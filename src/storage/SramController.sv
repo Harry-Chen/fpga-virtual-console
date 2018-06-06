@@ -26,6 +26,7 @@ module SramController (
             sramInterface <= 0;
             den <= 0;
         end else begin
+            sramInterface.cs <= 0;
             rendererResult.done <= 0;
             vgaResult.done <= 0;
             if (~vgaRequest.oe_n) begin
