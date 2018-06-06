@@ -2,6 +2,9 @@
 `ifndef DATATYPE_SVH
 `define DATATYPE_SVH
 
+// avoid typos
+`default_nettype none
+
 // constants
 //`define BAUD_RATE 115200
 `define BAUD_RATE 3_000_000  // 3M Baud, not standard
