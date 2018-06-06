@@ -13,7 +13,7 @@ The project is developed under Quartus Prime Lite 18.0, we do not provide any wa
 5. Login, and run `stty cols 100 rows 50` to set display area. Alternatively, you can run `demo/set_vt220.sh` or `demo/set_xterm.sh` to setup necessary environment for VT220 or XTerm-256color mode, respectively.
 6. Enjoy it!
 
-## Demostration
+## Demonstration
 
 There are some fancy commands. For example,
 
@@ -24,7 +24,7 @@ There are some fancy commands. For example,
 
 ## Notice
 
-1. The default baud is 3M, which is not a standard baud. You might need to modify the configuration of `getty` to make it communicate normally with the FPGA. Or you can slow it down in `DataType.svh`, which will leads to bad experiences such as slow refreshing rate.
+1. The default baud is 3M, which is not a standard baud. You might need to modify the configuration of `getty` to make it communicate normally with the FPGA. Or you can slow it down in `DataType.svh`, which will lead to bad experiences such as slow refreshing rate.
 2. There might be some timing issue with the VGA signal. You can adjust your monitor manually if it doesn't display image as expected.
 3. When `TERM=vt220`, there is no color support but everything will work well. When `TERM=xterm-256color`, there is color support, but there might be some strange behaviors for we have not implemented all instructions in that mode.
 
