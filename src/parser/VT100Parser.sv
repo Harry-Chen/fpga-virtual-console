@@ -4,7 +4,6 @@ module VT100Parser(
 	input                   clk, rst,
 	input                   dataReady,
 	input  [7:0]            data,
-	input                   blinkStatus,
 	input  TextRamResult_t  ramRes,
 	output TextRamRequest_t ramReq,
 	output Cursor_t         cursorInfo,
@@ -28,6 +27,16 @@ assign debug[31:24] = commandType;
 assign debug[15:8] = term.cursor.x;
 assign debug[7:0] = term.cursor.y;
 
+logic blinkStatus, blinkReset;
+
+BlinkGenerator #(
+	.ClkFrequency(100_000_000)
+) blink(
+	.clk(clk),
+	.sync_reset(blinkReset),
+	.status(blinkStatus)
+);
+
 // commands parser
 CommandsParser cmd_parser(
 	.clk,
@@ -49,6 +58,7 @@ CursorControl cursor_control(
 	.param,
 	.term,
 	.blinkStatus,
+	.blinkReset,
 	.cursor(term.cursor),
 	.o_scrolling(scrolling),
 	.scrollReady,

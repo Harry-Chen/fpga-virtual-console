@@ -19,6 +19,7 @@ module CursorControl(
 	input  Param_t      param,
 	input  Terminal_t   term,
 	input               blinkStatus,
+	output              blinkReset,
 	output Cursor_t     cursor,
 	output Scrolling_t  o_scrolling,
 	output              scrollReady,
@@ -93,6 +94,25 @@ TabControl tab_control(
 	.tabPos(tab_pos),
 	.tabReady
 );
+
+// blink reset
+always_comb
+begin
+	if(tabReady)
+	begin
+		blinkReset = 1'b1;
+	end else if(commandReady) begin
+		case(commandType)
+			CUP, CUF, CUB, CUD, CUU, CNL, CPL,
+			CHA, VPA, IND, IL, DL, RI, NEL, 
+			DECSTBM, REP, INPUT:
+				blinkReset = 1'b1;
+			default blinkReset = 1'b0;
+		endcase
+	end else begin
+		blinkReset = 1'b0;
+	end
+end
 
 always @(posedge clk or posedge rst)
 begin

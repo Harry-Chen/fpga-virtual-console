@@ -34,6 +34,7 @@ module VideoController(
         .ClkFrequency(100_000_000)
     ) blink(
         .clk(clk100M),
+		.sync_reset(1'b0),
         .status(blinkStatus)
     );
 
@@ -50,7 +51,6 @@ module VideoController(
         .data(uartDataReceived),
         .ramRes(textRamResultParser),
         .ramReq(textRamRequestParser),
-		.blinkStatus,
         .debug(vt100_debug),
         .cursorInfo(cursor)
     );

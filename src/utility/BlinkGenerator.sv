@@ -1,6 +1,7 @@
 `include "DataType.svh"
 module BlinkGenerator(
     input  clk,
+	input  sync_reset,
     output status
     );
 
@@ -12,8 +13,10 @@ module BlinkGenerator(
 
     always @(posedge clk)
     begin
-        if(blinking_cnt == BlinkClk)
-        begin
+		if(sync_reset) begin
+            blinking_cnt <= 32'd0;
+            blinking_status <= 1'b1;
+		end else if(blinking_cnt == BlinkClk) begin
             blinking_cnt <= 32'd0;
             blinking_status <= ~blinking_status;
         end else begin
