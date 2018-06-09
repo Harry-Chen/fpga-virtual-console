@@ -2,7 +2,7 @@
 
 `define SET_TAB_FIND(dir, step) \
 begin \
-	status = Tab_Loop; \
+	status <= Tab_Loop; \
 	tab_step <= step; \
 	tab_now <= term.cursor.y; \
 	tab_dir <= dir; \
@@ -31,7 +31,7 @@ logic tab_dir;  // 0 - backward, 1 - forward
 logic [7:0] tab_step, tab_now, tab_next, tab_step_next;
 
 // Set TabStop
-always @(posedge clk, posedge rst)
+always_ff @(posedge clk, posedge rst)
 begin
 	if(rst)
 	begin
@@ -49,7 +49,7 @@ begin
 end
 
 // Find TabStop
-always @(posedge clk, posedge rst)
+always_ff @(posedge clk, posedge rst)
 begin
 	if(rst)
 	begin
@@ -62,15 +62,15 @@ begin
 		end else begin
 			if(tab_step == 8'd0)
 			begin
-				status = Tab_Idle;
-			end else status = Tab_Loop;
+				status <= Tab_Idle;
+			end else status <= Tab_Loop;
 			tab_now <= tab_next;
 			tab_step <= tab_step_next;
 		end
 	end
 end
 
-always @(posedge clk)
+always_ff @(posedge clk)
 begin
 	if(tabReady == 1'b1)
 		tabReady <= 1'b0;

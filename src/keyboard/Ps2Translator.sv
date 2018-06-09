@@ -10,11 +10,11 @@ module Ps2Translator(
     );
 
 
-    localparam  BREAK = 8'hF0,
-                SPECIAL = 8'hE0,
-                LEFT_SHIFT = 8'h12,
-                RIGHT_SHIFT = 8'h59,
-                LEFT_CTRL = 8'h14;
+    localparam  KEY_BREAK = 8'hF0,
+                KEY_SPECIAL = 8'hE0,
+                KEY_LEFT_SHIFT = 8'h12,
+                KEY_RIGHT_SHIFT = 8'h59,
+                KEY_LEFT_CTRL = 8'h14;
 
     typedef enum logic[3:0] {
         STATE_NORMAL, STATE_BREAK_NORMAL, STATE_SPECIAL_NORMAL,
@@ -55,19 +55,19 @@ module Ps2Translator(
         unique case (currentState)
             STATE_NORMAL: begin
                 if(scancodeDone) begin
-                    if (scancode == LEFT_SHIFT || scancode == RIGHT_SHIFT) begin
+                    if (scancode == KEY_LEFT_SHIFT || scancode == KEY_RIGHT_SHIFT) begin
                         nextState = STATE_SHIFT;
                     end
 
-                    else if (scancode == LEFT_CTRL) begin
+                    else if (scancode == KEY_LEFT_CTRL) begin
                         nextState = STATE_CTRL;
                     end
 
-                    else if (scancode == SPECIAL) begin
+                    else if (scancode == KEY_SPECIAL) begin
                         nextState = STATE_SPECIAL_NORMAL;
                     end
 
-                    else if (scancode == BREAK) begin
+                    else if (scancode == KEY_BREAK) begin
                         nextState = STATE_BREAK_NORMAL;
                     end
 
@@ -87,7 +87,7 @@ module Ps2Translator(
 
             STATE_SPECIAL_NORMAL: begin
                 if(scancodeDone) begin
-                    if (scancode == BREAK) begin
+                    if (scancode == KEY_BREAK) begin
                         nextState = STATE_BREAK_NORMAL;
                     end else begin
                         nextState = STATE_NORMAL;
@@ -100,15 +100,15 @@ module Ps2Translator(
 
             STATE_SHIFT: begin
                 if(scancodeDone) begin
-                    if (scancode == LEFT_SHIFT || scancode == RIGHT_SHIFT) begin
+                    if (scancode == KEY_LEFT_SHIFT || scancode == KEY_RIGHT_SHIFT) begin
                         nextState = STATE_SHIFT;
                     end
 
-                    else if (scancode == SPECIAL) begin
+                    else if (scancode == KEY_SPECIAL) begin
                         nextState = STATE_SPECIAL_SHIFT;
                     end
 
-                    else if (scancode == BREAK) begin
+                    else if (scancode == KEY_BREAK) begin
                         nextState = STATE_BREAK_SHIFT;
                     end
 
@@ -122,7 +122,7 @@ module Ps2Translator(
 
             STATE_BREAK_SHIFT: begin
                 if(scancodeDone) begin
-                    if (scancode == LEFT_SHIFT || scancode == RIGHT_SHIFT) begin
+                    if (scancode == KEY_LEFT_SHIFT || scancode == KEY_RIGHT_SHIFT) begin
                         nextState = STATE_NORMAL;
                     end else begin
                         nextState = STATE_SHIFT;
@@ -133,7 +133,7 @@ module Ps2Translator(
             
             STATE_SPECIAL_SHIFT: begin
                 if(scancodeDone) begin
-                    if (scancode == BREAK) begin
+                    if (scancode == KEY_BREAK) begin
                         nextState = STATE_BREAK_SHIFT;
                     end else begin
                         nextState = STATE_SHIFT;
@@ -147,15 +147,15 @@ module Ps2Translator(
            
             STATE_CTRL: begin
                 if(scancodeDone) begin
-                    if (scancode == LEFT_CTRL) begin
+                    if (scancode == KEY_LEFT_CTRL) begin
                         nextState = STATE_CTRL;
                     end
 
-                    else if (scancode == SPECIAL) begin
+                    else if (scancode == KEY_SPECIAL) begin
                         nextState = STATE_SPECIAL_CTRL;
                     end
 
-                    else if (scancode == BREAK) begin
+                    else if (scancode == KEY_BREAK) begin
                         nextState = STATE_BREAK_CTRL;
                     end
 
@@ -169,7 +169,7 @@ module Ps2Translator(
             
             STATE_BREAK_CTRL: begin
                 if(scancodeDone) begin
-                    if (scancode == LEFT_CTRL) begin
+                    if (scancode == KEY_LEFT_CTRL) begin
                         nextState = STATE_NORMAL;
                     end else begin
                         nextState = STATE_CTRL;
@@ -179,7 +179,7 @@ module Ps2Translator(
             
             STATE_SPECIAL_CTRL: begin
                 if (scancodeDone) begin
-                    if (scancode == BREAK) begin
+                    if (scancode == KEY_BREAK) begin
                         nextState = STATE_BREAK_CTRL;
                     end else begin
                         nextState = STATE_CTRL;
@@ -187,7 +187,6 @@ module Ps2Translator(
                         ctrl = 1;
                         special = 1;
                         // Ctrl + Special Key
-                        // TODO: not working at the moment
                     end
                 end
             end
