@@ -28,6 +28,12 @@ There are some fancy commands. For example,
 2. There might be some timing issue with the VGA signal. You can adjust your monitor manually if it doesn't display image as expected.
 3. When `TERM=vt220`, there is no color support but everything will work well. When `TERM=xterm-256color`, there is color support, but there might be some strange behaviors for we have not implemented all instructions in that mode.
 
+## Documentation
+
+You can refer to `doc/report.pdf` for a detailed explanation, or `doc/presentation.pdf` for a quick view of this project.
+
+The source code is __not__ well documented, we sincerely apologize for the consequential inconvenience.
+
 ## Licence
 
 This project is released under GPLv3, see `LICENSE` for legal text.
