@@ -122,7 +122,7 @@ SGR & \texttt{ESC [ Ps m }&设置颜色等字符信息 \\ \hline
 
 光标的位置的原点取决于是否处于Origin模式。若处于Origin模式，则原点位于滚动区域的原点，否则位于整个屏幕的原点。
 
-对于部分命令，其对光标的操作会出发滚动屏幕的操作。这会引起一个名为\texttt{scrollReady}的信号被设置，并且附带一部分滚动屏幕的参数，交由\texttt{TextControl}模块处理。
+对于部分命令，其对光标的操作会触发滚动屏幕的操作。这会引起一个名为\texttt{scrollReady}的信号被设置，并且附带一部分滚动屏幕的参数，交由\texttt{TextControl}模块处理。
 
 对于制表符的处理，当输入这类字符时，该模块不会直接处理，\texttt{TabControl}发现该命令会寻找下一个TabStop的位置，并且在找到后产生一个\texttt{TabReady}信号并且附带查找到的位置。本模块在接受到这样的信号时再将光标设置到对应位置。
 
